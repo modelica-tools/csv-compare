@@ -1,0 +1,403 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FxCopProject Version="1.36" Name="My FxCop Project">
+ <ProjectOptions>
+  <SharedProject>True</SharedProject>
+  <Stylesheet Apply="False">c:\program files (x86)\microsoft fxcop 1.36\Xml\FxCopReport.xsl</Stylesheet>
+  <SaveMessages>
+   <Project Status="Active, Excluded" NewOnly="False" />
+   <Report Status="Active" NewOnly="False" />
+  </SaveMessages>
+  <ProjectFile Compress="True" DefaultTargetCheck="True" DefaultRuleCheck="True" SaveByRuleGroup="" Deterministic="True" />
+  <EnableMultithreadedLoad>True</EnableMultithreadedLoad>
+  <EnableMultithreadedAnalysis>True</EnableMultithreadedAnalysis>
+  <SourceLookup>True</SourceLookup>
+  <AnalysisExceptionsThreshold>10</AnalysisExceptionsThreshold>
+  <RuleExceptionsThreshold>1</RuleExceptionsThreshold>
+  <Spelling Locale="de-DE" />
+  <OverrideRuleVisibilities>False</OverrideRuleVisibilities>
+  <CustomDictionaries SearchFxCopDir="True" SearchUserProfile="True" SearchProjectDir="True" />
+  <SearchGlobalAssemblyCache>False</SearchGlobalAssemblyCache>
+  <DeadlockDetectionTimeout>120</DeadlockDetectionTimeout>
+  <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
+ </ProjectOptions>
+ <Targets>
+  <Target Name="$(ProjectDir)/Modelica_ResultCompare/bin/x64/Release/compare.exe" Analyze="True" AnalyzeAllChildren="False">
+   <Modules AnalyzeAllChildren="False">
+    <Module Name="compare.exe" Analyze="True" AnalyzeAllChildren="False">
+     <Namespaces AnalyzeAllChildren="False">
+      <Namespace Name="" Analyze="True" AnalyzeAllChildren="True" />
+      <Namespace Name="CsvCompare" Analyze="True" AnalyzeAllChildren="True" />
+     </Namespaces>
+     <Resources AnalyzeAllChildren="True" />
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <RuleFiles>
+   <RuleFile Name="$(FxCopDir)\Rules\DesignRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\GlobalizationRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\InteroperabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\MobilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\NamingRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PerformanceRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\SecurityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="True" />
+  </RuleFiles>
+  <Groups />
+  <Settings />
+ </Rules>
+ <FxCopReport Version="1.36">
+  <Targets>
+   <Target Name="$(ProjectDir)/Modelica_ResultCompare/bin/x64/Release/compare.exe">
+    <Modules>
+     <Module Name="compare.exe">
+      <Messages>
+       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2013-06-06 08:13:30Z">
+        <Issue Name="NoStrongName">
+         <Item>'compare.exe'</Item>
+        </Issue>
+       </Message>
+      </Messages>
+      <Namespaces>
+       <Namespace Name="CsvCompare">
+        <Types>
+         <Type Name="Chart">
+          <Members>
+           <Member Name="#Series">
+            <Messages>
+             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'List&lt;Series&gt;'</Item>
+               <Item>'Chart.Series'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="CsvFile">
+          <Members>
+           <Member Name="#CompareFiles(CsvCompare.Log,CsvCompare.CsvFile,System.String)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'CsvFile.CompareFiles(Log, CsvFile, string)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="4" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Results">
+            <Messages>
+             <Message TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'CsvFile.Results'</Item>
+               <Item>'Dictionary&lt;string, List&lt;double&gt;&gt;'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="3" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#XAxis">
+            <Messages>
+             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'CsvFile.XAxis'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Log">
+          <Members>
+           <Member Name="#SetLogFile(System.IO.FileInfo)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'Log.SetLogFile(FileInfo)'</Item>
+               <Item>'object'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="4" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteLine(CsvCompare.LogLevel,System.String)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'Log.WriteLine(LogLevel, string)'</Item>
+               <Item>'object'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="4" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteLine(System.String)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'Log.WriteLine(string)'</Item>
+               <Item>'object'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="4" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="MetaReport">
+          <Members>
+           <Member Name="#Reports">
+            <Messages>
+             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'List&lt;Report&gt;'</Item>
+               <Item>'MetaReport.Reports'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Options">
+          <Members>
+           <Member Name="#GetUsage()">
+            <Messages>
+             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue Certainty="50">
+               <Item>'Options.GetUsage()'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="0" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Items">
+            <Messages>
+             <Message TypeName="CollectionPropertiesShouldBeReadOnly" Category="Microsoft.Usage" CheckId="CA2227" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'Options.Items'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="1" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Range">
+          <Members>
+           <Member Name="#CalculateTubes(System.Array,System.Array,System.Collections.Generic.List`1&lt;System.Double&gt;,System.Collections.Generic.List`1&lt;System.Double&gt;,System.Collections.Generic.List`1&lt;System.Double&gt;,System.Collections.Generic.List`1&lt;System.Double&gt;,System.Double,System.Int32)">
+            <Messages>
+             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'Range.CalculateTubes(Array, Array, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, double, int)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'Range.CalculateTubes(Array, Array, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, double, int)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'Range.CalculateTubes(Array, Array, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, double, int)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'Range.CalculateTubes(Array, Array, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, double, int)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="r" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue Name="MemberParameterMoreMeaningfulName">
+               <Item>'Range.CalculateTubes(Array, Array, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, double, int)'</Item>
+               <Item>'r'</Item>
+              </Issue>
+             </Message>
+             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue Name="MemberParameterMoreMeaningfulName">
+               <Item>'Range.CalculateTubes(Array, Array, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, double, int)'</Item>
+               <Item>'x'</Item>
+              </Issue>
+             </Message>
+             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue Name="MemberParameterMoreMeaningfulName">
+               <Item>'Range.CalculateTubes(Array, Array, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;, double, int)'</Item>
+               <Item>'y'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Validate(System.Collections.Generic.List`1&lt;System.Double&gt;,System.Collections.Generic.List`1&lt;System.Double&gt;,System.Collections.Generic.List`1&lt;System.Double&gt;)">
+            <Messages>
+             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'Range.Validate(List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'Range.Validate(List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'Range.Validate(List&lt;double&gt;, List&lt;double&gt;, List&lt;double&gt;)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Report">
+          <Members>
+           <Member Name="#Chart">
+            <Messages>
+             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'List&lt;Chart&gt;'</Item>
+               <Item>'Report.Chart'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Data">
+            <Messages>
+             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'List&lt;string&gt;'</Item>
+               <Item>'Report.Data'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Series">
+          <Members>
+           <Member Name="#GetArrayString(System.Collections.Generic.List`1&lt;System.Double&gt;,System.Collections.Generic.List`1&lt;System.Double&gt;)">
+            <Messages>
+             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Excluded" Created="2013-06-06 08:25:21Z">
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'Series.GetArrayString(List&lt;double&gt;, List&lt;double&gt;)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'List&lt;double&gt;'</Item>
+               <Item>'Series.GetArrayString(List&lt;double&gt;, List&lt;double&gt;)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Sven.Ruetz">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+  </Targets>
+  <Notes>
+   <User Name="Sven.Ruetz">
+    <Note Id="0" Modified="2013-06-06 09:15:56Z">Needed for [HelpOption]</Note>
+    <Note Id="1" Modified="2013-06-06 10:13:14Z">Works only this way as "Option" is generic for CommandLineParser</Note>
+    <Note Id="2" Modified="2013-06-06 10:14:14Z">To much effort, unneccessary</Note>
+    <Note Id="3" Modified="2013-06-06 10:22:00Z">Thats how we do it :)</Note>
+    <Note Id="4" Modified="2013-06-06 10:22:16Z">makes app more robust</Note>
+   </User>
+  </Notes>
+  <Rules>
+   <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
+    <Resolution Name="NoStrongName">Sign {0} with a strong name key.</Resolution>
+   </Rule>
+   <Rule TypeName="CollectionPropertiesShouldBeReadOnly" Category="Microsoft.Usage" CheckId="CA2227">
+    <Resolution Name="Default">Change {0} to be read-only by removing the property setter.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031">
+    <Resolution Name="Default">Modify {0} to catch a more specific exception than {1} or rethrow the exception.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002">
+    <Resolution Name="Default">Change {0} in {1} to use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; or KeyedCollection&lt;K,V&gt;</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006">
+    <Resolution Name="Default">Consider a design where {0} doesn't nest generic type {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
+    <Resolution Name="MemberParameterMoreMeaningfulName">In method {0}, consider providing a more meaningful name than parameter name {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024">
+    <Resolution Name="Default">Change {0} to a property if appropriate.</Resolution>
+   </Rule>
+  </Rules>
+ </FxCopReport>
+</FxCopProject>
