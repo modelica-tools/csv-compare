@@ -386,8 +386,11 @@ namespace CsvCompare
                 //write results and paths of the sub reports
                 foreach (Report r in _reports)
                 {
-                    if (null!=r && !string.IsNullOrEmpty(r.FileName))// Catch empty report objects
+                    if (null!=r)// Catch empty report objects
                     {
+                        if (string.IsNullOrEmpty(r.FileName))
+                            r.FileName = Path.Combine(_path.DirectoryName, r.Chart[0].Id.ToString() + ".html");
+
                         if (_bReportDirSet)
                         {
                             r.FileName = Path.Combine(_path.Directory.FullName, Path.GetFileName(r.FileName));
@@ -479,7 +482,10 @@ namespace CsvCompare
         public bool WriteReport(Log log, FileSystemInfo metaPath, Options options)
         {
             string path;
-            _metaPath = metaPath.FullName;
+            if (null != metaPath)
+                _metaPath = metaPath.FullName;
+            else
+                _metaPath = string.Empty;
             try
             {
                 path = Path.GetFullPath(_path);
@@ -576,8 +582,10 @@ namespace CsvCompare
                 else
                     writer.WriteLine("	<tr><td class=\"header\">Meta Report:</td><td><a href=\"{0}\">{1}</a></td></tr>", Path.GetFileName(_metaPath), Path.GetFileName(_metaPath));
             
+            if(null != this.BaseFile)
             writer.WriteLine("	<tr><td class=\"header\">Base File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.BaseFile.Replace("\\", "/"), this.BaseFile);
-            writer.WriteLine("	<tr><td class=\"header\">Compare File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.CompareFile.Replace("\\", "/"), this.CompareFile);
+            if (null != this.CompareFile)
+                writer.WriteLine("	<tr><td class=\"header\">Compare File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.CompareFile.Replace("\\", "/"), this.CompareFile);
             
             writer.WriteLine("	<tr><td class=\"header\">Tolerance:</td><td>{0}</td></tr>", _tolerance);
             writer.WriteLine("	<tr><td class=\"header\">Tested:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
