@@ -144,7 +144,8 @@ namespace CsvCompare
             sb.AppendLine("              pad: 0, tickOptions: {format: '%.4f'}");
             sb.AppendLine("            },");
             sb.AppendLine("            yaxis: {");
-            sb.AppendFormat("              label: \"{0}\"", this.LabelY).AppendLine();
+            sb.AppendFormat("              label: \"{0}\",", this.LabelY).AppendLine();
+            sb.AppendLine("              tickOptions: {format: '%.4f'}");
             sb.AppendLine("            }");
             sb.AppendLine("          }");
             sb.AppendLine("        });");
