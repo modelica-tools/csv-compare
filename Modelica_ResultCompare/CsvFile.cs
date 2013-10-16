@@ -84,7 +84,7 @@ namespace CsvCompare
                     foreach (string sCol in values)
                         if (!string.IsNullOrEmpty(sCol))
                         {
-                            string sTemp=sCol.Trim(' ', '"', '\t');
+                            string sTemp = sCol.Trim(' ', '"', '\t');
                             if (sTemp != "t" && sTemp != "time" && sTemp != "Time")//Skip time values
                             {
                                 try
@@ -116,7 +116,7 @@ namespace CsvCompare
                             double dValue;
                             if (!Double.TryParse(sCol.Trim('"'), NumberStyles.Any, provider, out dValue))
                             {
-                                if(!string.IsNullOrEmpty(sCol))
+                                if (!string.IsNullOrEmpty(sCol))
                                     log.WriteLine(LogLevel.Warning, "Could not parse string \"{0}\" as double value, skipping.", sCol);
                                 iCol++;
                                 continue;
@@ -223,7 +223,7 @@ namespace CsvCompare
                         }
 
                         log.WriteLine("Generating tubes for {0}", res.Key);
-                        r.CalculateTubes(csvBase.XAxis.ToArray(), res.Value.ToArray(), lXHighTube, lYHighTube, lXLowTube, lYLowTube, _dRangeDelta, 1);
+                        r.CalculateTubes(csvBase.XAxis.ToArray(), res.Value.ToArray(), lXHighTube, lYHighTube, lXLowTube, lYLowTube, _dRangeDelta);
                     }
                     catch (IndexOutOfRangeException)
                     {
