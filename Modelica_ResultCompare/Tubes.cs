@@ -340,7 +340,7 @@ namespace CsvCompare
         {
             int iErrors = 0;
 
-            for (int i = 0; i < comp.Count - 1 && i < refHigh.Count - 1 && i < refLow.Count - 1; i++)
+            for (int i = 0; i < comp.Count && i < refHigh.Count && i < refLow.Count; i++)
             {
                 errorsTime.Add(time[i]);
 

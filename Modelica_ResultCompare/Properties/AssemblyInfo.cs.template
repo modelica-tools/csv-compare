@@ -16,7 +16,7 @@ using CommandLine.Text;
 [assembly: AssemblyCopyright("Copyright ©  2013 - ITI GmbH")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyInformationalVersionAttribute("1.0.0.$WCREV$")]
+[assembly: AssemblyInformationalVersionAttribute("1.1.0.$WCREV$")]
 
 // Durch Festlegen von ComVisible auf "false" werden die Typen in dieser Assembly unsichtbar 
 // für COM-Komponenten. Wenn Sie auf einen Typ in dieser Assembly von 
@@ -26,8 +26,8 @@ using CommandLine.Text;
 // Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
 [assembly: Guid("5ead2e40-fd60-4095-b96c-4f5a6473f43b")]
 
-[assembly: AssemblyVersion("1.0.0.$WCREV$")]
-[assembly: AssemblyFileVersion("1.0.0.$WCREV$")]
+[assembly: AssemblyVersion("1.1.0.$WCREV$")]
+[assembly: AssemblyFileVersion("1.1.0.$WCREV$")]
 
 [assembly: AssemblyLicense("\nThis software is free software and released under The BSD 3-Clause License <http://opensource.org/licenses/BSD-3-Clause>.\n")]
 [assembly: AssemblyUsage(@"Example Usage:
