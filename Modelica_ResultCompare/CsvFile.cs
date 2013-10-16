@@ -347,6 +347,11 @@ namespace CsvCompare
                     Title = "ERRORS"
                 });
             }
+            if (null != xAxis && xAxis.Count > 2)//Remember Start and Stop values for graph scaling
+            {
+                ch.MinValue = xAxis[0];
+                ch.MaxValue = xAxis.Last();
+            }
             rep.Chart.Add(ch);
         }
 

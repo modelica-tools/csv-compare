@@ -15,6 +15,7 @@ namespace CsvCompare
     {
         private List<Series> _series;
         private Guid _guid = Guid.NewGuid();
+        private double _dMin, _dMax;
 
         public Guid Id { get { return _guid; } }
         public string Title { get; set; }
@@ -23,6 +24,9 @@ namespace CsvCompare
         public List<Series> Series { get { return _series; } }
         public int Errors { get; set; }
         public Chart(){ _series = new List<Series>(); }
+        public double MinValue { get { return _dMin; } set { _dMin = value; } }
+        public double MaxValue { get { return _dMax; } set { _dMax = value; } }
+
         public string RenderChart()
         {
             StringBuilder sb = new StringBuilder();
@@ -73,8 +77,17 @@ namespace CsvCompare
             if (sb.ToString().EndsWith(","))
                 sb = sb.Remove(sb.Length - 1, 1);
 
+            //Add some tolerance for graph scaling and remeber values to get equal scaling for graph and error graph
+            if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
+            {
+                double d1 = _dMin;
+                double d2 = _dMax;
+                _dMin = d1 - (d1 + d2 * 5 / 100);
+                _dMax = d2 + (d1 + d2 * 5 / 100);
+            }
+
             sb.AppendLine("];");
-            sb.AppendLine("        var plot1 = $.jqplot ('"+_guid.ToString()+@"', data, {");
+            sb.AppendLine("        var plot1 = $.jqplot ('" + _guid.ToString() + @"', data, {");
             sb.AppendLine("        seriesDefaults: {show: true, xaxis: 'xaxis', yaxis: 'yaxis', lineWidth: 1, shadow: false, showLine: true, showMarker: false,},");
             sb.Append("        series:[");
             i = 0;
@@ -103,7 +116,8 @@ namespace CsvCompare
             sb.AppendLine("    cursor: {");
             sb.AppendLine("            show: true,");
             sb.AppendLine("            tooltipLocation:'sw',");
-            sb.AppendLine("            zoom:true");
+            sb.AppendLine("            showVerticalLine:true,");
+            sb.AppendLine("            zoom:true,");
             sb.AppendLine("          },");
             sb.AppendLine("    legend: {show: true },");
             sb.AppendLine("          // You can specify options for all axes on the plot at once with");
@@ -119,6 +133,11 @@ namespace CsvCompare
             sb.AppendLine("            // options for each axis are specified in seperate option objects.");
             sb.AppendLine("            xaxis: {");
             sb.AppendFormat("              label: \"{0}\",", this.LabelX).AppendLine();
+            if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
+            {
+                sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+                sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+            }
             sb.AppendLine("              // Turn off \"padding\".  This will allow data point to lie on the");
             sb.AppendLine("              // edges of the grid.  Default padding is 1.2 and will keep all");
             sb.AppendLine("              // points inside the bounds of the grid.");
@@ -138,18 +157,18 @@ namespace CsvCompare
             {
                 sb.AppendLine("<script class=\"code\" type=\"text/javascript\">");
                 sb.AppendLine("    $(document).ready(function(){");
-                sb.Append("        var data = [");
+                sb.Append("        var data_err = [");
                 //sValues 
-                
+
                 sb.Append((from s in this.Series where s.Title == "ERRORS" select s).Single().ArrayString);
 
                 sb.AppendLine("];");
-                sb.AppendLine("        var plot1 = $.jqplot ('" + _guid.ToString() + @"_errors', data, {");
+                sb.AppendLine("        var plot2 = $.jqplot ('" + _guid.ToString() + @"_errors', data_err, {");
                 sb.AppendLine("        seriesDefaults: {show: true, xaxis: 'xaxis', yaxis: 'yaxis', lineWidth: 1, shadow: false, showLine: true, showMarker: false,},");
                 sb.Append("        series:[");
 
                 sb.AppendFormat("{{color:'#{0}', label:'ERROR'}}", ColorToHexString(Color.Red));
-                    
+
                 sb.AppendLine("], title: '',");
                 sb.AppendLine("    grid: {");
                 sb.AppendLine("            drawGridLines: false,        // wether to draw lines across the grid or not.");
@@ -162,6 +181,7 @@ namespace CsvCompare
                 sb.AppendLine("    cursor: {");
                 sb.AppendLine("            show: true,");
                 sb.AppendLine("            tooltipLocation:'sw',");
+                sb.AppendLine("            showVerticalLine:true,");
                 sb.AppendLine("            zoom:true");
                 sb.AppendLine("          },");
                 sb.AppendLine("    legend: {show: false },");
@@ -178,6 +198,11 @@ namespace CsvCompare
                 sb.AppendLine("            // options for each axis are specified in seperate option objects.");
                 sb.AppendLine("            xaxis: {");
                 sb.AppendLine("              label: \"time\",");
+                if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
+                {
+                    sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+                    sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+                }
                 sb.AppendLine("              // Turn off \"padding\".  This will allow data point to lie on the");
                 sb.AppendLine("              // edges of the grid.  Default padding is 1.2 and will keep all");
                 sb.AppendLine("              // points inside the bounds of the grid.");
