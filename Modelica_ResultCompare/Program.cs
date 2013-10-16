@@ -186,6 +186,15 @@ namespace CsvCompare
                             meta.WriteReport(_log, options);
                         }
                         break;
+                    case OperationMode.PlotOnly:
+                        foreach (string item in options.Items)
+                        {
+                            CsvFile file = new CsvFile(item, options, _log);
+                            meta.Reports.Add(file.PlotCsvFile(null, _log));                            
+                        }
+
+                        meta.WriteReport(_log, options);
+                        break;
                     default://Invalid mode
                         Console.WriteLine(options.GetUsage());
                         break;
@@ -361,6 +370,7 @@ namespace CsvCompare
                 csvCompare.Save(options);
             }
 #endif
+            _log.WriteLine(LogLevel.Debug, "Exiting with exit code \"{0}\".", Environment.ExitCode);
             return csvCompare.CompareFiles(_log, csvBase);
         }
 

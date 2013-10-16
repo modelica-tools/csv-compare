@@ -151,6 +151,16 @@ namespace CsvCompare
             return _fileName;
         }
 
+        public Report PlotCsvFile(string sReportPath, Log log)
+        {
+            Report r = new Report(sReportPath);
+            log.WriteLine("Generating plot for report");
+
+            foreach (KeyValuePair<string, List<double>> res in _values)
+                PrepareCharts(r, res.Value.ToArray<double>(), res);
+
+            return r;
+        }
         public Report CompareFiles(Log log, CsvFile csvBase)
         {
             if (null != _fileName)
@@ -252,81 +262,92 @@ namespace CsvCompare
                     {
                         log.WriteLine(LogLevel.Warning, "{0} is invalid! {1} errors have been found during validation.", res.Key, iError);
                         iInvalids++;
+                        Environment.ExitCode = 1;
                     }
                 }
 
-                Chart ch = new Chart()
-                {
-                    LabelX = "Time",
-                    LabelY = res.Key,
-                    Errors = iError,
-                    Title = res.Key
-                };
-
-                if (!bSkipValidation)
-                {
-                    ch.Series.Add(new Series()
-                    {
-                        Color = Color.Orange,
-                        ArrayString = Series.GetArrayString(csvBase.XAxis, res.Value),
-                        Title = "Base (to compare with)"
-                    });
-                    ch.Series.Add(new Series()
-                    {
-                        Color = Color.Green,
-                        ArrayString = Series.GetArrayString(csvBase.XAxis, darResults.ToList<double>()),
-                        Title = "Result"
-                    });
-#if DEBUG               //Draw uncalibrated tubes in Debug mode
-                    ch.Series.Add(new Series()
-                    {
-                        Color = Color.Pink,
-                        ArrayString = Series.GetArrayString(lXHighTube, lYHighTube),
-                        Title = "High Tube"
-                    });
-                    ch.Series.Add(new Series()
-                    {
-                        Color = Color.Pink,
-                        ArrayString = Series.GetArrayString(lXLowTube, lYLowTube),
-                        Title = "Low Tube"
-                    });
-#endif
-                    ch.Series.Add(new Series()
-                    {
-                        Color = Color.LightBlue,
-                        ArrayString = Series.GetArrayString(csvBase.XAxis, lvYLowTube),
-                        Title = "Calibrated Low Tube"
-                    });
-                    ch.Series.Add(new Series()
-                    {
-                        Color = Color.LightGreen,
-                        ArrayString = Series.GetArrayString(csvBase.XAxis, lvYHighTube),
-                        Title = "Calibrated High Tube"
-                    });
-                }
-                else
-                {
-                    ch.Series.Add(new Series()
-                    {
-                        Color = Color.Green,
-                        ArrayString = Series.GetArrayString(csvBase.XAxis, res.Value),
-                        Title = "Compare"
-                    });
-                }
-                if (iError>0)
-                {
-                    ch.Series.Add(new Series()
-                    {
-                        Color = Color.DarkGoldenrod,
-                        ArrayString = Series.GetArrayString(csvBase.XAxis, lErrorsY),
-                        Title = "ERRORS"
-                    });
-                }
-                rep.Chart.Add(ch);
+                PrepareCharts(csvBase.XAxis, rep, lXHighTube, lYHighTube, lXLowTube, lYLowTube, lvYHighTube, lvYLowTube, lErrorsY, darResults, res, iError, bSkipValidation);
             }
             rep.Tolerance = _dRangeDelta;
 
             return rep;
+        }
+
+        private void PrepareCharts(Report rep, double[] darResults, KeyValuePair<string, List<double>> res)//Draw result only
+        {
+            PrepareCharts(_xAxis, rep, null, null, null, null, null, null, null, darResults, res, 0, true);
+        }
+
+        private static void PrepareCharts(List<double> xAxis, Report rep, List<double> lXHighTube, List<double> lYHighTube, List<double> lXLowTube, List<double> lYLowTube, List<double> lvYHighTube, List<double> lvYLowTube, List<double> lErrorsY, double[] darResults, KeyValuePair<string, List<double>> res, int iError, bool bSkipValidation)
+        {
+            Chart ch = new Chart()
+            {
+                LabelX = "Time",
+                LabelY = res.Key,
+                Errors = iError,
+                Title = res.Key
+            };
+
+            if (!bSkipValidation)
+            {
+                ch.Series.Add(new Series()
+                {
+                    Color = Color.Orange,
+                    ArrayString = Series.GetArrayString(xAxis, res.Value),
+                    Title = "Base (to compare with)"
+                });
+                ch.Series.Add(new Series()
+                {
+                    Color = Color.Green,
+                    ArrayString = Series.GetArrayString(xAxis, darResults.ToList<double>()),
+                    Title = "Result"
+                });
+#if DEBUG               //Draw uncalibrated tubes in Debug mode
+                ch.Series.Add(new Series()
+                {
+                    Color = Color.Pink,
+                    ArrayString = Series.GetArrayString(lXHighTube, lYHighTube),
+                    Title = "High Tube"
+                });
+                ch.Series.Add(new Series()
+                {
+                    Color = Color.Pink,
+                    ArrayString = Series.GetArrayString(lXLowTube, lYLowTube),
+                    Title = "Low Tube"
+                });
+#endif
+                ch.Series.Add(new Series()
+                {
+                    Color = Color.LightBlue,
+                    ArrayString = Series.GetArrayString(xAxis, lvYLowTube),
+                    Title = "Calibrated Low Tube"
+                });
+                ch.Series.Add(new Series()
+                {
+                    Color = Color.LightGreen,
+                    ArrayString = Series.GetArrayString(xAxis, lvYHighTube),
+                    Title = "Calibrated High Tube"
+                });
+            }
+            else
+            {
+                ch.Series.Add(new Series()
+                {
+                    Color = Color.Green,
+                    ArrayString = Series.GetArrayString(xAxis, res.Value),
+                    Title = "Compare"
+                });
+            }
+            if (iError > 0)
+            {
+                ch.Series.Add(new Series()
+                {
+                    Color = Color.DarkGoldenrod,
+                    ArrayString = Series.GetArrayString(xAxis, lErrorsY),
+                    Title = "ERRORS"
+                });
+            }
+            rep.Chart.Add(ch);
         }
 
         public void Save(Options options)

@@ -15,7 +15,8 @@ namespace CsvCompare
         NotSet,
         CsvFileCompare,
         CsvTreeCompare,
-        FmuChecker
+        FmuChecker,
+        PlotOnly
     }
 
     public class Options
@@ -29,7 +30,7 @@ namespace CsvCompare
         [Option('l', "logfile", Required = false, HelpText = "Log the output to the given file.")]
         public string Logfile { get; set; }
 
-        [Option('m', "mode", DefaultValue = OperationMode.CsvFileCompare, Required = false, HelpText = "Set the tools operation mode. Valid modes are: CsvFileCompare, CsvTreeCompare, FmuChecker")]
+        [Option('m', "mode", DefaultValue = OperationMode.CsvFileCompare, Required = false, HelpText = "Set the tools operation mode. Valid modes are: CsvFileCompare, CsvTreeCompare, FmuChecker, PlotOnly(experimental)")]
         public OperationMode Mode { get; set; }
 
         [Option('o', "override", DefaultValue = false, HelpText = "Override output files if they already exist (Default behaviour is to put the output next to the foudn file with a timestamp in the filename).")]
@@ -49,8 +50,8 @@ namespace CsvCompare
 
         [Option('d', "delimiter", Required = false, HelpText = "Sets the delimiter that is used to parse and write csv files. Default accepts \";\" or \",\".")]
         public char Delimiter { get; set; }
-
-        [ValueList(typeof(List<string>), MaximumElements = 2)]
+        
+        [ValueList(typeof(List<string>))]
         public IList<string> Items { get; set; }
 
         [HelpOption]
