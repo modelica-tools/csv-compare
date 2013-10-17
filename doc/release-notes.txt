@@ -6,7 +6,8 @@
 	*	added check for resolution of base file and documentation in
 		the readme. Base files should have a higher resolution than the
 		compare files
-		
+	*	use "--nometareport" to skip the generation of an index file for
+		the reports
 2013-06-14 Version 1.0.0.6717
 	*	added error graph to ease the discovery of errors in the graphs
 	*	stopping recursion instead of throwing exception when

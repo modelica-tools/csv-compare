@@ -307,159 +307,169 @@ namespace CsvCompare
                 log.Error("No report to write!");
                 return false;
             }
-            
-            if (null == _path)// Setting output path if not already done
+
+            if (!options.NoMetaReport)
             {
-                _path = new FileInfo(Path.Combine(Path.GetDirectoryName(_reports[0].FileName), string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-dd}-index.html", DateTime.Now)));
-                log.WriteLine("No report path has been given, writing to {0}", _path);
-            }
-            else
-                if (!_path.Directory.Exists)
-                    _path.Directory.Create();
-
-            if (!_path.Extension.StartsWith(".htm", StringComparison.OrdinalIgnoreCase))//add file name to path if not already present
-                _path = new FileInfo(Path.Combine(_path.FullName, string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-dd}-index.html", DateTime.Now)));
-
-            log.WriteLine("Writing meta report to {0}", _path);
-            if (!options.OverrideOutput && _path.Exists)
-            {
-                _path = new FileInfo(Path.Combine(_path.DirectoryName, string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-index.html", DateTime.Now)));
-                log.WriteLine(LogLevel.Warning, "Meta report already exists and --override has been set to false. Changed target filename to \"{0}\"", _path);
-            }
-            //if (!_path.Exists)
-            //    _path = new FileInfo(_path.DirectoryName + string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-index.html", DateTime.Now));
-
-            // write report to html file
-            using (TextWriter writer = new StreamWriter(_path.FullName, false))
-            {
-                writer.WriteLine("<!DOCTYPE html>");
-                writer.WriteLine("  <head>");
-                writer.WriteLine("<style type=\"text/css\">");
-                writer.WriteLine("body{ background: #EEEEEE; color: #000; text-align: center;}");
-                writer.WriteLine("body, table{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; }");
-                writer.WriteLine("#page{ width: 700px; margin: auto; text-align: left; background-color: #FFF;}");
-                writer.WriteLine("table.info{ border: 0; width: 690px; margin: 5px;}");
-                writer.WriteLine("table.info td{ background-color: #efefef; padding: 1em;}");
-                writer.WriteLine("table.info td.header{ font-weight: bold; width: 150px; background-color: #EEE;}");
-                writer.WriteLine("table.info td.error, span.error { background-color: #F5A9BC; color: red; }");
-                writer.WriteLine("table.info td.ok, span.ok{ background-color: #CDFECD; color: green; }");
-                writer.WriteLine("table.info td.untested, span.untested{ background-color: #DDD; color: #999; }");
-                writer.WriteLine("table.info td.right{ text-align: right; }");
-                writer.WriteLine("h1{ font-size: 16px; padding: 1em; }");
-                writer.WriteLine("</style>");
-                writer.WriteLine("</head>");
-                writer.WriteLine("<body>");
-                writer.WriteLine("<div id=\"page\">");
-                writer.WriteLine("<table class=\"info\">");
-                writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\"><h1>Metareport - CSV file comaprison</h1></td></tr>");
-                writer.WriteLine("	<tr><td class=\"header\">Timestamp:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
-                writer.WriteLine("	<tr><td class=\"header\">Mode:</td><td>{0}</td></tr>", options.Mode.ToString());
-                switch (options.Mode)
+                if (null == _path)// Setting output path if not already done
                 {
-                    case OperationMode.CsvTreeCompare:
-                        writer.WriteLine("	<tr><td class=\"header\">Base Directory:</td><td>{0}</td></tr>", options.Items[1]);
-                        writer.WriteLine("	<tr><td class=\"header\">Compare Directory:</td><td>{0}</td></tr>", options.Items[0]);
-                        break;
-                    case OperationMode.CsvFileCompare:
-                        writer.WriteLine("	<tr><td class=\"header\">Base File:</td><td>{0}</td></tr>", options.Items[1]);
-                        writer.WriteLine("	<tr><td class=\"header\">Compare File:</td><td>{0}</td></tr>", options.Items[0]);
-                        break;
-                    case OperationMode.FmuChecker:
-                        writer.WriteLine("	<tr><td class=\"header\">FMU Checker:</td><td>{0}</td></tr>", options.CheckerPath);
-                        writer.WriteLine("	<tr><td class=\"header\">FMU Arguments:</td><td>{0}</td></tr>", options.CheckerArgs);
-                        break;
-                    default:
-                        break;
+                    _path = new FileInfo(Path.Combine(Path.GetDirectoryName(_reports[0].FileName), string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-dd}-index.html", DateTime.Now)));
+                    log.WriteLine("No report path has been given, writing to {0}", _path);
                 }
-                writer.WriteLine("	<tr><td class=\"header\">Verbosity:</td><td>{0}</td></tr>", options.Verbosity.ToString(CultureInfo.CurrentCulture));
-
-                if(null != options.Tolerance)
-                    writer.WriteLine("	<tr><td class=\"header\">Tolerance:</td><td>{0}</td></tr>", options.Tolerance);
-
-                if (!String.IsNullOrEmpty(options.Logfile))
-                {
-                    writer.WriteLine("	<tr><td class=\"header\">Logfile:</td><td><a href=\"file:///{0}\">{0}</a></td></tr>", options.Logfile);
-                    writer.WriteLine("	<tr><td class=\"header\">Loglevel:</td><td>{0}</td></tr>", ((LogLevel)options.Verbosity));
-                }
-
-                int iTested = 0; 
-                int iErrors = 0; 
-                double dSuccess;
-
-                try
-                {
-                    iTested = _reports.Count - (from c in _reports where c.TotalErrors == -1 select c).Count();
-                    iErrors = (from c in _reports where c.TotalErrors > 0 && c.TotalErrors != -1 select c).Count();
-                }
-                catch (NullReferenceException) 
-                {
-                    //empty reports
-                }
-
-                if (iTested <= 0)
-                    dSuccess = 0;
                 else
-                    dSuccess = ((1 - ((double)iErrors / (double)iTested)));
+                    if (!_path.Directory.Exists)
+                        _path.Directory.Create();
 
-                writer.WriteLine("	<tr><td class=\"header\">Compared Files:</td><td>The compare file contained {0} results. {1} results have been tested. {2} failed, success rate is {3:0.0%}.</td></tr>",
-                    _reports.Count,     //All results
-                    iTested,            //All tested results
-                    iErrors,            //Errors
-                    dSuccess);
-                writer.WriteLine("<tr><td class=\"header\" colspan=\"2\">Results</td></tr>");
-                writer.WriteLine("<tr><td>&nbsp;</td><td>FAILED - at least one result failed its check with the base file<br/>UNTESTED - no base file has been found for all results in the file</br>SUCCEEDED - All results have been checked and are valid</td></tr>");
-                
-                //write results and paths of the sub reports
-                foreach (Report r in _reports)
+                if (!_path.Extension.StartsWith(".htm", StringComparison.OrdinalIgnoreCase))//add file name to path if not already present
+                    _path = new FileInfo(Path.Combine(_path.FullName, string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-dd}-index.html", DateTime.Now)));
+
+                log.WriteLine("Writing meta report to {0}", _path);
+                if (!options.OverrideOutput && _path.Exists)
                 {
-                    if (null!=r)// Catch empty report objects
+                    _path = new FileInfo(Path.Combine(_path.DirectoryName, string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-index.html", DateTime.Now)));
+                    log.WriteLine(LogLevel.Warning, "Meta report already exists and --override has been set to false. Changed target filename to \"{0}\"", _path);
+                }
+
+                //if (!_path.Exists)
+                //    _path = new FileInfo(_path.DirectoryName + string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-index.html", DateTime.Now));
+
+                // write report to html file
+                using (TextWriter writer = new StreamWriter(_path.FullName, false))
+                {
+                    writer.WriteLine("<!DOCTYPE html>");
+                    writer.WriteLine("  <head>");
+                    writer.WriteLine("<style type=\"text/css\">");
+                    writer.WriteLine("body{ background: #EEEEEE; color: #000; text-align: center;}");
+                    writer.WriteLine("body, table{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; }");
+                    writer.WriteLine("#page{ width: 700px; margin: auto; text-align: left; background-color: #FFF;}");
+                    writer.WriteLine("table.info{ border: 0; width: 690px; margin: 5px;}");
+                    writer.WriteLine("table.info td{ background-color: #efefef; padding: 1em;}");
+                    writer.WriteLine("table.info td.header{ font-weight: bold; width: 150px; background-color: #EEE;}");
+                    writer.WriteLine("table.info td.error, span.error { background-color: #F5A9BC; color: red; }");
+                    writer.WriteLine("table.info td.ok, span.ok{ background-color: #CDFECD; color: green; }");
+                    writer.WriteLine("table.info td.untested, span.untested{ background-color: #DDD; color: #999; }");
+                    writer.WriteLine("table.info td.right{ text-align: right; }");
+                    writer.WriteLine("h1{ font-size: 16px; padding: 1em; }");
+                    writer.WriteLine("</style>");
+                    writer.WriteLine("</head>");
+                    writer.WriteLine("<body>");
+                    writer.WriteLine("<div id=\"page\">");
+                    writer.WriteLine("<table class=\"info\">");
+                    writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\"><h1>Metareport - CSV file comaprison</h1></td></tr>");
+                    writer.WriteLine("	<tr><td class=\"header\">Timestamp:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
+                    writer.WriteLine("	<tr><td class=\"header\">Mode:</td><td>{0}</td></tr>", options.Mode.ToString());
+                    switch (options.Mode)
                     {
-                        if (string.IsNullOrEmpty(r.FileName))
-                            r.FileName = Path.Combine(_path.DirectoryName, r.Chart[0].Id.ToString() + ".html");
+                        case OperationMode.CsvTreeCompare:
+                            writer.WriteLine("	<tr><td class=\"header\">Base Directory:</td><td>{0}</td></tr>", options.Items[1]);
+                            writer.WriteLine("	<tr><td class=\"header\">Compare Directory:</td><td>{0}</td></tr>", options.Items[0]);
+                            break;
+                        case OperationMode.CsvFileCompare:
+                            writer.WriteLine("	<tr><td class=\"header\">Base File:</td><td>{0}</td></tr>", options.Items[1]);
+                            writer.WriteLine("	<tr><td class=\"header\">Compare File:</td><td>{0}</td></tr>", options.Items[0]);
+                            break;
+                        case OperationMode.FmuChecker:
+                            writer.WriteLine("	<tr><td class=\"header\">FMU Checker:</td><td>{0}</td></tr>", options.CheckerPath);
+                            writer.WriteLine("	<tr><td class=\"header\">FMU Arguments:</td><td>{0}</td></tr>", options.CheckerArgs);
+                            break;
+                        default:
+                            break;
+                    }
+                    writer.WriteLine("	<tr><td class=\"header\">Verbosity:</td><td>{0}</td></tr>", options.Verbosity.ToString(CultureInfo.CurrentCulture));
 
-                        if (_bReportDirSet)
-                        {
-                            r.FileName = Path.Combine(_path.Directory.FullName, Path.GetFileName(r.FileName));
-                            r.RelativePaths = true;
-                        }
+                    if (null != options.Tolerance)
+                        writer.WriteLine("	<tr><td class=\"header\">Tolerance:</td><td>{0}</td></tr>", options.Tolerance);
 
-                        if (r.WriteReport(log, _path, options))
+                    if (!String.IsNullOrEmpty(options.Logfile))
+                    {
+                        writer.WriteLine("	<tr><td class=\"header\">Logfile:</td><td><a href=\"file:///{0}\">{0}</a></td></tr>", options.Logfile);
+                        writer.WriteLine("	<tr><td class=\"header\">Loglevel:</td><td>{0}</td></tr>", ((LogLevel)options.Verbosity));
+                    }
+
+                    int iTested = 0;
+                    int iErrors = 0;
+                    double dSuccess;
+
+                    try
+                    {
+                        iTested = _reports.Count - (from c in _reports where c.TotalErrors == -1 select c).Count();
+                        iErrors = (from c in _reports where c.TotalErrors > 0 && c.TotalErrors != -1 select c).Count();
+                    }
+                    catch (NullReferenceException)
+                    {
+                        //empty reports
+                    }
+
+                    if (iTested <= 0)
+                        dSuccess = 0;
+                    else
+                        dSuccess = ((1 - ((double)iErrors / (double)iTested)));
+
+                    writer.WriteLine("	<tr><td class=\"header\">Compared Files:</td><td>The compare file contained {0} results. {1} results have been tested. {2} failed, success rate is {3:0.0%}.</td></tr>",
+                        _reports.Count,     //All results
+                        iTested,            //All tested results
+                        iErrors,            //Errors
+                        dSuccess);
+                    writer.WriteLine("<tr><td class=\"header\" colspan=\"2\">Results</td></tr>");
+                    writer.WriteLine("<tr><td>&nbsp;</td><td>FAILED - at least one result failed its check with the base file<br/>UNTESTED - no base file has been found for all results in the file</br>SUCCEEDED - All results have been checked and are valid</td></tr>");
+
+                    //write results and paths of the sub reports
+                    foreach (Report r in _reports)
+                    {
+                        if (null != r)// Catch empty report objects
                         {
-                            if ((from c in r.Chart where c.Errors > 0 select c).Count() > 0)
+                            if (string.IsNullOrEmpty(r.FileName))
+                                r.FileName = Path.Combine(_path.DirectoryName, r.Chart[0].Id.ToString() + ".html");
+
+                            if (_bReportDirSet)
                             {
-                                if (r.RelativePaths)
-                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName) );
-                                else
-                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                                r.FileName = Path.Combine(_path.Directory.FullName, Path.GetFileName(r.FileName));
+                                r.RelativePaths = true;
                             }
-                            else if ((from c in r.Chart where c.Errors == -1 select c).Count() == r.Chart.Count) // if all results have not been checked, mark as "untested"
+
+                            if (r.WriteReport(log, _path, options))
                             {
-                                if (r.RelativePaths)
-                                    writer.WriteLine("<tr><td class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                if ((from c in r.Chart where c.Errors > 0 select c).Count() > 0)
+                                {
+                                    if (r.RelativePaths)
+                                        writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                    else
+                                        writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                                }
+                                else if ((from c in r.Chart where c.Errors == -1 select c).Count() == r.Chart.Count) // if all results have not been checked, mark as "untested"
+                                {
+                                    if (r.RelativePaths)
+                                        writer.WriteLine("<tr><td class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                    else
+                                        writer.WriteLine("<tr><td class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                                }
                                 else
-                                    writer.WriteLine("<tr><td class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                                {
+                                    if (r.RelativePaths)
+                                        writer.WriteLine("<tr><td class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                    else
+                                        writer.WriteLine("<tr><td class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                                }
                             }
                             else
-                            {
-                                if (r.RelativePaths)
-                                    writer.WriteLine("<tr><td class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
-                                else
-                                    writer.WriteLine("<tr><td class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
-                            }
+                                log.Error("Error writing report to {0}", r.FileName);
                         }
-                        else
-                            log.Error("Error writing report to {0}", r.FileName);
                     }
-                }
 
-                writer.WriteLine("</table>");
-                writer.WriteLine(@"</div>
+                    writer.WriteLine("</table>");
+                    writer.WriteLine(@"</div>
   </body>
 </html>
 ");
+                }
+                log.WriteLine("Metareport has been written to: {0}", this.FileName);
             }
-            log.WriteLine("Metareport has been written to: {0}", this.FileName);
-                
+            else
+            {
+                log.WriteLine("Skipping generation of metareport as \"--nometareport\" has been set.");
+                foreach (Report r in _reports)
+                    if (!r.WriteReport(log, _path, options))
+                        log.Error("Error writing report to {0}", r.FileName);
+            }
             return bRet;
         }
     }
