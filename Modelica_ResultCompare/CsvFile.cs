@@ -100,6 +100,8 @@ namespace CsvCompare
                             }
                         }
 
+                    CheckHeaderForNumbers(log, map);
+
                     //read the rest of the csv file
                     while ((sLine = reader.ReadLine()) != null)
                     {
@@ -144,6 +146,19 @@ namespace CsvCompare
             }
             else
                 throw new FileNotFoundException();
+        }
+
+        private static void CheckHeaderForNumbers(Log log, List<string> map)
+        {
+            //Check map for numbers to throw a warning if no header has been set
+            foreach (string sCol in map)
+            {
+                double dTemp;
+                if (double.TryParse(sCol, out dTemp))
+                    log.WriteLine(LogLevel.Warning, "Column \"{0}\" seems to be a number and should be a column title. Maybe you forgot to add a header line?", sCol);
+                else
+                    log.WriteLine(LogLevel.Debug, "Column \"{0}\" seems to be text, this is good.", sCol);
+            }
         }
 
         public override string ToString()
