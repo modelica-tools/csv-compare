@@ -410,7 +410,7 @@ namespace CsvCompare
                         iErrors,            //Errors
                         dSuccess);
                     writer.WriteLine("<tr><td class=\"header\" colspan=\"2\">Results</td></tr>");
-                    writer.WriteLine("<tr><td>&nbsp;</td><td>FAILED - at least one result failed its check with the base file<br/>UNTESTED - no base file has been found for all results in the file</br>SUCCEEDED - All results have been checked and are valid</td></tr>");
+                    writer.WriteLine("<tr><td>&nbsp;</td><td>FAILED - at least one result failed its check with the base file<br/>UNTESTED - no base file has been found for all results in the file<br/>SUCCEEDED - All results have been checked and are valid</td></tr>");
 
                     //write results and paths of the sub reports
                     foreach (Report r in _reports)
