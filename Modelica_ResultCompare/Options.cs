@@ -51,7 +51,7 @@ namespace CsvCompare
         [Option('v', "verbosity", DefaultValue = 4, Required = false, HelpText = "Sets the verbositiy of the output (1 most to 4[Default] less verbose).")]
         public int Verbosity { get; set; }
 
-        [Option('d', "delimiter", Required = false, HelpText = "Sets the delimiter that is used to parse and write csv files. Default accepts \";\" or \",\".")]
+        [Option('d', "delimiter", Required = false, HelpText = "Sets the delimiter that is used to parse and write csv files. Default value is \";\".")]
         public char Delimiter { get; set; }
         
         [ValueList(typeof(List<string>))]
