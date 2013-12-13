@@ -180,7 +180,7 @@ namespace CsvCompare
         {
             if (null != _fileName)
                 if (Path.GetDirectoryName(_fileName).Length > 0)
-                    return CompareFiles(log, csvBase, string.Format(CultureInfo.CurrentCulture, "{0}\\{1}_report.html", Path.GetDirectoryName(_fileName), Path.GetFileNameWithoutExtension(csvBase.ToString())));
+                    return CompareFiles(log, csvBase, string.Format(CultureInfo.CurrentCulture, "{0}/{1}_report.html", Path.GetDirectoryName(_fileName), Path.GetFileNameWithoutExtension(csvBase.ToString())));
                 else
                     return CompareFiles(log, csvBase, Path.GetFileNameWithoutExtension(_fileName) + ".html");
             else

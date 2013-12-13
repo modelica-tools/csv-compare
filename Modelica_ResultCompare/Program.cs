@@ -381,7 +381,7 @@ namespace CsvCompare
 
             using (Process p = new Process())
             {
-                outFile = string.Format(CultureInfo.CurrentCulture, "{0}\\{1}.csv", dirCompare.FullName, Path.GetFileNameWithoutExtension(file.FullName));
+                outFile = string.Format(CultureInfo.CurrentCulture, "{0}/{1}.csv", dirCompare.FullName, Path.GetFileNameWithoutExtension(file.FullName));
                 p.StartInfo = new ProcessStartInfo(options.CheckerPath);
 
                 if (!string.IsNullOrEmpty(options.CheckerArgs))
