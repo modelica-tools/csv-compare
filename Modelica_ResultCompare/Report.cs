@@ -260,24 +260,20 @@ namespace CsvCompare
         public string ArrayString { get { return _sArrayString; } set { _sArrayString = value; } }
         /// Encodes arrays for the use as a jquery array.
         public static string GetArrayString(List<double> xValues, List<double> yValues)
-        {                    
-            string s = "[";
+        {
+            StringBuilder s = new StringBuilder("[");
             double dOffset = 0;
 
-            for (int i = 0; i < xValues.Count(); i++)
+            for (int i = 0; i < xValues.Count; i++)
             {
                 if (i == yValues.Count)
                     break;
                 if (Double.IsNaN(yValues[i]) || Double.IsNaN(xValues[i]))
                     continue; //return string.Empty;
                 else
-                    s += string.Format(CultureInfo.InvariantCulture, "[{0},{1}],", xValues[i], yValues[i] + dOffset);
+                    s.AppendFormat(CultureInfo.InvariantCulture, "[{0},{1}],", xValues[i], yValues[i] + dOffset);
             }
-
-            if (!string.IsNullOrEmpty(s))
-                return s.Remove(s.Length - 1) + "]";
-            else
-                return string.Empty;
+            return s.Remove(s.Length - 1, 1).Append("]").ToString();
         }
     }
 
