@@ -39,6 +39,7 @@ namespace CsvCompare
         private void GenerateHighTube(System.Array x, System.Array y, List<double> xHigh, List<double> yHigh)
         {
             int index = _lmh.Count - 1; // = _li0h.Count - 1 = _li1h.Count - 1 = xHigh.Count - 1 = yHigh.Count - 1 > 0
+
             double m1 = (double)_lmh[index];
             double m2 = (double)_lmh[index - 1];
             _dSlopeDif = Math.Abs(m1 - m2);		// (3.2.6.2)
@@ -80,6 +81,7 @@ namespace CsvCompare
                     yHigh[index] = _dY2 + m1 * (xHigh[index] - _dX2) + _dDelta * Math.Sqrt((m1 * m1) + (_dS * _dS));
                     _lmh[index - 1] = (yHigh[index] - yHigh[index - 1]) / _dXMinStep;
                 }
+                
                 // If the juncture of the current interval is before the last saved one (3.2.6.7)
                 while (((double)xHigh[index]) <= ((double)xHigh[index - 1]))
                 {
@@ -231,12 +233,15 @@ namespace CsvCompare
                     min = Y;
                 }
             }
-            _dS = Math.Abs(4 * (max - min) / (Math.Abs(_dtStop - _dtStart)));
-
+//            _dS = Math.Abs(4 * (max - min) / (Math.Abs(_dtStop - _dtStart)));
+            _dS = Math.Abs(((max - min) + Math.Abs(min)) / (Math.Abs(_dtStop - _dtStart)));
+            
             if (_dS < 0.0004 / (Math.Abs(_dtStop - _dtStart)))
             {
                 _dS = 0.0004 / (Math.Abs(_dtStop - _dtStart));
             }
+
+            bool bJump = false;
 
             // Begin calculation for the tubes
             for (int i = 1; i < x.Length; i++)
@@ -250,6 +255,7 @@ namespace CsvCompare
                 _dY2 = (double)y.GetValue(i - 1);
 
                 // catch jumps
+                bJump = false;
                 if ((_dX1 <= _dX2) && (_dY1 == _dY2) && (xHigh.Count == 0))
                     continue;
                 if ((_dX1 <= _dX2) && (_dY1 == _dY2))
@@ -262,6 +268,7 @@ namespace CsvCompare
                 {
                     if (_dX1 <= _dX2)
                     {
+                        bJump = true;
                         _dX1 = _dX2 + _dXMinStep;
                         x.SetValue(_dX1, i);
                     }
@@ -282,13 +289,67 @@ namespace CsvCompare
 
                 if (xHigh.Count == 0) // 1st interval (3.2.5)
                 {
-                    // initial values upper tube
-                    xHigh.Add(_dX2 - _dDelta);
-                    yHigh.Add(_dY2 - _dCurrentSlope * _dDelta + _dDelta * Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS)));
+                    if (bJump)
+                    {
+                        // initial values upper tube
+                        _li0h[0] = i - 1;
+                        _lmh[0] = 0.0;
+                        xHigh.Add(_dX2 - _dDelta - _dXMinStep);
+                        yHigh.Add(_dY2 + _dDelta * _dS);
+                        _li0h.Add(i);
+                        _li1h.Add(i - 1);
+                        _lmh.Add(_dCurrentSlope);
+                        xHigh.Add(_dX2 - _dDelta * _dCurrentSlope / (_dS + Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS))));
+                        yHigh.Add(_dY2 + _dDelta * _dS);
 
-                    // initial values lower tube
-                    xLow.Add(_dX2 - _dDelta);
-                    yLow.Add(_dY2 - _dCurrentSlope * _dDelta - _dDelta * Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS)));
+                        // initial values lower tube
+                        _li0l[0] = i - 1;
+                        _lml[0] = 0.0;
+                        xLow.Add(_dX2 - _dDelta - _dXMinStep);
+                        yLow.Add(_dY2 - _dDelta * _dS);
+                        _li0l.Add(i);
+                        _li1l.Add(i - 1);
+                        _lml.Add(_dCurrentSlope);
+                        xLow.Add(_dX2 + _dDelta * _dCurrentSlope / (_dS + Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS))));
+                        yLow.Add(_dY2 - _dDelta * _dS);
+                    }
+                    else
+                {
+                    if (bJump)
+                    {
+                        // initial values upper tube
+                        _li0h[0] = i - 1;
+                        _lmh[0] = 0.0;
+                        xHigh.Add(_dX2 - _dDelta - _dXMinStep);
+                        yHigh.Add(_dY2 + _dDelta * _dS);
+                        _li0h.Add(i);
+                        _li1h.Add(i - 1);
+                        _lmh.Add(_dCurrentSlope);
+                        xHigh.Add(_dX2 - _dDelta * _dCurrentSlope / (_dS + Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS))));
+                        yHigh.Add(_dY2 + _dDelta * _dS);
+
+                        // initial values lower tube
+                        _li0l[0] = i - 1;
+                        _lml[0] = 0.0;
+                        xLow.Add(_dX2 - _dDelta - _dXMinStep);
+                        yLow.Add(_dY2 - _dDelta * _dS);
+                        _li0l.Add(i);
+                        _li1l.Add(i - 1);
+                        _lml.Add(_dCurrentSlope);
+                        xLow.Add(_dX2 + _dDelta * _dCurrentSlope / (_dS + Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS))));
+                        yLow.Add(_dY2 - _dDelta * _dS);
+                    }
+                    else
+                    {
+                        // initial values upper tube
+                        xHigh.Add(_dX2 - _dDelta);
+                        yHigh.Add(_dY2 - _dCurrentSlope * _dDelta + _dDelta * Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS)));
+
+                        // initial values lower tube
+                        xLow.Add(_dX2 - _dDelta);
+                        yLow.Add(_dY2 - _dCurrentSlope * _dDelta - _dDelta * Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS)));
+                    }
+                }
                 }
                 else	// if not 1st interval (3.2.6)
                 {
@@ -309,25 +370,46 @@ namespace CsvCompare
             }
 
             // calculate terminal value
-            // upper tube
-            _dX1 = (double)xHigh[xHigh.Count - 1];
-            _dY1 = (double)yHigh[yHigh.Count - 1];
-            _dX2 = _dtStop;
+            _dX2 = (double)x.GetValue(x.Length - 1);
+            if (bJump)
+            {
+                _dY2 = (double)y.GetValue(y.Length - 1);
+                // upper tube
+                _dCurrentSlope = (double)_lmh[_lmh.Count - 1];
 
-            _dCurrentSlope = (double)_lmh[_lmh.Count - 1];
+                xHigh.Add(_dX2 - _dDelta * _dCurrentSlope / (_dS + Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS))));
+                yHigh.Add(_dY2 + _dDelta * _dS);
+                xHigh.Add(_dX2 + _dDelta + _dXMinStep);
+                yHigh.Add(_dY2 + _dDelta * _dS);
 
-            xHigh.Add(_dX2 + _dDelta);
-            yHigh.Add(_dY1 + _dCurrentSlope * (_dX2 + _dDelta - _dX1));
+                // lower tube
+                _dCurrentSlope = (double)_lml[_lml.Count - 1];
 
-            // lower tube
-            _dX1 = (double)xLow[xLow.Count - 1];
-            _dY1 = (double)yLow[yLow.Count - 1];
-            _dX2 = _dtStop;
+                xLow.Add(_dX2 + _dDelta * _dCurrentSlope / (_dS + Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS))));
+                yLow.Add(_dY2 - _dDelta * _dS);
+                xLow.Add(_dX2 + _dDelta + _dXMinStep);
+                yLow.Add(_dY2 - _dDelta * _dS);
+            }
+            else
+            {
+                // upper tube
+                _dX1 = (double)xHigh[xHigh.Count - 1];
+                _dY1 = (double)yHigh[yHigh.Count - 1];
 
-            _dCurrentSlope = (double)_lml[_lml.Count - 1];
+                _dCurrentSlope = (double)_lmh[_lmh.Count - 1];
 
-            xLow.Add(_dX2 + _dDelta);
-            yLow.Add(_dY1 + _dCurrentSlope * (_dX2 + _dDelta - _dX1));
+                xHigh.Add(_dX2 + _dDelta);
+                yHigh.Add(_dY1 + _dCurrentSlope * (_dX2 + _dDelta - _dX1));
+
+                // lower tube
+                _dX1 = (double)xLow[xLow.Count - 1];
+                _dY1 = (double)yLow[yLow.Count - 1];
+
+                _dCurrentSlope = (double)_lml[_lml.Count - 1];
+
+                xLow.Add(_dX2 + _dDelta);
+                yLow.Add(_dY1 + _dCurrentSlope * (_dX2 + _dDelta - _dX1));
+            }
         }
 
         ///  This method validates the values of the given compare curve to be inside the lower and upper tube.
