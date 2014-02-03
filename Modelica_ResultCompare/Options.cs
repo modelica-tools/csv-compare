@@ -39,6 +39,9 @@ namespace CsvCompare
         [Option('e', "abserror", DefaultValue = false, HelpText = "Shows, if set, only 0 and 1 in the error graph (peeks) instead of the difference between the error and the penetrated tube.")]
         public bool AbsoluteError { get; set; }
 
+        [Option("comparisonflag", DefaultValue = false, HelpText = "Generates a text file that indicates if the test has been passed and contains test details.")]
+        public bool ComparisonFlag { get; set; }
+
         [Option('r', "reportdir", HelpText = "Specifies the directory where the html reports(s) are to be saved.")]
         public string ReportDir { get; set; }
 

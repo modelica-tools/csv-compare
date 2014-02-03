@@ -46,11 +46,13 @@ namespace CsvCompare
     {
         /// global Log object
         private static Log _log = new Log();
-
+        private static string _sCmdArgs;
         /// The main entry of the application
         /// @para cmdArgs contains an array of commandline parameters that are parsed using CommandLine.Dll
         public static void Main(string[] cmdArgs)
         {
+            //Save args for log file info
+            _sCmdArgs = String.Join(" ", cmdArgs);
             //Global catch to prevent crash
             try { Run(cmdArgs); }
             catch (Exception ex)
@@ -257,7 +259,7 @@ namespace CsvCompare
 
                     try
                     {
-                        meta.Reports.Add(csvCompare.CompareFiles(_log, new CsvFile(sBase, options, _log), Path.Combine(options.ReportDir, file.Name + ".html")));
+                        meta.Reports.Add(csvCompare.CompareFiles(_log, new CsvFile(sBase, options, _log), Path.Combine(options.ReportDir, file.Name + ".html"), ref options));
                     }
                     catch (ArgumentNullException ex) { _log.Error(ex.Message); }
                 }
@@ -277,7 +279,7 @@ namespace CsvCompare
             foreach (FileInfo file in dirCompare.GetFiles("*.csv", SearchOption.AllDirectories))
             {
                 _log.WriteLine(LogLevel.Debug, "Searching for file {0} in {1}", file.Name, dirBase.FullName);
-                
+
                 //Try different locations for the base file
                 string sBaseFile = string.Empty;
                 if (dirBase.GetFiles(file.Name).Length == 1)//1. Base file is in the, via commandline, given base directory
@@ -298,16 +300,14 @@ namespace CsvCompare
                         else
                             _log.WriteLine(LogLevel.Debug, "Found base file in given base directory \"{0}\", comparing ...", dirBase);
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         _log.Error(ex.Message);
                         continue;
                     }
-                }               
+                }
 
-                Report r = CheckFiles(options, file.FullName, sBaseFile);
-                if (null != r)
-                    meta.Reports.Add(r);
+                meta.Reports.Add(CheckFiles(options, file.FullName, sBaseFile));
             }
         }
 
@@ -371,7 +371,7 @@ namespace CsvCompare
             }
 #endif
             _log.WriteLine(LogLevel.Debug, "Exiting with exit code \"{0}\".", Environment.ExitCode);
-            return csvCompare.CompareFiles(_log, csvBase);
+            return csvCompare.CompareFiles(_log, csvBase, ref options);
         }
 
         private static bool RunFMUChecker(Options options, DirectoryInfo dirCompare, ref string outFile, FileInfo file)

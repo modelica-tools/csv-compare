@@ -176,17 +176,17 @@ namespace CsvCompare
 
             return r;
         }
-        public Report CompareFiles(Log log, CsvFile csvBase)
+        public Report CompareFiles(Log log, CsvFile csvBase, ref Options options)
         {
             if (null != _fileName)
                 if (Path.GetDirectoryName(_fileName).Length > 0)
-                    return CompareFiles(log, csvBase, string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}_report.html", Path.GetDirectoryName(_fileName), Path.DirectorySeparatorChar, Path.GetFileNameWithoutExtension(csvBase.ToString())));
+                    return CompareFiles(log, csvBase, string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}_report.html", Path.GetDirectoryName(_fileName), Path.DirectorySeparatorChar, Path.GetFileNameWithoutExtension(csvBase.ToString())), ref options);
                 else
-                    return CompareFiles(log, csvBase, Path.GetFileNameWithoutExtension(_fileName) + ".html");
+                    return CompareFiles(log, csvBase, Path.GetFileNameWithoutExtension(_fileName) + ".html", ref options);
             else
-                return CompareFiles(log, csvBase, null);
+                return CompareFiles(log, csvBase, null, ref options);
         }
-        public Report CompareFiles(Log log, CsvFile csvBase, string sReportPath)
+        public Report CompareFiles(Log log, CsvFile csvBase, string sReportPath, ref Options options)
         {
             int iInvalids = 0;
 
@@ -285,6 +285,35 @@ namespace CsvCompare
             }
             rep.Tolerance = _dRangeDelta;
 
+            string sResult = "na";
+
+                if (rep.TotalErrors == 0)
+                    sResult = "passed";
+                else
+                    sResult = "failed";
+
+            if (options.ComparisonFlag)
+                using (TextWriter writer = File.CreateText(string.Format("{0}{1}compare_{2}.log", Path.GetDirectoryName(_fileName), Path.DirectorySeparatorChar, sResult)))
+                {
+                    //Content needs to be defined
+                    writer.WriteLine("CSV Compare Version {0} ({1})", Info.AssemblyVersion, Assembly.GetExecutingAssembly().GetName().ProcessorArchitecture);
+                    writer.WriteLine("Comparison result file for {0}", _fileName);
+                    writer.WriteLine(". Time:        {0:o}", DateTime.Now);
+                    writer.WriteLine(". Operation:   {0}", options.Mode);
+                    writer.WriteLine(". Tolerance:   {0}", options.Tolerance);
+                    writer.WriteLine(". Result:      {0}", sResult);
+
+                    if (rep.TotalErrors > 0)
+                    {
+                        Chart pairMax = rep.Chart.Aggregate((l, r) => l.DeltaError > r.DeltaError ? l : r);
+                        writer.WriteLine(". Biggest error: {0}=>{1}", pairMax.Title, pairMax.DeltaError);
+                        writer.WriteLine(". Failed values:");
+
+                        foreach (Chart c in (from r in rep.Chart where r.DeltaError > 0 select r).OrderByDescending(er => er.DeltaError))
+                            writer.WriteLine("{0}=>{1}", c.Title, c.DeltaError);
+                    }
+                }
+
             return rep;
         }
 
@@ -361,6 +390,16 @@ namespace CsvCompare
                     ArrayString = Series.GetArrayString(xAxis, lErrorsY),
                     Title = "ERRORS"
                 });
+                
+                List<double> lDeltas=new List<double>();
+                for (int i = 1; i < darResults.Length-1; i++)
+                    lDeltas.Add((Math.Abs(lErrorsY[i]) * 
+                            (
+                                (Math.Abs(xAxis[i] - xAxis[i - 1]))+
+                                (Math.Abs(xAxis[i+1] - xAxis[i]))
+                            )) / 2);
+
+                ch.DeltaError = lDeltas.Sum() / (1e-3 + darResults.Max(x => Math.Abs(x)));
             }
             if (null != xAxis && xAxis.Count > 2)//Remember Start and Stop values for graph scaling
             {
