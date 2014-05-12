@@ -314,34 +314,7 @@ namespace CsvCompare
                         yLow.Add(_dY2 - _dDelta * _dS);
                     }
                     else
-                {
-                    if (bJump)
-                    {
-                        // initial values upper tube
-                        _li0h[0] = i - 1;
-                        _lmh[0] = 0.0;
-                        xHigh.Add(_dX2 - _dDelta - _dXMinStep);
-                        yHigh.Add(_dY2 + _dDelta * _dS);
-                        _li0h.Add(i);
-                        _li1h.Add(i - 1);
-                        _lmh.Add(_dCurrentSlope);
-                        xHigh.Add(_dX2 - _dDelta * _dCurrentSlope / (_dS + Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS))));
-                        yHigh.Add(_dY2 + _dDelta * _dS);
-
-                        // initial values lower tube
-                        _li0l[0] = i - 1;
-                        _lml[0] = 0.0;
-                        xLow.Add(_dX2 - _dDelta - _dXMinStep);
-                        yLow.Add(_dY2 - _dDelta * _dS);
-                        _li0l.Add(i);
-                        _li1l.Add(i - 1);
-                        _lml.Add(_dCurrentSlope);
-                        xLow.Add(_dX2 + _dDelta * _dCurrentSlope / (_dS + Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS))));
-                        yLow.Add(_dY2 - _dDelta * _dS);
-                    }
-                    else
-                    {
-                        // initial values upper tube
+                    {       // initial values upper tube
                         xHigh.Add(_dX2 - _dDelta);
                         yHigh.Add(_dY2 - _dCurrentSlope * _dDelta + _dDelta * Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS)));
 
@@ -349,7 +322,6 @@ namespace CsvCompare
                         xLow.Add(_dX2 - _dDelta);
                         yLow.Add(_dY2 - _dCurrentSlope * _dDelta - _dDelta * Math.Sqrt((_dCurrentSlope * _dCurrentSlope) + (_dS * _dS)));
                     }
-                }
                 }
                 else	// if not 1st interval (3.2.6)
                 {
