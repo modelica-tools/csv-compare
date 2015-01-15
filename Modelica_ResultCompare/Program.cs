@@ -190,10 +190,10 @@ namespace CsvCompare
                         break;
                     case OperationMode.PlotOnly:
                         foreach (string item in options.Items)
-                        {
-                            CsvFile file = new CsvFile(item, options, _log);
-                            meta.Reports.Add(file.PlotCsvFile(null, _log));                            
-                        }
+                            using (CsvFile file = new CsvFile(item, options, _log))
+                            {
+                                meta.Reports.Add(file.PlotCsvFile(null, _log));
+                            }
 
                         meta.WriteReport(_log, options);
                         break;
@@ -325,53 +325,53 @@ namespace CsvCompare
                 else
                     throw new ArgumentException("You have to set compare and base csv files!");
 
-            CsvFile csvCompare, csvBase;
-
             try
             {
-                csvCompare = new CsvFile(Compare, options, _log);
-                csvCompare.ShowRelativeErrors = !options.AbsoluteError;
+                using (CsvFile csvCompare = new CsvFile(Compare, options, _log))
+                {
+                    csvCompare.ShowRelativeErrors = !options.AbsoluteError;
+                    try
+                    {
+                        using (CsvFile csvBase = new CsvFile(Base, options, _log))
+                        {
+#if DEBUG   //Save csv files during DEBUG session
+                            if (!string.IsNullOrEmpty(options.ReportDir))
+                            {
+                                csvBase.Save(options.ReportDir, options);
+                                csvCompare.Save(options.ReportDir, options);
+                            }
+                            else
+                            {
+                                csvBase.Save(options);
+                                csvCompare.Save(options);
+                            }
+#endif
+                            _log.WriteLine(LogLevel.Debug, "Exiting with exit code \"{0}\".", Environment.ExitCode);
+                            return csvCompare.CompareFiles(_log, csvBase, ref options);
+                        }
+                    }
+                    catch (ArgumentException argEx)
+                    {
+                        _log.Error(argEx.Message);
+                        return null;
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "Base file \"{0}\" does not exist, exiting.", Base));
+                    }
+                }
             }
-            catch (ArgumentException ex)          
+            catch (ArgumentException ex)
             {
                 _log.Error("Nothing has been parsed; maybe wrong csv format?");
                 _log.Error("Exception said: {0}", ex.Message);
-                Environment.ExitCode=2;
+                Environment.ExitCode = 2;
                 return null;
             }
             catch (FileNotFoundException)
             {
                 throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "Compare file \"{0}\" does not exist, exiting.", Compare));
             }
-
-            try
-            {
-                csvBase = new CsvFile(Base, options, _log);
-            }
-            catch (ArgumentException argEx)
-            {
-                _log.Error(argEx.Message);
-                return null;
-            }
-            catch (FileNotFoundException)
-            {
-                throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "Base file \"{0}\" does not exist, exiting.", Base));
-            }
-
-#if DEBUG   //Save csv files during DEBUG session
-            if (!string.IsNullOrEmpty(options.ReportDir))
-            {
-                csvBase.Save(options.ReportDir, options);
-                csvCompare.Save(options.ReportDir, options);
-            }
-            else
-            {
-                csvBase.Save(options);
-                csvCompare.Save(options);
-            }
-#endif
-            _log.WriteLine(LogLevel.Debug, "Exiting with exit code \"{0}\".", Environment.ExitCode);
-            return csvCompare.CompareFiles(_log, csvBase, ref options);
         }
 
         private static bool RunFMUChecker(Options options, DirectoryInfo dirCompare, ref string outFile, FileInfo file)

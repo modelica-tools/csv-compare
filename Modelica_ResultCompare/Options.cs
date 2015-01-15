@@ -56,7 +56,10 @@ namespace CsvCompare
 
         [Option('d', "delimiter", Required = false, HelpText = "Sets the delimiter that is used to parse and write csv files. Default value is \";\".")]
         public char Delimiter { get; set; }
-        
+
+        [Option('s', "separator", DefaultValue = '.', Required = false, HelpText = "Sets the decimal separator that is used to parse and write csv files. Default value is \".\".")]
+        public char Separator { get; set; }
+
         [ValueList(typeof(List<string>))]
         public IList<string> Items { get; set; }
 

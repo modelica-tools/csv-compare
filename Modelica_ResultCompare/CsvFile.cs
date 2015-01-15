@@ -14,13 +14,14 @@ using System.Threading.Tasks;
 namespace CsvCompare
 {
     /// This class parses CSV files and holds results in a dictionary
-    public class CsvFile
+    public class CsvFile:IDisposable
     {
         private double _dRangeDelta = 0.002;
         private string _fileName = string.Empty;
         private List<double> _xAxis = new List<double>();
         private Dictionary<string, List<double>> _values = new Dictionary<string, List<double>>();
         private bool _bShowRelativeErrors = true;
+        private bool _bDisposed = false;
 
         /// Holds values for x axis (time)
         public List<double> XAxis { get { return _xAxis; } }
@@ -43,15 +44,15 @@ namespace CsvCompare
         public CsvFile(string fileName, Options options, Log log)
         {
             //Parse tolerance from commandline
-            NumberFormatInfo provider = new NumberFormatInfo();
-            provider.NumberDecimalSeparator = ".";
+            NumberFormatInfo toleranceProvider = new NumberFormatInfo();
+            toleranceProvider.NumberDecimalSeparator = ".";
 
             //understand 0.002
-            if (!Double.TryParse(options.Tolerance, NumberStyles.AllowDecimalPoint, provider, out _dRangeDelta))
+            if (!Double.TryParse(options.Tolerance, NumberStyles.AllowDecimalPoint, toleranceProvider, out _dRangeDelta))
             {
                 //understand 0,002
-                provider.NumberDecimalSeparator = ",";
-                if (!Double.TryParse(options.Tolerance, NumberStyles.AllowDecimalPoint, provider, out _dRangeDelta))
+                toleranceProvider.NumberDecimalSeparator = ",";
+                if (!Double.TryParse(options.Tolerance, NumberStyles.AllowDecimalPoint, toleranceProvider, out _dRangeDelta))
                     //understand 2e-2 etc.
                     if (!Double.TryParse(options.Tolerance, out _dRangeDelta))
                         log.WriteLine(LogLevel.Warning, "could not parse given tolerance argument: \"{0}\", using default \"{1}\".", options.Tolerance, _dRangeDelta);
@@ -66,6 +67,10 @@ namespace CsvCompare
                     if (null == sLine)
                         throw new ArgumentNullException(string.Format("\"{0}\" is empty, nothing to parse here.", fileName));
 
+#if DEBUG           //Do some benchmarking in DEBUG mode
+                    Stopwatch timer = new Stopwatch();
+                    timer.Start();
+#endif
                     List<string> map = new List<string>();
 
                     //skip comments
@@ -100,8 +105,15 @@ namespace CsvCompare
                             }
                         }
 
+#if DEBUG 
+                    log.WriteLine(LogLevel.Debug, "Parsed header in {0}ms", timer.ElapsedMilliseconds);
+                    timer.Restart();
+#endif
                     CheckHeaderForNumbers(log, map);
-
+#if DEBUG 
+                    log.WriteLine(LogLevel.Debug, "Checked header in {0}ms", timer.ElapsedMilliseconds);
+                    timer.Restart();
+#endif
                     //read the rest of the csv file
                     while ((sLine = reader.ReadLine()) != null)
                     {
@@ -109,11 +121,20 @@ namespace CsvCompare
                         if (sLine.StartsWith("#", StringComparison.OrdinalIgnoreCase))
                             continue;
 
-                        values = reg.Split(sLine);
+                        //values = reg.Split(sLine); //splitting using regular expressions is slow
+                        IEnumerable<string> dataValues;
+                        if (options.Delimiter.Equals(options.Separator))
+                            dataValues = Tokenize(sLine, options.Delimiter); //use custom tokenizer for improved performance
+                        else
+                            dataValues = sLine.Split(options.Delimiter); //use ordinary Split function for simple cases
+                        
                         int iCol = 0;
 
+                        NumberFormatInfo provider = new NumberFormatInfo();
+                        provider.NumberDecimalSeparator = options.Separator.ToString();
+
                         //read values to the dictionary
-                        foreach (string sCol in values)
+                        foreach (string sCol in dataValues)
                         {
                             double dValue;
                             if (!Double.TryParse(sCol.Trim('"'), NumberStyles.Any, provider, out dValue))
@@ -139,6 +160,10 @@ namespace CsvCompare
                             iCol++;
                         }
                     }
+#if DEBUG 
+                    timer.Stop();
+                    log.WriteLine(LogLevel.Debug, "Time to parse: {0}", timer.Elapsed);
+#endif
 
                     if (_xAxis.Count <= 1)
                         throw new ArgumentNullException(string.Format(CultureInfo.CurrentCulture, "{0} could not be parsed and might be an invalid csv file.", fileName));
@@ -159,6 +184,47 @@ namespace CsvCompare
                 else
                     log.WriteLine(LogLevel.Debug, "Column \"{0}\" seems to be text, this is good.", sCol);
             }
+        }
+
+        private List<string> Tokenize(string str, char delimiter)
+        {
+            List<string> tokens = new List<string>();
+
+            int pos = 0;
+            int end = str.Length;
+            bool withinQuotes = false;
+
+            int lpos=pos;
+            int length=0;
+
+            while (pos < end) {
+                char c = str[pos];
+                
+                if (c == '"')
+                    withinQuotes = !withinQuotes;
+
+                if (c == delimiter && !withinQuotes)
+                {
+                    string token = str.Substring(lpos, length);
+                    tokens.Add(token);
+                    lpos = pos+1;
+                    length = 0;
+                }
+                else {
+                    length++;
+                }
+
+                pos++;
+            }
+
+            //special treatment for lines which are not terminated by the delimiter
+            if (length > 0)
+            {
+                string token = str.Substring(lpos, length);
+                tokens.Add(token);
+            }
+
+            return tokens;
         }
 
         public override string ToString()
@@ -449,6 +515,24 @@ namespace CsvCompare
                     iCount++;
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_bDisposed)
+                return;
+
+            if (disposing)
+            {
+                this._xAxis.Clear();
+                this._values.Clear();
+            }
+            _bDisposed = true;
         }
     }
 }
