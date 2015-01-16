@@ -140,19 +140,20 @@ namespace CsvCompare
             sb.AppendLine("            // options for each axis are specified in seperate option objects.");
             sb.AppendLine("            xaxis: {");
             sb.AppendFormat("              label: \"{0}\",", this.LabelX).AppendLine();
-            if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
-            {
-                sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
-                sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
-            }
+            //Min and Max might break the scaling of the graph if the value format is "smaller" than the tick format
+            //if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
+            //{
+            //    sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+            //    sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+            //}
             sb.AppendLine("              // Turn off \"padding\".  This will allow data point to lie on the");
             sb.AppendLine("              // edges of the grid.  Default padding is 1.2 and will keep all");
             sb.AppendLine("              // points inside the bounds of the grid.");
-            sb.AppendLine("              pad: 0, tickOptions: {format: '%.4f'}");
+            sb.AppendLine("              pad: 0, tickOptions: {format: '%.5g'}");
             sb.AppendLine("            },");
             sb.AppendLine("            yaxis: {");
             sb.AppendFormat("              label: \"{0}\",", this.LabelY).AppendLine();
-            sb.AppendLine("              tickOptions: {format: '%.4f'}");
+            sb.AppendLine("              tickOptions: {format: '%.5g'}");
             sb.AppendLine("            }");
             sb.AppendLine("          }");
             sb.AppendLine("        });");
@@ -166,7 +167,6 @@ namespace CsvCompare
                 sb.AppendLine("<script class=\"code\" type=\"text/javascript\">");
                 sb.AppendLine("    $(document).ready(function(){");
                 sb.Append("        var data_err = [");
-                //sValues 
 
                 sb.Append((from s in this.Series where s.Title == "ERRORS" select s).Single().ArrayString);
 
@@ -206,15 +206,16 @@ namespace CsvCompare
                 sb.AppendLine("            // options for each axis are specified in seperate option objects.");
                 sb.AppendLine("            xaxis: {");
                 sb.AppendLine("              label: \"time\",");
-                if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
-                {
-                    sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
-                    sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
-                }
+                //Min and Max might break the scaling of the graph if the value format is "smaller" than the tick format
+                //if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
+                //{
+                //    sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+                //    sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+                //}
                 sb.AppendLine("              // Turn off \"padding\".  This will allow data point to lie on the");
                 sb.AppendLine("              // edges of the grid.  Default padding is 1.2 and will keep all");
                 sb.AppendLine("              // points inside the bounds of the grid.");
-                sb.AppendLine("              pad: 0, tickOptions: {format: '%.4f'}");
+                sb.AppendLine("              pad: 0, tickOptions: {format: '%.5g'}");
                 sb.AppendLine("            },");
                 sb.AppendLine("            yaxis: {");
                 sb.AppendLine("              label: \"error\"");
