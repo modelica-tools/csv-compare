@@ -155,6 +155,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CurveCompare\Algorithms\Algorithm.cs" />
+    <Compile Include="CurveCompare\Algorithms\Ellipse.cs" />
+    <Compile Include="CurveCompare\Algorithms\Rectangle.cs" />
+    <Compile Include="CurveCompare\Curve.cs" />
+    <Compile Include="CurveCompare\CurveCompare.cs" />
+    <Compile Include="CurveCompare\DataImport\CsvFile.cs" />
+    <Compile Include="CurveCompare\DataImport\Options.cs" />
+    <Compile Include="CurveCompare\DataImport\ReadOptions.cs" />
+    <Compile Include="CurveCompare\DataImport\Report.cs" />
+    <Compile Include="CurveCompare\Options\IOptions.cs" />
+    <Compile Include="CurveCompare\Options\Options1.cs" />
+    <Compile Include="CurveCompare\Options\Options2.cs" />
+    <Compile Include="CurveCompare\Properties\Resources.Designer.cs" />
+    <Compile Include="CurveCompare\Report\ChartControl.cs" />
+    <Compile Include="CurveCompare\Report\ChartControl.Designer.cs">
+      <DependentUpon>ChartControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CurveCompare\Report\Log.cs" />
+    <Compile Include="CurveCompare\Report\TubeReport.cs" />
+    <Compile Include="CurveCompare\Tube.cs" />
+    <Compile Include="CurveCompare\TubeSize.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandLine\Attributes\AssemblyLicenseAttribute.cs" />
     <Compile Include="CommandLine\Attributes\AssemblyUsageAttribute.cs" />
     <Compile Include="CommandLine\Attributes\BaseOptionAttribute.cs" />
@@ -209,10 +231,8 @@
     <Compile Include="CsvFile.cs" />
     <Compile Include="CommandLine\Info.cs" />
     <Compile Include="Log.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Tubes.cs" />
     <Compile Include="Report.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -240,7 +260,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <CodeAnalysisDictionary Include="CommandLine\CustomDictionary.xml" />
   </ItemGroup>
@@ -263,6 +282,10 @@
   -->
   <ItemGroup />
   <ItemGroup>
+    <EmbeddedResource Include="CurveCompare\Properties\Resources.resx" />
+    <EmbeddedResource Include="CurveCompare\Report\ChartControl.resx">
+      <DependentUpon>ChartControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\JavaScriptHeaders.js" />
   </ItemGroup>
 </Project>

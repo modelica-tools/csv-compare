@@ -265,14 +265,14 @@ namespace CsvCompare
         /// Returns the string to be used in jQuery [[0,0],[1,0],...,[100,78]]
         public string ArrayString { get { return _sArrayString; } set { _sArrayString = value; } }
         /// Encodes arrays for the use as a jquery array.
-        public static string GetArrayString(List<double> xValues, List<double> yValues)
+        public static string GetArrayString(double[] xValues, double[] yValues)
         {
             StringBuilder s = new StringBuilder("[");
             double dOffset = 0;
 
-            for (int i = 0; i < xValues.Count; i++)
+            for (int i = 0; i < xValues.Length; i++)
             {
-                if (i == yValues.Count)
+                if (i == yValues.Length)
                     break;
                 if (Double.IsNaN(yValues[i]) || Double.IsNaN(xValues[i]))
                     continue; //return string.Empty;
