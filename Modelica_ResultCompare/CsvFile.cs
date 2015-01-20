@@ -316,7 +316,8 @@ namespace CsvCompare
                         Environment.ExitCode = 1;
                     }
                 }
-                PrepareCharts(reference, compareCurve, tube.Report.Errors, rep, tubeReport, res);
+                if (null != tube.Report)//No charts for missing reports
+                    PrepareCharts(reference, compareCurve, tube.Report.Errors, rep, tubeReport, res);
             }
             rep.Tolerance = _dRangeDelta;
 
