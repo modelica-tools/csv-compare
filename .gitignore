@@ -1,0 +1,12 @@
+test/
+deliver/
+Modelica_ResultCompare/obj/
+Modelica_ResultCompare/bin/
+*.suo
+*.user
+Modelica_ResultCompare/CurveCompare/obj/
+*.userprefs
+Modelica_ResultCompare/CurveCompare/ClassDiagramCurveCompare.cd
+Modelica_ResultCompare/CurveCompare/CurveCompare.csproj
+Modelica_ResultCompare/CurveCompare/bin/
+Modelica_ResultCompare/Properties/AssemblyInfo.cs
