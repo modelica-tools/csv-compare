@@ -241,7 +241,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SR.strings.cs</LastGenOutput>
     </None>
-    <None Include="Properties\AssemblyInfo.cs.template" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -268,10 +267,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>SubWCRev $(ProjectDir) $(ProjectDir)Properties\AssemblyInfo.cs.template $(ProjectDir)Properties\AssemblyInfo.cs || echo Error setting revision number of the assembly version. To automatically set the revision of the built please install TortoiseSVN. If you do not need the correct version information copy $(ProjectDir)Properties\AssemblyInfo.cs.template to $(ProjectDir)Properties\AssemblyInfo.cs and set the desired options in the file.</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>SubWCRev $(SolutionDir) $(SolutionDir)deliver\current-version.txt.template $(SolutionDir)deliver\current-version.txt || echo Failed to set deliver/current-version.txt</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
