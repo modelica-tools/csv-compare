@@ -9,7 +9,7 @@ is a double value setting the width of the tube at discontinuity in x-direction.
 
 ## Documents
 
-For build instructions see: `\doc\build.txt` Licence information is provided in: `\doc\license.txt`
+For build instructions see: [Build.md](https://github.com/modelica-tools/csv-compare/blob/master/BUILD.md) Licence information is provided in: [LICENSE](https://github.com/modelica-tools/csv-compare/blob/master/LICENSE)
 
 ## Usage
 
