@@ -351,6 +351,7 @@ namespace CsvCompare
                 }
 
             rep.WriteReport(log, (!string.IsNullOrEmpty(options.ReportDir)) ? options.ReportDir : string.Empty, options);
+            GC.Collect();//immediately forget big charts and data
             return rep;
         }
 
@@ -414,15 +415,28 @@ namespace CsvCompare
                     Title = "ERRORS"
                 });
 
-                //List<double> lDeltas = new List<double>();
-                //for (int i = 1; i < compare.X.Length - 1; i++)
-                //    lDeltas.Add((Math.Abs(error.Y[i]) *
-                //            (
-                //                (Math.Abs(compare.X[i] - compare.X[i - 1])) +
-                //                (Math.Abs(compare.X[i + 1] - compare.X[i]))
-                //            )) / 2);
 
-                //ch.DeltaError = lDeltas.Sum() / (1e-3 + compare.Y.Max(x => Math.Abs(x)));
+                //ch.DeltaError = ((Math.Abs(error.Y.Max()) + Math.Abs(error.Y.Min()))) / 2;
+                List<double> lDeltas = new List<double>();
+                int j = 0;
+                for (int i = 1; i < compare.X.Length - 1; i++)
+                {
+                    if (j < error.X.Length)
+                    {
+                        while (compare.X[i] < error.X[j])
+                        {
+                            //lDeltas.Add(0);
+                            i++;
+                            continue;
+                        }
+
+                        lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])) + (Math.Abs(compare.X[i + 1] - compare.X[i])))) / 2);
+                        j++;
+                    }
+                    //else
+                    //    lDeltas.Add(0);
+                }
+                ch.DeltaError = lDeltas.Sum() / (1e-3 + compare.Y.Max(x => Math.Abs(x)));
             }
             if (tubeReport.Lower.X.ToList<double>().Count > 2)//Remember Start and Stop values for graph scaling
             {

@@ -421,41 +421,35 @@ namespace CsvCompare
                     {
                         if (null != r)// Catch empty report objects
                         {
-                            if (string.IsNullOrEmpty(r.FileName))
-                                r.FileName = Path.Combine(_path.DirectoryName, r.Chart[0].Id.ToString() + ".html");
-
                             if (_bReportDirSet)
                             {
                                 r.FileName = Path.Combine(_path.Directory.FullName, Path.GetFileName(r.FileName));
                                 r.RelativePaths = true;
                             }
 
-                            if (r.WriteReport(log, _path, options))
+
+                            if (r.TotalErrors > 0)
                             {
-                                if ((from c in r.Chart where c.Errors > 0 select c).Count() > 0)
-                                {
-                                    if (r.RelativePaths)
-                                        writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"{1}\">{1}</a></td></tr>", r.AverageError, Path.GetFileName(r.FileName));
-                                    else
-                                        writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
-                                }
-                                else if ((from c in r.Chart where c.Errors == -1 select c).Count() == r.Chart.Count) // if all results have not been checked, mark as "untested"
-                                {
-                                    if (r.RelativePaths)
-                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
-                                    else
-                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
-                                }
+                                if (r.RelativePaths)
+                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"{1}\">{1}</a></td></tr>", r.AverageError, Path.GetFileName(r.FileName));
                                 else
-                                {
-                                    if (r.RelativePaths)
-                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
-                                    else
-                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><td class=\"ok\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
-                                }
+                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                            }
+                            else if (r.TotalErrors==-1) // if all results have not been checked, mark as "untested"
+                            {
+                                if (r.RelativePaths)
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                else
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
                             }
                             else
-                                log.Error("Error writing report to {0}", r.FileName);
+                            {
+                                if (r.RelativePaths)
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                else
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><td class=\"ok\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                            }
+
                         }
                     }
 
@@ -471,7 +465,7 @@ namespace CsvCompare
             {
                 log.WriteLine("Skipping generation of metareport as \"--nometareport\" has been set.");
                 foreach (Report r in _reports)
-                    if (!r.WriteReport(log, _path, options))
+                    if (!r.WriteReport(log, _path.FullName, options))
                         log.Error("Error writing report to {0}", r.FileName);
             }
             return bRet;
@@ -529,41 +523,50 @@ namespace CsvCompare
 
         public Report(string sFilePath) { _path = sFilePath; }
 
-        public bool WriteReport(Log log, FileSystemInfo metaPath, Options options)
+        public bool WriteReport(Log log, string metaPath, Options options)
         {
-            string path;
             if (null != metaPath)
-                _metaPath = metaPath.FullName;
+                _metaPath = metaPath;
             else
                 _metaPath = string.Empty;
-            try
+
+            if (!string.IsNullOrEmpty(options.ReportDir))
+                _path = Path.Combine(options.ReportDir, Path.GetFileName(_path));
+            else
             {
-                path = Path.GetFullPath(_path);
-            }
-            catch (PathTooLongException)
-            {
-                log.Error("The report path \"{0}\" is too long for the filesystem. Cannot write this report", _path);
-                return false;
+                try
+                {
+                    _path = Path.GetFullPath(_path);
+                }
+                catch (PathTooLongException)
+                {
+                    log.Error("The report path \"{0}\" is too long for the filesystem. Cannot write this report", _path);
+                    return false;
+                }
             }
             bool bRet = false;
 
             if (_bRelative)
-                path = Path.Combine(Path.GetDirectoryName(_metaPath), _path);
+                _path = Path.Combine(Path.GetDirectoryName(_metaPath), _path);
 
-            if (!options.OverrideOutput && File.Exists(path))
+            if (!options.OverrideOutput && File.Exists(_path))
             {
-                path = Path.Combine(Path.GetDirectoryName(path), string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-{1}", DateTime.Now, Path.GetFileName(path)));
-                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target filename to \"{0}\"", path);
-                _path = path;
+                _path = Path.Combine(Path.GetDirectoryName(_path), string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-{1}", DateTime.Now, Path.GetFileName(_path)));
+                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target filename to \"{0}\"", _path);
             }
-            using (TextWriter writer = new StreamWriter(path,false))
+            using (TextWriter writer = new StreamWriter(_path, false))
             {
                 WriteHeader(writer);
                 WriteChart(writer);
                 WriteFooter(writer);
                 bRet = true;
             }
-            log.WriteLine("Report has been written to: {0}", path);
+            log.WriteLine("Report has been written to: {0}", _path);
+            
+            //Clear big data after writing
+            this._chart.Clear();
+            this._data.Clear();
+
             return bRet;
         }
 

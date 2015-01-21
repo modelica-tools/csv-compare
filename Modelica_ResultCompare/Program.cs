@@ -47,6 +47,7 @@ namespace CsvCompare
         /// global Log object
         private static Log _log = new Log();
         private static string _sCmdArgs;
+
         /// The main entry of the application
         /// @para cmdArgs contains an array of commandline parameters that are parsed using CommandLine.Dll
         public static void Main(string[] cmdArgs)
@@ -275,8 +276,9 @@ namespace CsvCompare
         {
             DirectoryInfo dirCompare = new DirectoryInfo(options.Items[0]);
             DirectoryInfo dirBase = new DirectoryInfo(options.Items[1]);
+            FileInfo[] files = dirCompare.GetFiles("*.csv", SearchOption.AllDirectories);
 
-            foreach (FileInfo file in dirCompare.GetFiles("*.csv", SearchOption.AllDirectories))
+            foreach (FileInfo file in files)
             {
                 _log.WriteLine(LogLevel.Debug, "Searching for file {0} in {1}", file.Name, dirBase.FullName);
 
@@ -306,11 +308,11 @@ namespace CsvCompare
                         continue;
                     }
                 }
-
-                meta.Reports.Add(CheckFiles(options, file.FullName, sBaseFile));
+                Report r = CheckFiles(options, file.FullName, sBaseFile);
+                meta.Reports.Add(r);
             }
         }
-
+        
         private static Report CheckFiles(Options options, string Compare = null, string Base = null)
         {
             //Check Arguments
