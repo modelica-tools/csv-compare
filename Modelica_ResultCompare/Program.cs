@@ -151,7 +151,7 @@ namespace CsvCompare
                             Environment.Exit(2);
                         }
                         Report rep = CheckFiles(options);
-                        if (null != rep)
+                        if (null != rep && !options.NoMetaReport)
                         {
                             meta.Reports.Add(rep);//Return "1" on invalid testresults
                             meta.WriteReport(_log, options);
