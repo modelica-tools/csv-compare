@@ -350,6 +350,7 @@ namespace CsvCompare
                     }
                 }
 
+            rep.WriteReport(log, (!string.IsNullOrEmpty(options.ReportDir)) ? options.ReportDir : string.Empty, options);
             return rep;
         }
 
@@ -437,7 +438,7 @@ namespace CsvCompare
         }
         public void Save(string sFolderName, Options options)
         {
-            string sFilename = string.Format(CultureInfo.CurrentCulture, "{0}{1}.generated.csv", sFolderName, Path.GetFileNameWithoutExtension(_fileName));
+            string sFilename = string.Format(CultureInfo.CurrentCulture, "{0}\\{1}.generated.csv", sFolderName, Path.GetFileNameWithoutExtension(_fileName));
             NumberFormatInfo provider = new NumberFormatInfo();
 
             provider.NumberDecimalSeparator = ".";
