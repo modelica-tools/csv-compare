@@ -336,18 +336,18 @@ namespace CsvCompare
                     {
                         using (CsvFile csvBase = new CsvFile(Base, options, _log))
                         {
-#if DEBUG   //Save csv files during DEBUG session
-                            if (!string.IsNullOrEmpty(options.ReportDir))
-                            {
-                                csvBase.Save(options.ReportDir, options);
-                                csvCompare.Save(options.ReportDir, options);
-                            }
-                            else
-                            {
-                                csvBase.Save(options);
-                                csvCompare.Save(options);
-                            }
-#endif
+//#if DEBUG   //Save csv files during DEBUG session
+//                            if (!string.IsNullOrEmpty(options.ReportDir))
+//                            {
+//                                csvBase.Save(options.ReportDir, options);
+//                                csvCompare.Save(options.ReportDir, options);
+//                            }
+//                            else
+//                            {
+//                                csvBase.Save(options);
+//                                csvCompare.Save(options);
+//                            }
+//#endif
                             _log.WriteLine(LogLevel.Debug, "Exiting with exit code \"{0}\".", Environment.ExitCode);
                             return csvCompare.CompareFiles(_log, csvBase, ref options);
                         }
