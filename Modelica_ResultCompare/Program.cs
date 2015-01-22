@@ -165,7 +165,8 @@ namespace CsvCompare
                             Environment.Exit(2);
                         }
                         CheckTrees(meta, options);
-                        meta.WriteReport(_log, options);
+                        if(!options.NoMetaReport)
+                            meta.WriteReport(_log, options);
                         break;
                     case OperationMode.FmuChecker://run FMU checker on all fmus in directory given via option 1 and compare the result to CSVs in the source directory
                         if (options.Items.Count != 1)
