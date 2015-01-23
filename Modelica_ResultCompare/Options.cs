@@ -48,7 +48,7 @@ namespace CsvCompare
         [Option('n', "nometareport", DefaultValue = false, HelpText = "Set this to disable the generation of a meta report.")]
         public bool NoMetaReport { get; set; }
 
-        [Option('t', "tolerance", DefaultValue = "0.002", Required = false, HelpText = "Set the width of the tube at discontinuity in x-direction [Default is 0.002].")]
+        [Option('t', "tolerance", Required = false, HelpText = "Set the width of the tube at discontinuity in x-direction [Default is 0.002].")]
         public string Tolerance { get; set; }
 
         [Option('v', "verbosity", DefaultValue = 4, Required = false, HelpText = "Sets the verbositiy of the output (1 most to 4[Default] less verbose).")]
