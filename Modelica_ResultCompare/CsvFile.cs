@@ -272,7 +272,7 @@ namespace CsvCompare
             TubeReport tubeReport = new TubeReport();
             TubeSize size = null;            
             Tube tube = new Tube(size);
-            IOptions tubeOptions = new Options1(Convert.ToDouble(options.Tolerance), Axes.X);
+            IOptions tubeOptions = new Options1(_dRangeDelta, Axes.X);
 
             foreach (KeyValuePair<string, List<double>> res in csvBase.Results)
             {
