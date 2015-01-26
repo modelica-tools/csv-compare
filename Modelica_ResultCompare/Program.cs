@@ -137,6 +137,8 @@ namespace CsvCompare
                 {
                     meta.ReportDirSet = true;
                     options.ReportDir = Path.GetFullPath(options.ReportDir);//normalize report dir (i.e. make absolut if relative)
+                    if (!Directory.Exists(options.ReportDir))
+                        Directory.CreateDirectory(options.ReportDir);
                 }
 
                 meta.FileName = new FileInfo(Path.Combine(options.ReportDir, string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-dd}-index.html", DateTime.Now)));
