@@ -58,7 +58,7 @@ Csv (comma seperated values) is a file format that is used by many tools and lac
 
 The default settings for csv compare to read a csv file are:
  1. one dataset per line (CRLF or LF does not matter)
- 2. first column contains the time
+ 2. first column contains the time and its heading is either "time" or "t"
  3. Default seperator is ";" you can set the delimiter with the -d flag
  4. When the csv contains double values and the delimiter is set to "," the
 	double values have to be saved with a "." as decimal separator and/or they
