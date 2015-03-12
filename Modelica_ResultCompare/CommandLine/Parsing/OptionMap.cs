@@ -182,7 +182,7 @@ namespace CommandLine.Parsing
 
             var property = list[0].Left;
 
-            // This method can be called when parser state is still not intialized
+            // This method can be called when parser state is still not initialized
             if (property.GetValue(options, null) == null)
             {
                 property.SetValue(options, new CommandLine.ParserState(), null);

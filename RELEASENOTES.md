@@ -36,7 +36,7 @@
 	*	added option --delimiter to set the delimiter of the input
 		csv files
 		
-	*	changed the csv parser algorith to use regular expressions
+	*	changed the csv parser algorithm to use regular expressions
 		
 	*	merged CommandLineParser source code to project
 		

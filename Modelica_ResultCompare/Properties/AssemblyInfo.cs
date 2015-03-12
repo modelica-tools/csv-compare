@@ -30,7 +30,7 @@ using CommandLine.Text;
 [assembly: AssemblyUsage(@"Example Usage:
  -m csvtreecompare -v 1 -r ""C:\test\report"" ""C:\test\compare\"" ""C:\test\base""
 
-The tool returns 0 if all results were valid and no errors occured during the validation, 1 if there were invalid results and 2 if there were exceptions or errors during the program run.
+The tool returns 0 if all results were valid and no errors occurred during the validation, 1 if there were invalid results and 2 if there were exceptions or errors during the program run.
 
 ")]
 [assembly:CLSCompliant(true)]

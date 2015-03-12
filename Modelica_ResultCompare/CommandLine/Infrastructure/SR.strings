@@ -13,6 +13,6 @@ CommandLineParserException_IncompatibleTypes = The types are incompatible.
 InvalidOperationException_CopyrightInfoRequiresAssemblyCopyrightAttributeOrAssemblyCompanyAttribute = CopyrightInfo::Default requires that you define AssemblyCopyrightAttribute or AssemblyCompanyAttribute.
 ArgumentNullException_OnVerbDelegateCannotBeNull = Delegate executed to capture verb command instance reference cannot be null.
 ArgumentNullException_ParserSettingsDelegateCannotBeNull = The command line parser settings delegate cannot be null.
-InvalidOperationException_ParserSettingsInstanceCanBeUsedOnce = The command line parserSettings instance cannnot be used more than once.
+InvalidOperationException_ParserSettingsInstanceCanBeUsedOnce = The command line parserSettings instance cannot be used more than once.
 InvalidOperationException_ParserStateInstanceCannotBeNotNull = ParserState instance cannot be supplied.
 InvalidOperationException_ParserStateInstanceBadApplied = Cannot apply ParserStateAttribute to a property that does not implement IParserState or is not accessible.

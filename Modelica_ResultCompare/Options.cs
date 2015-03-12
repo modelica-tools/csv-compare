@@ -33,7 +33,7 @@ namespace CsvCompare
         [Option('m', "mode", DefaultValue = OperationMode.CsvFileCompare, Required = false, HelpText = "Set the tools operation mode. Valid modes are: CsvFileCompare, CsvTreeCompare, FmuChecker, PlotOnly(experimental)")]
         public OperationMode Mode { get; set; }
 
-        [Option('o', "override", DefaultValue = false, HelpText = "Override output files if they already exist (Default behaviour is to put the output next to the foudn file with a timestamp in the filename).")]
+        [Option('o', "override", DefaultValue = false, HelpText = "Override output files if they already exist (Default behaviour is to put the output next to the found file with a timestamp in the filename).")]
         public bool OverrideOutput { get; set; }
 
         [Option('e', "abserror", DefaultValue = false, HelpText = "Shows, if set, only 0 and 1 in the error graph (peeks) instead of the difference between the error and the penetrated tube.")]

@@ -33,7 +33,7 @@ To check a Tree of fmu files against reference csv files (in the same directory 
 ```
 compare.exe -mode FmuChecker -c "C:\Program Files\FMUChecker-1.0.2-win64\fmuCheck.win64.exe" -r "C:\temp\test003" "C:\test\FMus\2013-05-17_Test"
 ```
-The tool returns 0 if all results were valid and no errors occured during the validation, 1 if there were invalid results and 2 if there were exceptions or errors during the program run.
+The tool returns 0 if all results were valid and no errors occurred during the validation, 1 if there were invalid results and 2 if there were exceptions or errors during the program run.
 
 ## Modes
 	
@@ -41,7 +41,7 @@ The tool returns 0 if all results were valid and no errors occured during the va
 Is the default operation mode and compares a given compare file with a base file where "compare " is the value that is to be compared to the base file.
 
 ### CsvTreeCompare
-A given compare directory is recursively browsed for .csv files. When a compare csv file has been found the tool searches the second argument, the base directory for the existance of a csv file with the same name as the compare csv. If the file is not found the tool searches for a base csv in the same tree as the compare csv. I.e.
+A given compare directory is recursively browsed for .csv files. When a compare csv file has been found the tool searches the second argument, the base directory for the existence of a csv file with the same name as the compare csv. If the file is not found the tool searches for a base csv in the same tree as the compare csv. I.e.
 ```	
 compare.exe -m csvtreecompare c:\temp\compare c:\temp\base
 ```	
@@ -54,12 +54,12 @@ If no report directory has been set the compare tool uses the directory of the c
 
 ## Hints
 
-Csv (comma seperated values) is a file format that is used by many tools and lacks a proper standardization. [RFC 4180](https://tools.ietf.org/html/rfc4180) describes the basic definitions that are supported by this comparison tool, too.
+Csv (comma separated values) is a file format that is used by many tools and lacks a proper standardization. [RFC 4180](https://tools.ietf.org/html/rfc4180) describes the basic definitions that are supported by this comparison tool, too.
 
 The default settings for csv compare to read a csv file are:
  1. one dataset per line (CRLF or LF does not matter)
  2. first column contains the time and its heading is either "time" or "t"
- 3. Default seperator is ";" you can set the delimiter with the -d flag
+ 3. Default separator is ";" you can set the delimiter with the -d flag
  4. When the csv contains double values and the delimiter is set to "," the
 	double values have to be saved with a "." as decimal separator and/or they
 	have to be enclosed in quotation marks (i.e. 0.001 "0,001")

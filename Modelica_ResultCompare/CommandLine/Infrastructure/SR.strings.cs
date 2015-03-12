@@ -41,7 +41,7 @@ namespace CommandLine.Infrastructure
 
         public const string ArgumentNullException_ParserSettingsDelegateCannotBeNull = "The command line parser settings delegate cannot be null.";
 
-        public const string InvalidOperationException_ParserSettingsInstanceCanBeUsedOnce = "The command line parserSettings instance cannnot be used more than once.";
+        public const string InvalidOperationException_ParserSettingsInstanceCanBeUsedOnce = "The command line parserSettings instance cannot be used more than once.";
 
         public const string InvalidOperationException_ParserStateInstanceCannotBeNotNull = "ParserState instance cannot be supplied.";
 
