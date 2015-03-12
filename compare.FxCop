@@ -371,8 +371,8 @@
    <User Name="Sven.Ruetz">
     <Note Id="0" Modified="2013-06-06 09:15:56Z">Needed for [HelpOption]</Note>
     <Note Id="1" Modified="2013-06-06 10:13:14Z">Works only this way as "Option" is generic for CommandLineParser</Note>
-    <Note Id="2" Modified="2013-06-06 10:14:14Z">To much effort, unneccessary</Note>
-    <Note Id="3" Modified="2013-06-06 10:22:00Z">Thats how we do it :)</Note>
+    <Note Id="2" Modified="2013-06-06 10:14:14Z">To much effort, unnecessary</Note>
+    <Note Id="3" Modified="2013-06-06 10:22:00Z">That's how we do it :)</Note>
     <Note Id="4" Modified="2013-06-06 10:22:16Z">makes app more robust</Note>
    </User>
   </Notes>

@@ -92,11 +92,11 @@ namespace CsvCompare
 
                 if (options.Delimiter == 0)
                 {
-                    _log.WriteLine(LogLevel.Debug, "Delimiter is not explicitely set, so I am using \";\"");
+                    _log.WriteLine(LogLevel.Debug, "Delimiter is not explicitly set, so I am using \";\"");
                     options.Delimiter = ';';
                 }
                 else
-                    _log.WriteLine(LogLevel.Debug, "Delimiter to be used to parse csv has been explicitely set and is \"{0}\"", options.Delimiter);
+                    _log.WriteLine(LogLevel.Debug, "Delimiter to be used to parse csv has been explicitly set and is \"{0}\"", options.Delimiter);
 
                 if (null == options.Logfile)
                     _log.WriteLine(LogLevel.Debug, "Logfile is empty");
