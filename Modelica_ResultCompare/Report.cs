@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using NPlot;
 
 namespace CsvCompare
 {
@@ -18,7 +19,7 @@ namespace CsvCompare
         private Guid _guid = Guid.NewGuid();
         private double _dMin, _dMax;
         private double _lDeltaError;
-
+        
         public Guid Id { get { return _guid; } }
         public string Title { get; set; }
         public string LabelX { get; set; }
@@ -32,6 +33,7 @@ namespace CsvCompare
             get { return _lDeltaError; }
             set { _lDeltaError = value; }
         }
+        public bool UseBitmap { get; set; }
 
         public string RenderChart()
         {
@@ -232,6 +234,72 @@ namespace CsvCompare
             return sb.ToString();
         }
 
+        public string RenderBitmap(string path)
+        {
+            path = Path.GetDirectoryName(path);
+            string Filename = string.Format("{0}\\{1}.png", path, this._guid);
+
+            NPlot.Bitmap.PlotSurface2D npSurface = new NPlot.Bitmap.PlotSurface2D(700, 500);
+
+            //Font definitions:
+            Font TitleFont = new Font("Arial", 12);
+            Font AxisFont = new Font("Arial", 10);
+            Font TickFont = new Font("Arial", 8);
+
+            //Legend definition:
+            NPlot.Legend npLegend = new NPlot.Legend();
+
+            //Prepare PlotSurface:
+            npSurface.Clear();
+            npSurface.Title = "Line Graph";
+            npSurface.BackColor = System.Drawing.Color.White;
+
+            //Left Y axis grid:
+            NPlot.Grid p = new Grid();
+            npSurface.Add(p, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
+
+            foreach (Series s in this.Series)
+            {
+                NPlot.LinePlot npPlot = new LinePlot();
+                //Weight:
+                npPlot.AbscissaData = s.XAxis;
+                npPlot.OrdinateData = s.YAxis;
+                npPlot.Label = s.Title;
+                npPlot.Color = s.Color;
+
+                npSurface.Add(npPlot, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
+            }
+            //X axis
+            npSurface.XAxis1.Label = "Time";
+            npSurface.XAxis1.NumberFormat = "{0:####0.0}";
+            npSurface.XAxis1.TicksLabelAngle = 90;
+            npSurface.XAxis1.TickTextNextToAxis = true;
+            npSurface.XAxis1.FlipTicksLabel = true;
+            npSurface.XAxis1.LabelOffset = 110;
+            npSurface.XAxis1.LabelOffsetAbsolute = true;
+            npSurface.XAxis1.LabelFont = AxisFont;
+            npSurface.XAxis1.TickTextFont = TickFont;
+
+            //Y axis
+            npSurface.YAxis1.Label = string.Empty;
+            npSurface.YAxis1.NumberFormat = "{0:####0.0}";
+            npSurface.YAxis1.LabelFont = AxisFont;
+            npSurface.YAxis1.TickTextFont = TickFont;
+
+            //Add legend:
+            npLegend.AttachTo(NPlot.PlotSurface2D.XAxisPosition.Top, NPlot.PlotSurface2D.YAxisPosition.Right);
+            npLegend.VerticalEdgePlacement = NPlot.Legend.Placement.Inside;
+            npLegend.HorizontalEdgePlacement = NPlot.Legend.Placement.Outside;
+            npLegend.BorderStyle = NPlot.LegendBase.BorderType.Line;
+            npSurface.Legend = npLegend;
+
+            //Update PlotSurface:
+            npSurface.Refresh();
+
+            npSurface.Bitmap.Save(Filename);
+            return this._guid + ".png";
+        }
+
         /// Convert a .NET Color to a hex string.
         /// @returns ex: "FFFFFF", "AB12E9"
         private static string ColorToHexString(Color color)
@@ -258,6 +326,8 @@ namespace CsvCompare
         private Color _col;
         private string _sArrayString;
         private string _title;
+        private double[] _xAxis;
+        private double[] _yAxis;
 
         /// Holds the color of the plot as C# object. It is converted at runtime via ColorHelper.ColorToHexString(Color color).
         public Color Color { get { return _col; } set { _col = value; } }
@@ -265,12 +335,15 @@ namespace CsvCompare
         public string Title { get { return _title; } set { _title = value; } }
         /// Returns the string to be used in jQuery [[0,0],[1,0],...,[100,78]]
         public string ArrayString { get { return _sArrayString; } set { _sArrayString = value; } }
+        /// Holds arrays for plotting bimtap
+        public double[] XAxis { get { return this._xAxis; } set { this._xAxis = value; } }
+        public double[] YAxis { get { return this._yAxis; } set { this._yAxis = value; } }
+
         /// Encodes arrays for the use as a jquery array.
         public static string GetArrayString(double[] xValues, double[] yValues)
         {
             StringBuilder s = new StringBuilder("[");
             double dOffset = 0;
-
             for (int i = 0; i < xValues.Length; i++)
             {
                 if (i == yValues.Length)
@@ -281,7 +354,7 @@ namespace CsvCompare
                     s.AppendFormat(CultureInfo.InvariantCulture, "[{0},{1}],", xValues[i], yValues[i] + dOffset);
             }
             return s.Remove(s.Length - 1, 1).Append("]").ToString();
-        }
+        }        
     }
 
     /// This class represents the "meta report"
@@ -581,7 +654,10 @@ namespace CsvCompare
         private void WriteChart(TextWriter writer)
         {
             foreach (Chart ch in _chart)
-                writer.WriteLine(ch.RenderChart());
+                if (!ch.UseBitmap)
+                    writer.WriteLine(ch.RenderChart());
+                else
+                    writer.WriteLine("<p><img src=\"{0}\"/></p>", ch.RenderBitmap(this._path));
         }
 
         private void WriteHeader(TextWriter writer)

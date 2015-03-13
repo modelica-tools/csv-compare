@@ -317,7 +317,7 @@ namespace CsvCompare
                     }
                 }
                 if (null != tube.Report)//No charts for missing reports
-                    PrepareCharts(reference, compareCurve, tube.Report.Errors, rep, tubeReport, res);
+                    PrepareCharts(reference, compareCurve, tube.Report.Errors, rep, tubeReport, res, options.UseBitmapPlots);
             }
             rep.Tolerance = _dRangeDelta;
 
@@ -357,17 +357,19 @@ namespace CsvCompare
 
         private void PrepareCharts(Report rep, Curve compare)//Draw result only
         {
-            PrepareCharts(compare, null, null, rep, null, new KeyValuePair<string, List<double>>());
+            PrepareCharts(compare, null, null, rep, null, new KeyValuePair<string, List<double>>(), false);
         }
 
-        private static void PrepareCharts(Curve reference, Curve compare, Curve error, Report rep, TubeReport tubeReport, KeyValuePair<string, List<double>> res)
+        private static void PrepareCharts(Curve reference, Curve compare, Curve error, Report rep, TubeReport tubeReport, KeyValuePair<string, List<double>> res, bool bDrawBitmapPlots)
         {
+
             Chart ch = new Chart()
             {
                 LabelX = "Time",
                 LabelY = res.Key,
                 Errors = (null != error && null != error.X) ? error.X.Length : 0,
-                Title = res.Key
+                Title = res.Key,
+                UseBitmap = bDrawBitmapPlots
             };
 
             if (null != compare)
@@ -375,26 +377,35 @@ namespace CsvCompare
                 ch.Series.Add(new Series()
                 {
                     Color = Color.Orange,
-                    ArrayString = Series.GetArrayString(reference.X, reference.Y),
-                    Title = "Base (to compare with)"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(reference.X, reference.Y),
+                    Title = "Base (to compare with)",
+                    XAxis = (bDrawBitmapPlots) ? reference.X : null,
+                    YAxis = (bDrawBitmapPlots) ? reference.Y : null
                 });
+                
                 ch.Series.Add(new Series()
                 {
                     Color = Color.Green,
-                    ArrayString = Series.GetArrayString(compare.X, compare.Y),
-                    Title = "Result"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(compare.X, compare.Y),
+                    Title = "Result",
+                    XAxis = (bDrawBitmapPlots) ? compare.X : null,
+                    YAxis = (bDrawBitmapPlots) ? compare.Y : null
                 });
                 ch.Series.Add(new Series()
                 {
                     Color = Color.LightBlue,
-                    ArrayString = Series.GetArrayString(tubeReport.Lower.X, tubeReport.Lower.Y),
-                    Title = "Low Tube"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(tubeReport.Lower.X, tubeReport.Lower.Y),
+                    Title = "Low Tube",
+                    XAxis = (bDrawBitmapPlots) ? tubeReport.Lower.X : null,
+                    YAxis = (bDrawBitmapPlots) ? tubeReport.Lower.Y : null
                 });
                 ch.Series.Add(new Series()
                 {
                     Color = Color.LightGreen,
-                    ArrayString = Series.GetArrayString(tubeReport.Upper.X, tubeReport.Upper.Y),
-                    Title = "High Tube"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(tubeReport.Upper.X, tubeReport.Upper.Y),
+                    Title = "High Tube",
+                    XAxis = (bDrawBitmapPlots) ? tubeReport.Upper.X : null,
+                    YAxis = (bDrawBitmapPlots) ? tubeReport.Upper.Y : null
                 });
             }
             else
@@ -402,8 +413,10 @@ namespace CsvCompare
                 ch.Series.Add(new Series()
                 {
                     Color = Color.Green,
-                    ArrayString = Series.GetArrayString(reference.X, reference.Y),
-                    Title = "Compare"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(reference.X, reference.Y),
+                    Title = "Compare",
+                    XAxis = (bDrawBitmapPlots) ? reference.X : null,
+                    YAxis = (bDrawBitmapPlots) ? reference.Y : null
                 });
             }
             if (null != error && null != error.X && error.X.Length > 0)
@@ -411,10 +424,11 @@ namespace CsvCompare
                 ch.Series.Add(new Series()
                 {
                     Color = Color.DarkGoldenrod,
-                    ArrayString = Series.GetArrayString(error.X, error.Y),
-                    Title = "ERRORS"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(error.X, error.Y),
+                    Title = "ERRORS",
+                    XAxis = (bDrawBitmapPlots) ? error.X : null,
+                    YAxis = (bDrawBitmapPlots) ? error.Y : null
                 });
-
 
                 //ch.DeltaError = ((Math.Abs(error.Y.Max()) + Math.Abs(error.Y.Min()))) / 2;
                 List<double> lDeltas = new List<double>();
