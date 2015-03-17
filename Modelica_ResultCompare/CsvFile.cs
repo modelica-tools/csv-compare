@@ -360,7 +360,7 @@ namespace CsvCompare
             PrepareCharts(compare, null, null, rep, null, new KeyValuePair<string, List<double>>(), false);
         }
 
-        private static void PrepareCharts(Curve reference, Curve compare, Curve error, Report rep, TubeReport tubeReport, KeyValuePair<string, List<double>> res, bool bDrawBitmapPlots)
+        private void PrepareCharts(Curve reference, Curve compare, Curve error, Report rep, TubeReport tubeReport, KeyValuePair<string, List<double>> res, bool bDrawBitmapPlots)
         {
 
             Chart ch = new Chart()
@@ -368,7 +368,7 @@ namespace CsvCompare
                 LabelX = "Time",
                 LabelY = res.Key,
                 Errors = (null != error && null != error.X) ? error.X.Length : 0,
-                Title = res.Key,
+                Title = string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(this._fileName),  res.Key),
                 UseBitmap = bDrawBitmapPlots
             };
 
@@ -423,7 +423,7 @@ namespace CsvCompare
             {
                 ch.Series.Add(new Series()
                 {
-                    Color = Color.DarkGoldenrod,
+                    Color = Color.Red,
                     ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(error.X, error.Y),
                     Title = "ERRORS",
                     XAxis = (bDrawBitmapPlots) ? error.X : null,

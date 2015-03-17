@@ -37,36 +37,10 @@ namespace CsvCompare
 
         public string RenderChart()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("<a id=\"a{0}\"/>", _guid);
+            StringBuilder sb;
 
-            if (null == this.Series || this.Series.Count == 0)
-            {
-                sb.AppendLine("<table class=\"info\">");
-                sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
-                sb.AppendLine("	<tr><td class=\"header\">Errors:</td><td>Exception during validation, skipping!</td></tr>");
-                sb.AppendLine("</table>");
-                sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
-
+            if (!GetHeaderTable(out sb))//no charts? skip the rest
                 return sb.ToString();
-            }
-
-            sb.AppendLine("<table class=\"info\">");
-            sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
-
-            if (this.Errors > 0)
-                sb.AppendFormat("	<tr class=\"error\"><td class=\"header\">Errors:</td><td>{0} (relative error is {1:0.00})</td></tr>", this.Errors, this.DeltaError).AppendLine();
-            else if (this.Errors == 0)
-                sb.AppendFormat("	<tr><td class=\"header\">Errors:</td><td>{0}</td></tr>", this.Errors).AppendLine();
-            else
-            {
-                sb.AppendLine("	<tr class=\"warning\"><td class=\"header\">Errors:</td><td>Result not found in base file.</td></tr>");
-                sb.AppendLine("</table>");
-                sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
-                return sb.ToString();
-            }
-
-            sb.AppendLine("</table>");
 
             sb.AppendLine("<script class=\"code\" type=\"text/javascript\">");
             sb.AppendLine("    $(document).ready(function(){");
@@ -229,7 +203,7 @@ namespace CsvCompare
                 sb.AppendLine("    <p></p>");
                 sb.AppendFormat("    <div id=\"{0}_errors\" style=\"height:120px; width:640px;\"></div>", _guid);
             }
-            sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
+            AddLinkToTop(sb);
 
             return sb.ToString();
         }
@@ -237,38 +211,127 @@ namespace CsvCompare
         public string RenderBitmap(string path)
         {
             path = Path.GetDirectoryName(path);
-            string Filename = string.Format("{0}\\{1}.png", path, this._guid);
 
-            NPlot.Bitmap.PlotSurface2D npSurface = new NPlot.Bitmap.PlotSurface2D(700, 500);
+            string Filename = string.Format("{0}.png", this.Title);
+            string ImagePath = Path.Combine(path, @"img", Filename);
 
-            //Font definitions:
-            Font TitleFont = new Font("Arial", 12);
-            Font AxisFont = new Font("Arial", 10);
-            Font TickFont = new Font("Arial", 8);
+            StringBuilder sb;
+            
+            if (!GetHeaderTable(out sb))//no charts? skip the rest
+                return sb.ToString();
 
-            //Legend definition:
-            NPlot.Legend npLegend = new NPlot.Legend();
-
-            //Prepare PlotSurface:
-            npSurface.Clear();
-            npSurface.Title = "Line Graph";
-            npSurface.BackColor = System.Drawing.Color.White;
-
-            //Left Y axis grid:
-            NPlot.Grid p = new Grid();
-            npSurface.Add(p, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
+            NPlot.Bitmap.PlotSurface2D npSurface;
+            Font AxisFont;
+            Font TickFont;
+            NPlot.Grid p;
+            InitPlot(out npSurface, out AxisFont, out TickFont, out p, 700, 500);
 
             foreach (Series s in this.Series)
             {
-                NPlot.LinePlot npPlot = new LinePlot();
-                //Weight:
-                npPlot.AbscissaData = s.XAxis;
-                npPlot.OrdinateData = s.YAxis;
-                npPlot.Label = s.Title;
-                npPlot.Color = s.Color;
-
-                npSurface.Add(npPlot, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
+                if (s.Title.ToUpperInvariant() == "ERRORS")
+                    continue;
+                else
+                {
+                    NPlot.LinePlot npPlot = new LinePlot();
+                    //Weight:
+                    npPlot.AbscissaData = s.XAxis;
+                    npPlot.OrdinateData = s.YAxis;
+                    npPlot.Label = s.Title;
+                    npPlot.Color = s.Color;
+                    npSurface.Add(npPlot, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
+                }
             }
+            SetAxes(npSurface, AxisFont, TickFont);
+            double iMin = npSurface.XAxis1.WorldMin;
+            double iMax = npSurface.XAxis1.WorldMax;
+
+            if (!Directory.Exists(Path.GetDirectoryName(ImagePath)))
+                Directory.CreateDirectory(Path.GetDirectoryName(ImagePath));
+
+            //Save image and add it to the report
+            npSurface.Bitmap.Save(ImagePath, System.Drawing.Imaging.ImageFormat.Png);
+            sb.AppendFormat("<img src=\"img/{0}\" alt=\"{1}\" />", Filename, this.Title);
+
+            //Generate error graph if needed
+            if (this.Errors > 0)
+            {
+                Filename = "errors." + Filename;
+                ImagePath = Path.Combine(path, "img", Filename);
+                npSurface.Clear();
+
+                InitPlot(out npSurface, out AxisFont, out TickFont, out p, 700, 300);
+
+                foreach (Series s in this.Series)
+                {
+                    if (s.Title.ToUpperInvariant() == "ERRORS")
+                    {
+                        NPlot.LinePlot npPlot = new LinePlot();
+                        npPlot.AbscissaData = s.XAxis;
+                        npPlot.OrdinateData = s.YAxis;
+                        npPlot.Label = s.Title;
+                        npPlot.Color = s.Color;
+
+                        npSurface.Add(npPlot, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
+                        break;
+                    }
+                }
+                //Set min/max to same values as main plot
+                npSurface.XAxis1.WorldMin = iMin;
+                npSurface.XAxis1.WorldMax = iMax;
+                SetAxes(npSurface, AxisFont, TickFont);
+
+                //Save image and add it to the report
+                npSurface.Bitmap.Save(ImagePath, System.Drawing.Imaging.ImageFormat.Png);
+                sb.AppendFormat("<img src=\"img/{0}\" alt=\"{1}\" />", Filename, this.Title);
+
+            }
+            AddLinkToTop(sb);
+
+            return sb.ToString();
+        }
+
+        private static void AddLinkToTop(StringBuilder sb)
+        {
+            sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
+        }
+
+        private bool GetHeaderTable(out StringBuilder sb)
+        {
+            sb = new StringBuilder();
+            sb.AppendFormat("<a id=\"a{0}\"/>", _guid);
+
+            if (null == this.Series || this.Series.Count == 0)
+            {
+                sb.AppendLine("<table class=\"info\">");
+                sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
+                sb.AppendLine("	<tr><td class=\"header\">Errors:</td><td>Exception during validation, skipping!</td></tr>");
+                sb.AppendLine("</table>");
+                sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
+
+                return false;
+            }
+
+            sb.AppendLine("<table class=\"info\">");
+            sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
+
+            if (this.Errors > 0)
+                sb.AppendFormat("	<tr class=\"error\"><td class=\"header\">Errors:</td><td>{0} (relative error is {1:0.00})</td></tr>", this.Errors, this.DeltaError).AppendLine();
+            else if (this.Errors == 0)
+                sb.AppendFormat("	<tr><td class=\"header\">Errors:</td><td>{0}</td></tr>", this.Errors).AppendLine();
+            else
+            {
+                sb.AppendLine("	<tr class=\"warning\"><td class=\"header\">Errors:</td><td>Result not found in base file.</td></tr>");
+                sb.AppendLine("</table>");
+                sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
+                return false;
+            }
+
+            sb.AppendLine("</table>");
+            return true;
+        }
+
+        private void SetAxes(NPlot.Bitmap.PlotSurface2D npSurface, Font AxisFont, Font TickFont)
+        {
             //X axis
             npSurface.XAxis1.Label = "Time";
             npSurface.XAxis1.NumberFormat = "{0:####0.0}";
@@ -281,23 +344,45 @@ namespace CsvCompare
             npSurface.XAxis1.TickTextFont = TickFont;
 
             //Y axis
-            npSurface.YAxis1.Label = string.Empty;
+            npSurface.YAxis1.Label = this.Title;
             npSurface.YAxis1.NumberFormat = "{0:####0.0}";
             npSurface.YAxis1.LabelFont = AxisFont;
             npSurface.YAxis1.TickTextFont = TickFont;
 
-            //Add legend:
+            //Legend definition:
+            NPlot.Legend npLegend = new NPlot.Legend();
             npLegend.AttachTo(NPlot.PlotSurface2D.XAxisPosition.Top, NPlot.PlotSurface2D.YAxisPosition.Right);
-            npLegend.VerticalEdgePlacement = NPlot.Legend.Placement.Inside;
-            npLegend.HorizontalEdgePlacement = NPlot.Legend.Placement.Outside;
+            npLegend.VerticalEdgePlacement = Legend.Placement.Inside;
+            npLegend.HorizontalEdgePlacement = Legend.Placement.Outside;
             npLegend.BorderStyle = NPlot.LegendBase.BorderType.Line;
-            npSurface.Legend = npLegend;
+            npLegend.XOffset = -5;
+            npLegend.YOffset = -20;
+            npLegend.BackgroundColor = Color.White;
 
+            npSurface.Legend = npLegend;
+            
             //Update PlotSurface:
             npSurface.Refresh();
+        }
 
-            npSurface.Bitmap.Save(Filename);
-            return this._guid + ".png";
+        private void InitPlot(out NPlot.Bitmap.PlotSurface2D npSurface, out Font AxisFont, out Font TickFont, out NPlot.Grid p, int width, int height)
+        {
+            npSurface = new NPlot.Bitmap.PlotSurface2D(width, height);
+            npSurface.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            //Font definitions:
+            Font TitleFont = new Font("Arial", 12);
+            AxisFont = new Font("Arial", 10);
+            TickFont = new Font("Arial", 8);
+
+            //Prepare PlotSurface:
+            npSurface.Clear();
+            npSurface.Title = this.Title;
+            npSurface.BackColor = System.Drawing.Color.White;
+
+            //Left Y axis grid:
+            p = new Grid();
+            npSurface.Add(p, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
         }
 
         /// Convert a .NET Color to a hex string.
@@ -657,7 +742,7 @@ namespace CsvCompare
                 if (!ch.UseBitmap)
                     writer.WriteLine(ch.RenderChart());
                 else
-                    writer.WriteLine("<p><img src=\"{0}\"/></p>", ch.RenderBitmap(this._path));
+                    writer.WriteLine(ch.RenderBitmap(this._path));
         }
 
         private void WriteHeader(TextWriter writer)
