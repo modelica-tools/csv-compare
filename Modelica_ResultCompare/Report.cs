@@ -643,7 +643,6 @@ namespace CsvCompare
         private double _dAvErr = 0;
         private int _iTotalErrors = -1;
         private bool _bRelative = false;
-        private bool _bInlineScripts = false;
 
         public double Tolerance
         {
@@ -658,7 +657,6 @@ namespace CsvCompare
         public string BaseFile { get; set; }
         public string CompareFile { get; set; }
         public bool RelativePaths { get { return _bRelative; } set { _bRelative = value; } }
-        public bool UseInlineScripts { get { return _bInlineScripts; } set { _bInlineScripts = value; } }
         public int TotalErrors
         {
             get
@@ -717,14 +715,14 @@ namespace CsvCompare
             }
             using (TextWriter writer = new StreamWriter(_path, false))
             {
-                WriteHeader(writer);
+                WriteHeader(writer, options);
                 WriteChart(writer);
                 WriteFooter(writer);
                 bRet = true;
             }
             log.WriteLine("Report has been written to: {0}", _path);
 
-            if (!this._bInlineScripts && !options.UseBitmapPlots)//Save script files from ressource to file system
+            if (!options.InlineScripts && !options.UseBitmapPlots)//Save script files from ressource to file system
             {
                 Assembly ass = Assembly.GetExecutingAssembly();
 
@@ -780,11 +778,11 @@ namespace CsvCompare
                     writer.WriteLine(ch.RenderBitmap(this._path));
         }
 
-        private void WriteHeader(TextWriter writer)
+        private void WriteHeader(TextWriter writer, Options options)
         {
             writer.WriteLine("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">");
-            writer.WriteLine("  <head>");
-            writer.WriteLine("  <title>Report " + DateTime.Now.ToString() + @"</title>");
+            writer.WriteLine("<head>");
+            writer.WriteLine("<title>Report {0}</title>", DateTime.Now);
 
             Assembly ass = Assembly.GetExecutingAssembly();
             List<string> lScripts = new List<string>();
@@ -792,7 +790,7 @@ namespace CsvCompare
             {
                 if (!s.ToLowerInvariant().EndsWith(".js"))
                     continue;
-                if (this._bInlineScripts)
+                if (options.InlineScripts)
                 {
                     var javascriptHeaders = new StreamReader(ass.GetManifestResourceStream(s));
                     lScripts.Add(string.Format("<script language=\"javascript\" type=\"text/javascript\">{0}</script>", javascriptHeaders.ReadToEnd()));
@@ -802,7 +800,7 @@ namespace CsvCompare
             }
             lScripts = lScripts.OrderByDescending(x => x).ToList<string>();//Sort alphabetically to ensure jquery is loaded first
             writer.WriteLine(string.Join(Environment.NewLine, lScripts.ToArray()));
-            if (this._bInlineScripts)
+            if (options.InlineScripts)
             {
                 writer.WriteLine("<style type=\"text/css\">");
                 writer.WriteLine(".jqplot-target{position:relative;color:#666;font-family:\"Trebuchet MS\",Arial,Helvetica,sans-serif;font-size:1em;}.jqplot-axis{font-size:.75em;}.jqplot-xaxis{margin-top:10px;}.jqplot-x2axis{margin-bottom:10px;}.jqplot-yaxis{margin-right:10px;}.jqplot-y2axis,.jqplot-y3axis,.jqplot-y4axis,.jqplot-y5axis,.jqplot-y6axis,.jqplot-y7axis,.jqplot-y8axis,.jqplot-y9axis{margin-left:10px;margin-right:10px;}.jqplot-axis-tick,.jqplot-xaxis-tick,.jqplot-yaxis-tick,.jqplot-x2axis-tick,.jqplot-y2axis-tick,.jqplot-y3axis-tick,.jqplot-y4axis-tick,.jqplot-y5axis-tick,.jqplot-y6axis-tick,.jqplot-y7axis-tick,.jqplot-y8axis-tick,.jqplot-y9axis-tick{position:absolute;}.jqplot-xaxis-tick{top:0;left:15px;vertical-align:top;}.jqplot-x2axis-tick{bottom:0;left:15px;vertical-align:bottom;}.jqplot-yaxis-tick{right:0;top:15px;text-align:right;}.jqplot-yaxis-tick.jqplot-breakTick{right:-20px;margin-right:0;padding:1px 5px 1px 5px;z-index:2;font-size:1.5em;}.jqplot-y2axis-tick,.jqplot-y3axis-tick,.jqplot-y4axis-tick,.jqplot-y5axis-tick,.jqplot-y6axis-tick,.jqplot-y7axis-tick,.jqplot-y8axis-tick,.jqplot-y9axis-tick{left:0;top:15px;text-align:left;}.jqplot-meterGauge-tick{font-size:.75em;color:#999;}.jqplot-meterGauge-label{font-size:1em;color:#999;}.jqplot-xaxis-label{margin-top:10px;font-size:11pt;position:absolute;}.jqplot-x2axis-label{margin-bottom:10px;font-size:11pt;position:absolute;}.jqplot-yaxis-label{margin-right:10px;font-size:11pt;position:absolute;}.jqplot-y2axis-label,.jqplot-y3axis-label,.jqplot-y4axis-label,.jqplot-y5axis-label,.jqplot-y6axis-label,.jqplot-y7axis-label,.jqplot-y8axis-label,.jqplot-y9axis-label{font-size:11pt;position:absolute;}table.jqplot-table-legend{margin-top:12px;margin-bottom:12px;margin-left:12px;margin-right:12px;}table.jqplot-table-legend,table.jqplot-cursor-legend{background-color:rgba(255,255,255,0.6);border:1px solid #ccc;position:absolute;font-size:.75em;}td.jqplot-table-legend{vertical-align:middle;}td.jqplot-seriesToggle:hover,td.jqplot-seriesToggle:active{cursor:pointer;}td.jqplot-table-legend>div{border:1px solid #ccc;padding:1px;}div.jqplot-table-legend-swatch{width:0;height:0;border-top-width:5px;border-bottom-width:5px;border-left-width:6px;border-right-width:6px;border-top-style:solid;border-bottom-style:solid;border-left-style:solid;border-right-style:solid;}.jqplot-title{top:0;left:0;padding-bottom:.5em;font-size:1.2em;}table.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;}.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}.jqplot-highlighter-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}.jqplot-point-label{font-size:.75em;z-index:2;}td.jqplot-cursor-legend-swatch{vertical-align:middle;text-align:center;}div.jqplot-cursor-legend-swatch{width:1.2em;height:.7em;}.jqplot-error{text-align:center;}.jqplot-error-message{position:relative;top:46%;display:inline-block;}div.jqplot-bubble-label{font-size:.8em;padding-left:2px;padding-right:2px;color:rgb(20%,20%,20%);}div.jqplot-bubble-label.jqplot-bubble-label-highlight{background:rgba(90%,90%,90%,0.7);}div.jqplot-noData-container{text-align:center;background-color:rgba(96%,96%,96%,0.3);}");

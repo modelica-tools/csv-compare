@@ -51,6 +51,9 @@ namespace CsvCompare
         [Option('b', "bitmap", DefaultValue = false, HelpText = "Set this to generate raster instead of vector plots (i.e. reports will shrink).")]
         public bool UseBitmapPlots { get; set; }
 
+        [Option('i', "inline", DefaultValue = false, HelpText = "If set, javascript and style sheet files are inserted as inline text in every html output file")]
+        public bool InlineScripts { get; set; }
+
         [Option('t', "tolerance", Required = false, DefaultValue = "0.002", HelpText = "Set the width of the tube at discontinuity in x-direction [Default is 0.002].")]
         public string Tolerance { get; set; }
 
