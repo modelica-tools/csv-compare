@@ -430,7 +430,6 @@ namespace CsvCompare
                     YAxis = (bDrawBitmapPlots) ? error.Y : null
                 });
 
-                //ch.DeltaError = ((Math.Abs(error.Y.Max()) + Math.Abs(error.Y.Min()))) / 2;
                 List<double> lDeltas = new List<double>();
                 int j = 0;
                 for (int i = 1; i < compare.X.Length - 1; i++)
@@ -439,16 +438,17 @@ namespace CsvCompare
                     {
                         while (compare.X[i] < error.X[j])
                         {
-                            //lDeltas.Add(0);
+                            lDeltas.Add(0);
                             i++;
                             continue;
                         }
 
-                        lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])) + (Math.Abs(compare.X[i + 1] - compare.X[i])))) / 2);
+                        if (i < compare.X.Length - 1)
+                            lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])) + (Math.Abs(compare.X[i + 1] - compare.X[i])))) / 2);
+                        else//handle errors in the last point (ther is no i+1)
+                            lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])))) / 2);
                         j++;
                     }
-                    //else
-                    //    lDeltas.Add(0);
                 }
                 ch.DeltaError = lDeltas.Sum() / (1e-3 + compare.Y.Max(x => Math.Abs(x)));
             }
