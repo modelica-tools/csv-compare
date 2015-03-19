@@ -445,7 +445,7 @@ namespace CsvCompare
 
                         if (i < compare.X.Length - 1)
                             lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])) + (Math.Abs(compare.X[i + 1] - compare.X[i])))) / 2);
-                        else//handle errors in the last point (ther is no i+1)
+                        else // handle errors in the last point (ther is no i+1)
                             lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])))) / 2);
                         j++;
                     }
