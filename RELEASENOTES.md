@@ -1,23 +1,13 @@
 ## 2015-03 Version 2.0.0
-	*	new command line option --inline to insert scripts and styles in
-		the report html file (easier to exchange reports with others);
-		the default behaviour was to insert the scripts/styles in the
-		code this has been changed to generate scripts and styles only
-		once and reference in all other html files to the generated files
-	*	new command line option --bitmap toggles to raster plots in
-		reports to make the files smaller and better to parse in case of
-		very much points to plot (browsers freezed when using vector
-		plots
-	*	a new tube algorithm has been implemented and is used now, this
-		fixed several bugs
-	*	reports in tree mode are now written per compared csv files,
-		this keeps a lower memory consumption
-	*	a significantly faster csv parsing has been implemented
-	*	locale independence has been ensured
-	*	new option --separator can now be set	
+* new command line option `--inline` to insert scripts and styles in the report html file (easier to exchange reports with others); the default behaviour was to insert the scripts/styles in the code this has been changed to generate scripts and styles only once and reference in all other html files to the generated files
+* new command line option `--bitmap` toggles to raster plots in reports to make the files smaller and better to parse in case of very much points to plot (browsers freezed when using vector plots)
+* a new tube algorithm has been implemented and is used now, this fixed several bugs
+* reports in tree mode are now written per compared csv files, this keeps a lower memory consumption
+* a significantly faster csv parsing has been implemented
+* locale independence has been ensured
+* new option `--separator` can now be set to change the seperator used in csv files
 
---- moved to github ---
-
+#### repository moved from modelica.org svn to github ####
 ## 2013-06-26 Version 1.0.0.6751
 	*	bugfix error graph (list has not been reset)
 	*	new commandline parameter "-e" for enabling absolute errors
