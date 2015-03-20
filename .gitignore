@@ -10,3 +10,5 @@ Modelica_ResultCompare/CurveCompare/ClassDiagramCurveCompare.cd
 Modelica_ResultCompare/CurveCompare/CurveCompare.csproj
 Modelica_ResultCompare/CurveCompare/bin/
 Modelica_ResultCompare/Resources/js/
+deliver.*.err
+*.zip

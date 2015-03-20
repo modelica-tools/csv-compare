@@ -12,7 +12,7 @@ debug:
 release:
 	$(BUILD_CMD) $(REL_ARG) $(ARGS)
 publish: clean
-	./deploy.sh
+	sh ./deploy.sh
 clean:
 	rm -rf $(BIN)
 	rm -rf $(OBJ)
