@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 #This script sets assembly infos and builds csv-copmpare and zips it in a properly named tar archive
 
 # stop on errors
@@ -19,7 +19,7 @@ then
         echo file version set to $fileversion
         sed -i 's/\(AssemblyInformationalVersionAttribute\)(.*/\1("'$version'")]/' $output
         echo informational version set to $version
-        sed -i 's/\(AssemblyCopyright\).*/AssemblyCopyright("Copyright � '$dt' ITI GmbH")]/' $output
+        sed -i 's/\(AssemblyCopyright\).*/AssemblyCopyright("Copyright © '$dt' ITI GmbH")]/' $output
 else
         echo "No template found @"$input!
         exit 1
@@ -35,8 +35,6 @@ then
 	echo "Successfully created the file $root/csv-compare.windows-$version.x64.tar.gz"
 	"$zipper" a -tzip $root/csv-compare.windows-$version.x86.zip  ./Modelica_ResultCompare/bin/x86/Release/Compare.exe BUILD.md LICENSE README.md RELEASENOTES.md
 	echo "Successfully created the file $root/csv-compare.windows-$version.x86.tar.gz"
-	echo "resetting AssemblyInfo.cs"
-	git checkout -- $output
 else
 	# build release
 	make release
@@ -45,3 +43,5 @@ else
 	echo "Successfully created the file csv-compare.linux-$version.tar.gz with the following content:"
 	tar tf $root/csv-compare.linux-$version.tar.gz
 fi
+echo "resetting AssemblyInfo.cs"
+git checkout -- $output
