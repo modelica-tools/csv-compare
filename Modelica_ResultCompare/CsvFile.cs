@@ -368,7 +368,7 @@ namespace CsvCompare
                 LabelX = "Time",
                 LabelY = res.Key,
                 Errors = (null != error && null != error.X) ? error.X.Length : 0,
-                Title = string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(this._fileName),  res.Key),
+                Title = string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(this._fileName), res.Key),
                 UseBitmap = bDrawBitmapPlots
             };
 
@@ -382,7 +382,7 @@ namespace CsvCompare
                     XAxis = (bDrawBitmapPlots) ? reference.X : null,
                     YAxis = (bDrawBitmapPlots) ? reference.Y : null
                 });
-                
+
                 ch.Series.Add(new Series()
                 {
                     Color = Color.Green,
@@ -421,24 +421,41 @@ namespace CsvCompare
             }
             if (null != error && null != error.X && error.X.Length > 0)
             {
+                //Get complete error curve as "error" only holds error points
+                Curve curveErrors = new Curve("ERRORS", new double[compare.X.Length], new double[compare.X.Length]);
+                int j = 0;
+                for (int i = 0; i < compare.X.Length - 1; i++)
+                {
+                    if (error.X.Contains(compare.X[i]))
+                    {
+                        curveErrors.X[i] = compare.X[i];
+                        curveErrors.Y[i] = (this._bShowRelativeErrors) ? error.Y[j++] : 1;
+                    }
+                    else
+                    {
+                        curveErrors.X[i] = compare.X[i];
+                        curveErrors.Y[i] = 0;
+                    }
+                }
+
                 ch.Series.Add(new Series()
                 {
                     Color = Color.Red,
-                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(error.X, error.Y),
-                    Title = "ERRORS",
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(curveErrors.X, curveErrors.Y),
+                    Title = curveErrors.Name,
                     XAxis = (bDrawBitmapPlots) ? error.X : null,
                     YAxis = (bDrawBitmapPlots) ? error.Y : null
                 });
 
+                //Calculate delta error
                 List<double> lDeltas = new List<double>();
-                int j = 0;
+                j = 0;
                 for (int i = 1; i < compare.X.Length - 1; i++)
                 {
                     if (j < error.X.Length)
                     {
                         while (compare.X[i] < error.X[j])
                         {
-                            lDeltas.Add(0);
                             i++;
                             continue;
                         }
