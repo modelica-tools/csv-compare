@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 #This script sets assembly infos and builds csv-copmpare and zips it in a properly named tar archive
 
 # stop on errors
@@ -19,7 +19,7 @@ then
         echo file version set to $fileversion
         sed -i 's/\(AssemblyInformationalVersionAttribute\)(.*/\1("'$version'")]/' $output
         echo informational version set to $version
-        sed -i 's/\(AssemblyCopyright\).*/AssemblyCopyright("Copyright © '$dt' ITI GmbH")]/' $output
+        sed -i 's/\(AssemblyCopyright\).*/AssemblyCopyright("Copyright � '$dt' ITI GmbH")]/' $output
 else
         echo "No template found @"$input!
         exit 1
