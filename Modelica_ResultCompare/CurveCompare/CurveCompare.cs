@@ -36,7 +36,9 @@ namespace CurveCompare
             TubeReport report = new TubeReport();
             Curve refCurve, testCurve;
             bool testExists = (testX != null && testY != null && testX.Length > 0 && testY.Length > 0);
+#if GUI
             bool saveImage = (!String.IsNullOrWhiteSpace(options.ReportFolder) && Directory.Exists(options.ReportFolder));
+#endif
             string name = modelName + " - " + resultName;
 
             // write log file

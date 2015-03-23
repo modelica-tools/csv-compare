@@ -46,14 +46,11 @@ namespace CsvCompare
     {
         /// global Log object
         private static Log _log = new Log();
-        private static string _sCmdArgs;
 
         /// The main entry of the application
         /// @para cmdArgs contains an array of commandline parameters that are parsed using CommandLine.Dll
         public static void Main(string[] cmdArgs)
         {
-            //Save args for log file info
-            _sCmdArgs = String.Join(" ", cmdArgs);
             //Global catch to prevent crash
             try { Run(cmdArgs); }
             catch (Exception ex)

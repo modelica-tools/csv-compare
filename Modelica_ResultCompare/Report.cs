@@ -315,7 +315,7 @@ namespace CsvCompare
             sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
 
             if (this.Errors > 0)
-                sb.AppendFormat("	<tr class=\"error\"><td class=\"header\">Errors:</td><td>{0} (relative error is {1:0.00})</td></tr>", this.Errors, this.DeltaError).AppendLine();
+                sb.AppendFormat("	<tr class=\"error\"><td class=\"header\">Errors:</td><td>{0} (relative error is {1})</td></tr>", this.Errors, this.DeltaError).AppendLine();
             else if (this.Errors == 0)
                 sb.AppendFormat("	<tr><td class=\"header\">Errors:</td><td>{0}</td></tr>", this.Errors).AppendLine();
             else
@@ -371,7 +371,6 @@ namespace CsvCompare
             npSurface.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
             //Font definitions:
-            Font TitleFont = new Font("Arial", 12);
             AxisFont = new Font("Arial", 10);
             TickFont = new Font("Arial", 8);
 
