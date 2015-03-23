@@ -10,17 +10,19 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using CurveCompare;
 
 namespace CsvCompare
 {
     /// This class parses CSV files and holds results in a dictionary
-    public class CsvFile
+    public class CsvFile:IDisposable
     {
         private double _dRangeDelta = 0.002;
         private string _fileName = string.Empty;
         private List<double> _xAxis = new List<double>();
         private Dictionary<string, List<double>> _values = new Dictionary<string, List<double>>();
         private bool _bShowRelativeErrors = true;
+        private bool _bDisposed = false;
 
         /// Holds values for x axis (time)
         public List<double> XAxis { get { return _xAxis; } }
@@ -43,15 +45,15 @@ namespace CsvCompare
         public CsvFile(string fileName, Options options, Log log)
         {
             //Parse tolerance from commandline
-            NumberFormatInfo provider = new NumberFormatInfo();
-            provider.NumberDecimalSeparator = ".";
+            NumberFormatInfo toleranceProvider = new NumberFormatInfo();
+            toleranceProvider.NumberDecimalSeparator = ".";
 
             //understand 0.002
-            if (!Double.TryParse(options.Tolerance, NumberStyles.AllowDecimalPoint, provider, out _dRangeDelta))
+            if (!Double.TryParse(options.Tolerance, NumberStyles.AllowDecimalPoint, toleranceProvider, out _dRangeDelta))
             {
                 //understand 0,002
-                provider.NumberDecimalSeparator = ",";
-                if (!Double.TryParse(options.Tolerance, NumberStyles.AllowDecimalPoint, provider, out _dRangeDelta))
+                toleranceProvider.NumberDecimalSeparator = ",";
+                if (!Double.TryParse(options.Tolerance, NumberStyles.AllowDecimalPoint, toleranceProvider, out _dRangeDelta))
                     //understand 2e-2 etc.
                     if (!Double.TryParse(options.Tolerance, out _dRangeDelta))
                         log.WriteLine(LogLevel.Warning, "could not parse given tolerance argument: \"{0}\", using default \"{1}\".", options.Tolerance, _dRangeDelta);
@@ -66,6 +68,10 @@ namespace CsvCompare
                     if (null == sLine)
                         throw new ArgumentNullException(string.Format("\"{0}\" is empty, nothing to parse here.", fileName));
 
+#if DEBUG           //Do some benchmarking in DEBUG mode
+                    Stopwatch timer = new Stopwatch();
+                    timer.Start();
+#endif
                     List<string> map = new List<string>();
 
                     //skip comments
@@ -100,8 +106,15 @@ namespace CsvCompare
                             }
                         }
 
+#if DEBUG 
+                    log.WriteLine(LogLevel.Debug, "Parsed header in {0}ms", timer.ElapsedMilliseconds);
+                    timer.Restart();
+#endif
                     CheckHeaderForNumbers(log, map);
-
+#if DEBUG 
+                    log.WriteLine(LogLevel.Debug, "Checked header in {0}ms", timer.ElapsedMilliseconds);
+                    timer.Restart();
+#endif
                     //read the rest of the csv file
                     while ((sLine = reader.ReadLine()) != null)
                     {
@@ -109,11 +122,20 @@ namespace CsvCompare
                         if (sLine.StartsWith("#", StringComparison.OrdinalIgnoreCase))
                             continue;
 
-                        values = reg.Split(sLine);
+                        //values = reg.Split(sLine); //splitting using regular expressions is slow
+                        IEnumerable<string> dataValues;
+                        if (options.Delimiter.Equals(options.Separator))
+                            dataValues = Tokenize(sLine, options.Delimiter); //use custom tokenizer for improved performance
+                        else
+                            dataValues = sLine.Split(options.Delimiter); //use ordinary Split function for simple cases
+                        
                         int iCol = 0;
 
+                        NumberFormatInfo provider = new NumberFormatInfo();
+                        provider.NumberDecimalSeparator = options.Separator.ToString();
+
                         //read values to the dictionary
-                        foreach (string sCol in values)
+                        foreach (string sCol in dataValues)
                         {
                             double dValue;
                             if (!Double.TryParse(sCol.Trim('"'), NumberStyles.Any, provider, out dValue))
@@ -139,6 +161,10 @@ namespace CsvCompare
                             iCol++;
                         }
                     }
+#if DEBUG 
+                    timer.Stop();
+                    log.WriteLine(LogLevel.Debug, "Time to parse: {0}", timer.Elapsed);
+#endif
 
                     if (_xAxis.Count <= 1)
                         throw new ArgumentNullException(string.Format(CultureInfo.CurrentCulture, "{0} could not be parsed and might be an invalid csv file.", fileName));
@@ -161,6 +187,47 @@ namespace CsvCompare
             }
         }
 
+        private List<string> Tokenize(string str, char delimiter)
+        {
+            List<string> tokens = new List<string>();
+
+            int pos = 0;
+            int end = str.Length;
+            bool withinQuotes = false;
+
+            int lpos=pos;
+            int length=0;
+
+            while (pos < end) {
+                char c = str[pos];
+                
+                if (c == '"')
+                    withinQuotes = !withinQuotes;
+
+                if (c == delimiter && !withinQuotes)
+                {
+                    string token = str.Substring(lpos, length);
+                    tokens.Add(token);
+                    lpos = pos+1;
+                    length = 0;
+                }
+                else {
+                    length++;
+                }
+
+                pos++;
+            }
+
+            //special treatment for lines which are not terminated by the delimiter
+            if (length > 0)
+            {
+                string token = str.Substring(lpos, length);
+                tokens.Add(token);
+            }
+
+            return tokens;
+        }
+
         public override string ToString()
         {
             return _fileName;
@@ -172,7 +239,10 @@ namespace CsvCompare
             log.WriteLine("Generating plot for report");
 
             foreach (KeyValuePair<string, List<double>> res in _values)
-                PrepareCharts(r, res.Value.ToArray<double>(), res);
+            {
+                Curve compare = new Curve(res.Key, this.XAxis.ToArray<double>(), res.Value.ToArray<double>());
+                PrepareCharts(r, compare);
+            }
 
             return r;
         }
@@ -186,6 +256,7 @@ namespace CsvCompare
             else
                 return CompareFiles(log, csvBase, null, ref options);
         }
+        
         public Report CompareFiles(Log log, CsvFile csvBase, string sReportPath, ref Options options)
         {
             int iInvalids = 0;
@@ -193,104 +264,69 @@ namespace CsvCompare
             Report rep = new Report(sReportPath);
             log.WriteLine("Comparing \"{0}\" to \"{1}\"", _fileName, csvBase.ToString());
 
-            List<double> lXHighTube = new List<double>();
-            List<double> lYHighTube = new List<double>();
-            List<double> lXLowTube = new List<double>();
-            List<double> lYLowTube = new List<double>();
-            List<double> lvYHighTube = new List<double>();
-            List<double> lvYLowTube = new List<double>();
-            List<double> lErrorsX = new List<double>();
-            List<double> lErrorsY = new List<double>();
-
-            double[] darResults = null;
-
             rep.BaseFile = csvBase.ToString();
             rep.CompareFile = _fileName;
 
+            Curve reference = new Curve();
+            Curve compareCurve = new Curve();
+            TubeReport tubeReport = new TubeReport();
+            TubeSize size = null;            
+            Tube tube = new Tube(size);
+            IOptions tubeOptions = new Options1(_dRangeDelta, Axes.X);
+
             foreach (KeyValuePair<string, List<double>> res in csvBase.Results)
             {
-                Range r = new Range();
-                int iError = -1;
-                bool bSkipValidation = false;
-                lXHighTube.Clear();
-                lXLowTube.Clear();
-                lYHighTube.Clear();
-                lYLowTube.Clear();
-                lvYHighTube.Clear();
-                lvYLowTube.Clear();
-                lErrorsX.Clear();
-                lErrorsY.Clear();
-                darResults = null;
-
                 if (!this.Results.ContainsKey(res.Key))
-                {
                     log.WriteLine(LogLevel.Warning, "{0} not found in \"{1}\", skipping checks.", res.Key, this._fileName);
-                    bSkipValidation = true;
-                }
                 else
                 {
-                    try
-                    {
-                        if (res.Value.Count == 0)
-                        {
-                            log.Error("{0} has no y-Values! Maybe error during parsing? Skipping", res.Key);
-                            continue;
-                        }
+                    compareCurve = new Curve(res.Key, this.XAxis.ToArray<double>(), this.Results[res.Key].ToArray<double>());
 
-                        log.WriteLine("Generating tubes for {0}", res.Key);
-                        r.CalculateTubes(csvBase.XAxis.ToArray(), res.Value.ToArray(), lXHighTube, lYHighTube, lXLowTube, lYLowTube, _dRangeDelta);
-                    }
-                    catch (IndexOutOfRangeException)
+                    if (res.Value.Count == 0)
                     {
-                        log.Error("Error in the calculation of the tubes. Skipping {0}", res.Key);
-                        rep.Chart.Add(new Chart() { Title = res.Key, Errors = 1 });
+                        log.Error("{0} has no y-Values! Maybe error during parsing? Skipping", res.Key);
+                        continue;
                     }
-                    catch (ArgumentOutOfRangeException)
+                    reference = new Curve("Reference ", csvBase.XAxis.ToArray(), csvBase.Results[res.Key].ToArray());
+                    if (!reference.ImportSuccessful)
                     {
                         log.Error("Error in the calculation of the tubes. Skipping {0}", res.Key);
                         rep.Chart.Add(new Chart() { Title = res.Key, Errors = 1 });
                         continue;
                     }
-                    catch (Exception ex)//Should never be fired
-                    {
-                        log.Error("Exception in the calculation of the tubes. Skipping {0} [Message: {1}]", res.Key, ex.Message);
-                        rep.Chart.Add(new Chart() { Title = res.Key, Errors = 1 });
-                    }
 
-                    if (csvBase.XAxis.Count < this.XAxis.Count)
+                    if (reference.X.Length < compareCurve.X.Length)
                         log.WriteLine(LogLevel.Warning, "The resolution of the base x-axis is smaller than the compare x-axis. The better the base resolution is, the better the validation result will be!");
                     else
                         log.WriteLine(LogLevel.Debug, "The resolution of the base x-axis is good.");
 
-                    log.WriteLine(LogLevel.Debug, "Calibrating timelines");
+                    size = new TubeSize(reference, true);
+                    size.Calculate(_dRangeDelta, Axes.X, Relativity.Relative);
+                    tube = new Tube(size);
+                    tubeReport = tube.Calculate(reference);
+                    tube.Validate(compareCurve);
 
-                    darResults = Range.CalibrateValues(this.XAxis.ToArray(), csvBase.XAxis.ToArray(), this.Results[res.Key].ToArray<double>());
-                    lvYHighTube = Range.CalibrateValues(lXHighTube.ToArray(), csvBase.XAxis.ToArray(), lYHighTube.ToArray()).ToList<double>();
-                    lvYLowTube = Range.CalibrateValues(lXLowTube.ToArray(), csvBase.XAxis.ToArray(), lYLowTube.ToArray()).ToList<double>();
-
-                    Range.RelativeErrors = _bShowRelativeErrors;
-                    iError = Range.Validate(lvYLowTube, lvYHighTube, darResults.ToList<double>(), csvBase.XAxis, ref lErrorsX, ref lErrorsY);
-
-                    if (iError == 0)
+                    if (tubeReport.Valid == Validity.Valid)
                         log.WriteLine(res.Key + " is valid");
                     else
                     {
-                        log.WriteLine(LogLevel.Warning, "{0} is invalid! {1} errors have been found during validation.", res.Key, iError);
+                        log.WriteLine(LogLevel.Warning, "{0} is invalid! {1} errors have been found during validation.", res.Key,
+                            (null != tube.Report.Errors && null != tube.Report.Errors.X) ? tube.Report.Errors.X.Length : 0);
                         iInvalids++;
                         Environment.ExitCode = 1;
                     }
                 }
-
-                PrepareCharts(csvBase.XAxis, rep, lXHighTube, lYHighTube, lXLowTube, lYLowTube, lvYHighTube, lvYLowTube, lErrorsY, darResults, res, iError, bSkipValidation);
+                if (null != tube.Report)//No charts for missing reports
+                    PrepareCharts(reference, compareCurve, tube.Report.Errors, rep, tubeReport, res, options.UseBitmapPlots);
             }
             rep.Tolerance = _dRangeDelta;
 
             string sResult = "na";
 
-                if (rep.TotalErrors == 0)
-                    sResult = "passed";
-                else
-                    sResult = "failed";
+            if (rep.TotalErrors == 0)
+                sResult = "passed";
+            else
+                sResult = "failed";
 
             if (options.ComparisonFlag)
                 using (TextWriter writer = File.CreateText(string.Format("{0}{1}compare_{2}.log", Path.GetDirectoryName(_fileName), Path.DirectorySeparatorChar, sResult)))
@@ -314,63 +350,62 @@ namespace CsvCompare
                     }
                 }
 
+            rep.WriteReport(log, (!string.IsNullOrEmpty(options.ReportDir)) ? options.ReportDir : string.Empty, options);
+            GC.Collect();//immediately forget big charts and data
             return rep;
         }
 
-        private void PrepareCharts(Report rep, double[] darResults, KeyValuePair<string, List<double>> res)//Draw result only
+        private void PrepareCharts(Report rep, Curve compare)//Draw result only
         {
-            PrepareCharts(_xAxis, rep, null, null, null, null, null, null, null, darResults, res, 0, true);
+            PrepareCharts(compare, null, null, rep, null, new KeyValuePair<string, List<double>>(), false);
         }
 
-        private static void PrepareCharts(List<double> xAxis, Report rep, List<double> lXHighTube, List<double> lYHighTube, List<double> lXLowTube, List<double> lYLowTube, List<double> lvYHighTube, List<double> lvYLowTube, List<double> lErrorsY, double[] darResults, KeyValuePair<string, List<double>> res, int iError, bool bSkipValidation)
+        private void PrepareCharts(Curve reference, Curve compare, Curve error, Report rep, TubeReport tubeReport, KeyValuePair<string, List<double>> res, bool bDrawBitmapPlots)
         {
+
             Chart ch = new Chart()
             {
                 LabelX = "Time",
                 LabelY = res.Key,
-                Errors = iError,
-                Title = res.Key
+                Errors = (null != error && null != error.X) ? error.X.Length : 0,
+                Title = string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(this._fileName), res.Key),
+                UseBitmap = bDrawBitmapPlots
             };
 
-            if (!bSkipValidation)
+            if (null != compare)
             {
                 ch.Series.Add(new Series()
                 {
                     Color = Color.Orange,
-                    ArrayString = Series.GetArrayString(xAxis, res.Value),
-                    Title = "Base (to compare with)"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(reference.X, reference.Y),
+                    Title = "Base (to compare with)",
+                    XAxis = (bDrawBitmapPlots) ? reference.X : null,
+                    YAxis = (bDrawBitmapPlots) ? reference.Y : null
                 });
+
                 ch.Series.Add(new Series()
                 {
                     Color = Color.Green,
-                    ArrayString = Series.GetArrayString(xAxis, darResults.ToList<double>()),
-                    Title = "Result"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(compare.X, compare.Y),
+                    Title = "Result",
+                    XAxis = (bDrawBitmapPlots) ? compare.X : null,
+                    YAxis = (bDrawBitmapPlots) ? compare.Y : null
                 });
-#if DEBUG               //Draw uncalibrated tubes in Debug mode
-                ch.Series.Add(new Series()
-                {
-                    Color = Color.Pink,
-                    ArrayString = Series.GetArrayString(lXHighTube, lYHighTube),
-                    Title = "High Tube"
-                });
-                ch.Series.Add(new Series()
-                {
-                    Color = Color.Pink,
-                    ArrayString = Series.GetArrayString(lXLowTube, lYLowTube),
-                    Title = "Low Tube"
-                });
-#endif
                 ch.Series.Add(new Series()
                 {
                     Color = Color.LightBlue,
-                    ArrayString = Series.GetArrayString(xAxis, lvYLowTube),
-                    Title = "Calibrated Low Tube"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(tubeReport.Lower.X, tubeReport.Lower.Y),
+                    Title = "Low Tube",
+                    XAxis = (bDrawBitmapPlots) ? tubeReport.Lower.X : null,
+                    YAxis = (bDrawBitmapPlots) ? tubeReport.Lower.Y : null
                 });
                 ch.Series.Add(new Series()
                 {
                     Color = Color.LightGreen,
-                    ArrayString = Series.GetArrayString(xAxis, lvYHighTube),
-                    Title = "Calibrated High Tube"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(tubeReport.Upper.X, tubeReport.Upper.Y),
+                    Title = "High Tube",
+                    XAxis = (bDrawBitmapPlots) ? tubeReport.Upper.X : null,
+                    YAxis = (bDrawBitmapPlots) ? tubeReport.Upper.Y : null
                 });
             }
             else
@@ -378,33 +413,66 @@ namespace CsvCompare
                 ch.Series.Add(new Series()
                 {
                     Color = Color.Green,
-                    ArrayString = Series.GetArrayString(xAxis, res.Value),
-                    Title = "Compare"
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(reference.X, reference.Y),
+                    Title = "Compare",
+                    XAxis = (bDrawBitmapPlots) ? reference.X : null,
+                    YAxis = (bDrawBitmapPlots) ? reference.Y : null
                 });
             }
-            if (iError > 0)
+            if (null != error && null != error.X && error.X.Length > 0)
             {
+                //Get complete error curve as "error" only holds error points
+                Curve curveErrors = new Curve("ERRORS", new double[compare.X.Length], new double[compare.X.Length]);
+                int j = 0;
+                for (int i = 0; i < compare.X.Length - 1; i++)
+                {
+                    if (error.X.Contains(compare.X[i]))
+                    {
+                        curveErrors.X[i] = compare.X[i];
+                        curveErrors.Y[i] = (this._bShowRelativeErrors) ? error.Y[j++] : 1;
+                    }
+                    else
+                    {
+                        curveErrors.X[i] = compare.X[i];
+                        curveErrors.Y[i] = 0;
+                    }
+                }
+
                 ch.Series.Add(new Series()
                 {
-                    Color = Color.DarkGoldenrod,
-                    ArrayString = Series.GetArrayString(xAxis, lErrorsY),
-                    Title = "ERRORS"
+                    Color = Color.Red,
+                    ArrayString = (bDrawBitmapPlots) ? string.Empty : Series.GetArrayString(curveErrors.X, curveErrors.Y),
+                    Title = curveErrors.Name,
+                    XAxis = (bDrawBitmapPlots) ? error.X : null,
+                    YAxis = (bDrawBitmapPlots) ? error.Y : null
                 });
-                
-                List<double> lDeltas=new List<double>();
-                for (int i = 1; i < darResults.Length-1; i++)
-                    lDeltas.Add((Math.Abs(lErrorsY[i]) * 
-                            (
-                                (Math.Abs(xAxis[i] - xAxis[i - 1]))+
-                                (Math.Abs(xAxis[i+1] - xAxis[i]))
-                            )) / 2);
 
-                ch.DeltaError = lDeltas.Sum() / (1e-3 + darResults.Max(x => Math.Abs(x)));
+                //Calculate delta error
+                List<double> lDeltas = new List<double>();
+                j = 0;
+                for (int i = 1; i < compare.X.Length - 1; i++)
+                {
+                    if (j < error.X.Length)
+                    {
+                        while (compare.X[i] < error.X[j])
+                        {
+                            i++;
+                            continue;
+                        }
+
+                        if (i < compare.X.Length - 1)
+                            lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])) + (Math.Abs(compare.X[i + 1] - compare.X[i])))) / 2);
+                        else // handle errors in the last point (ther is no i+1)
+                            lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])))) / 2);
+                        j++;
+                    }
+                }
+                ch.DeltaError = lDeltas.Sum() / (1e-3 + compare.Y.Max(x => Math.Abs(x)));
             }
-            if (null != xAxis && xAxis.Count > 2)//Remember Start and Stop values for graph scaling
+            if (tubeReport.Lower.X.ToList<double>().Count > 2)//Remember Start and Stop values for graph scaling
             {
-                ch.MinValue = xAxis[0];
-                ch.MaxValue = xAxis.Last();
+                ch.MinValue = tubeReport.Lower.X[0];
+                ch.MaxValue = tubeReport.Lower.X.Last();
             }
             rep.Chart.Add(ch);
         }
@@ -415,7 +483,7 @@ namespace CsvCompare
         }
         public void Save(string sFolderName, Options options)
         {
-            string sFilename = string.Format(CultureInfo.CurrentCulture, "{0}{1}.generated.csv", sFolderName, Path.GetFileNameWithoutExtension(_fileName));
+            string sFilename = string.Format(CultureInfo.CurrentCulture, "{0}\\{1}.generated.csv", sFolderName, Path.GetFileNameWithoutExtension(_fileName));
             NumberFormatInfo provider = new NumberFormatInfo();
 
             provider.NumberDecimalSeparator = ".";
@@ -449,6 +517,24 @@ namespace CsvCompare
                     iCount++;
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_bDisposed)
+                return;
+
+            if (disposing)
+            {
+                this._xAxis.Clear();
+                this._values.Clear();
+            }
+            _bDisposed = true;
         }
     }
 }

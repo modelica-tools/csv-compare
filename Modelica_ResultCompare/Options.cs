@@ -48,7 +48,13 @@ namespace CsvCompare
         [Option('n', "nometareport", DefaultValue = false, HelpText = "Set this to disable the generation of a meta report.")]
         public bool NoMetaReport { get; set; }
 
-        [Option('t', "tolerance", DefaultValue = "0.002", Required = false, HelpText = "Set the width of the tube at discontinuity in x-direction [Default is 0.002].")]
+        [Option('b', "bitmap", DefaultValue = false, HelpText = "Set this to generate raster instead of vector plots (i.e. reports will shrink).")]
+        public bool UseBitmapPlots { get; set; }
+
+        [Option('i', "inline", DefaultValue = false, HelpText = "If set, javascript and style sheet files are inserted as inline text in every html output file")]
+        public bool InlineScripts { get; set; }
+
+        [Option('t', "tolerance", Required = false, DefaultValue = "0.002", HelpText = "Set the width of the tube at discontinuity in x-direction [Default is 0.002].")]
         public string Tolerance { get; set; }
 
         [Option('v', "verbosity", DefaultValue = 4, Required = false, HelpText = "Sets the verbositiy of the output (1 most to 4[Default] less verbose).")]
@@ -56,7 +62,10 @@ namespace CsvCompare
 
         [Option('d', "delimiter", Required = false, HelpText = "Sets the delimiter that is used to parse and write csv files. Default value is \";\".")]
         public char Delimiter { get; set; }
-        
+
+        [Option('s', "separator", DefaultValue = '.', Required = false, HelpText = "Sets the decimal separator that is used to parse and write csv files. Default value is \".\".")]
+        public char Separator { get; set; }
+
         [ValueList(typeof(List<string>))]
         public IList<string> Items { get; set; }
 

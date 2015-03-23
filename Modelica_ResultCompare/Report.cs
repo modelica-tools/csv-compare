@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using NPlot;
 
 namespace CsvCompare
 {
@@ -18,7 +19,7 @@ namespace CsvCompare
         private Guid _guid = Guid.NewGuid();
         private double _dMin, _dMax;
         private double _lDeltaError;
-
+        
         public Guid Id { get { return _guid; } }
         public string Title { get; set; }
         public string LabelX { get; set; }
@@ -32,39 +33,14 @@ namespace CsvCompare
             get { return _lDeltaError; }
             set { _lDeltaError = value; }
         }
+        public bool UseBitmap { get; set; }
 
         public string RenderChart()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("<a id=\"a{0}\"/>", _guid);
+            StringBuilder sb;
 
-            if (null == this.Series || this.Series.Count == 0)
-            {
-                sb.AppendLine("<table class=\"info\">");
-                sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
-                sb.AppendLine("	<tr><td class=\"header\">Errors:</td><td>Exception during validation, skipping!</td></tr>");
-                sb.AppendLine("</table>");
-                sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
-
+            if (!GetHeaderTable(out sb))//no charts? skip the rest
                 return sb.ToString();
-            }
-
-            sb.AppendLine("<table class=\"info\">");
-            sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
-
-            if (this.Errors > 0)
-                sb.AppendFormat("	<tr class=\"error\"><td class=\"header\">Errors:</td><td>{0} (relative error is {1:0.00})</td></tr>", this.Errors, this.DeltaError).AppendLine();
-            else if (this.Errors == 0)
-                sb.AppendFormat("	<tr><td class=\"header\">Errors:</td><td>{0}</td></tr>", this.Errors).AppendLine();
-            else
-            {
-                sb.AppendLine("	<tr class=\"warning\"><td class=\"header\">Errors:</td><td>Result not found in base file.</td></tr>");
-                sb.AppendLine("</table>");
-                sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
-                return sb.ToString();
-            }
-
-            sb.AppendLine("</table>");
 
             sb.AppendLine("<script class=\"code\" type=\"text/javascript\">");
             sb.AppendLine("    $(document).ready(function(){");
@@ -113,7 +89,7 @@ namespace CsvCompare
 
             sb.AppendLine("], title: '" + this.Title + "',");
             sb.AppendLine("    grid: {");
-            sb.AppendLine("            drawGridLines: false,        // whether to draw lines across the grid or not.");
+            sb.AppendLine("            drawGridLines: false,        // wether to draw lines across the grid or not.");
             sb.AppendLine("            gridLineColor: '#cccccc',    // *Color of the grid lines.");
             sb.AppendLine("            background: '#ffffff',      // CSS color spec for background color of grid.");
             sb.AppendLine("            borderColor: '#000000',     // CSS color spec for border around grid.");
@@ -137,22 +113,23 @@ namespace CsvCompare
             sb.AppendLine("          // Allowable axes are xaxis, x2axis, yaxis, y2axis, y3axis, ...");
             sb.AppendLine("          // Up to 9 y axes are supported.");
             sb.AppendLine("          axes: {");
-            sb.AppendLine("            // options for each axis are specified in separate option objects.");
+            sb.AppendLine("            // options for each axis are specified in seperate option objects.");
             sb.AppendLine("            xaxis: {");
             sb.AppendFormat("              label: \"{0}\",", this.LabelX).AppendLine();
-            if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
-            {
-                sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
-                sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
-            }
+            //Min and Max might break the scaling of the graph if the value format is "smaller" than the tick format
+            //if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
+            //{
+            //    sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+            //    sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+            //}
             sb.AppendLine("              // Turn off \"padding\".  This will allow data point to lie on the");
             sb.AppendLine("              // edges of the grid.  Default padding is 1.2 and will keep all");
             sb.AppendLine("              // points inside the bounds of the grid.");
-            sb.AppendLine("              pad: 0, tickOptions: {format: '%.4f'}");
+            sb.AppendLine("              pad: 0, tickOptions: {format: '%.5g'}");
             sb.AppendLine("            },");
             sb.AppendLine("            yaxis: {");
             sb.AppendFormat("              label: \"{0}\",", this.LabelY).AppendLine();
-            sb.AppendLine("              tickOptions: {format: '%.4f'}");
+            sb.AppendLine("              tickOptions: {format: '%.5g'}");
             sb.AppendLine("            }");
             sb.AppendLine("          }");
             sb.AppendLine("        });");
@@ -166,7 +143,6 @@ namespace CsvCompare
                 sb.AppendLine("<script class=\"code\" type=\"text/javascript\">");
                 sb.AppendLine("    $(document).ready(function(){");
                 sb.Append("        var data_err = [");
-                //sValues 
 
                 sb.Append((from s in this.Series where s.Title == "ERRORS" select s).Single().ArrayString);
 
@@ -179,7 +155,7 @@ namespace CsvCompare
 
                 sb.AppendLine("], title: '',");
                 sb.AppendLine("    grid: {");
-                sb.AppendLine("            drawGridLines: false,        // whether to draw lines across the grid or not.");
+                sb.AppendLine("            drawGridLines: false,        // wether to draw lines across the grid or not.");
                 sb.AppendLine("            gridLineColor: '#cccccc',    // *Color of the grid lines.");
                 sb.AppendLine("            background: '#ffffff',      // CSS color spec for background color of grid.");
                 sb.AppendLine("            borderColor: '#000000',     // CSS color spec for border around grid.");
@@ -203,18 +179,19 @@ namespace CsvCompare
                 sb.AppendLine("          // Allowable axes are xaxis, x2axis, yaxis, y2axis, y3axis, ...");
                 sb.AppendLine("          // Up to 9 y axes are supported.");
                 sb.AppendLine("          axes: {");
-                sb.AppendLine("            // options for each axis are specified in separate option objects.");
+                sb.AppendLine("            // options for each axis are specified in seperate option objects.");
                 sb.AppendLine("            xaxis: {");
                 sb.AppendLine("              label: \"time\",");
-                if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
-                {
-                    sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
-                    sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
-                }
+                //Min and Max might break the scaling of the graph if the value format is "smaller" than the tick format
+                //if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
+                //{
+                //    sb.AppendLine("            min:" + _dMin.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+                //    sb.AppendLine("            max:" + _dMax.ToString(CultureInfo.CreateSpecificCulture("en-US")) + ",");
+                //}
                 sb.AppendLine("              // Turn off \"padding\".  This will allow data point to lie on the");
                 sb.AppendLine("              // edges of the grid.  Default padding is 1.2 and will keep all");
                 sb.AppendLine("              // points inside the bounds of the grid.");
-                sb.AppendLine("              pad: 0, tickOptions: {format: '%.4f'}");
+                sb.AppendLine("              pad: 0, tickOptions: {format: '%.5g'}");
                 sb.AppendLine("            },");
                 sb.AppendLine("            yaxis: {");
                 sb.AppendLine("              label: \"error\"");
@@ -226,9 +203,185 @@ namespace CsvCompare
                 sb.AppendLine("    <p></p>");
                 sb.AppendFormat("    <div id=\"{0}_errors\" style=\"height:120px; width:640px;\"></div>", _guid);
             }
-            sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
+            AddLinkToTop(sb);
 
             return sb.ToString();
+        }
+
+        public string RenderBitmap(string path)
+        {
+            path = Path.GetDirectoryName(path);
+
+            string Filename = string.Format("{0}.png", this.Title);
+            string ImagePath = Path.Combine(path, @"img", Filename);
+
+            StringBuilder sb;
+            
+            if (!GetHeaderTable(out sb))//no charts? skip the rest
+                return sb.ToString();
+
+            NPlot.Bitmap.PlotSurface2D npSurface;
+            Font AxisFont;
+            Font TickFont;
+            NPlot.Grid p;
+            InitPlot(out npSurface, out AxisFont, out TickFont, out p, 700, 500);
+
+            foreach (Series s in this.Series)
+            {
+                if (s.Title.ToUpperInvariant() == "ERRORS")
+                    continue;
+                else
+                {
+                    NPlot.LinePlot npPlot = new LinePlot();
+                    //Weight:
+                    npPlot.AbscissaData = s.XAxis;
+                    npPlot.OrdinateData = s.YAxis;
+                    npPlot.Label = s.Title;
+                    npPlot.Color = s.Color;
+                    npSurface.Add(npPlot, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
+                }
+            }
+            SetAxes(npSurface, AxisFont, TickFont);
+            double iMin = npSurface.XAxis1.WorldMin;
+            double iMax = npSurface.XAxis1.WorldMax;
+
+            if (!Directory.Exists(Path.GetDirectoryName(ImagePath)))
+                Directory.CreateDirectory(Path.GetDirectoryName(ImagePath));
+
+            //Save image and add it to the report
+            npSurface.Bitmap.Save(ImagePath, System.Drawing.Imaging.ImageFormat.Png);
+            sb.AppendFormat("<img src=\"img/{0}\" alt=\"{1}\" />", Filename, this.Title);
+
+            //Generate error graph if needed
+            if (this.Errors > 0)
+            {
+                Filename = "errors." + Filename;
+                ImagePath = Path.Combine(path, "img", Filename);
+                npSurface.Clear();
+
+                InitPlot(out npSurface, out AxisFont, out TickFont, out p, 700, 300);
+
+                foreach (Series s in this.Series)
+                {
+                    if (s.Title.ToUpperInvariant() == "ERRORS")
+                    {
+                        NPlot.LinePlot npPlot = new LinePlot();
+                        npPlot.AbscissaData = s.XAxis;
+                        npPlot.OrdinateData = s.YAxis;
+                        npPlot.Label = s.Title;
+                        npPlot.Color = s.Color;
+
+                        npSurface.Add(npPlot, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
+                        break;
+                    }
+                }
+                //Set min/max to same values as main plot
+                npSurface.XAxis1.WorldMin = iMin;
+                npSurface.XAxis1.WorldMax = iMax;
+                SetAxes(npSurface, AxisFont, TickFont);
+
+                //Save image and add it to the report
+                npSurface.Bitmap.Save(ImagePath, System.Drawing.Imaging.ImageFormat.Png);
+                sb.AppendFormat("<img src=\"img/{0}\" alt=\"{1}\" />", Filename, this.Title);
+
+            }
+            AddLinkToTop(sb);
+
+            return sb.ToString();
+        }
+
+        private static void AddLinkToTop(StringBuilder sb)
+        {
+            sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
+        }
+
+        private bool GetHeaderTable(out StringBuilder sb)
+        {
+            sb = new StringBuilder();
+            sb.AppendFormat("<a id=\"a{0}\"/>", _guid);
+
+            if (null == this.Series || this.Series.Count == 0)
+            {
+                sb.AppendLine("<table class=\"info\">");
+                sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
+                sb.AppendLine("	<tr><td class=\"header\">Errors:</td><td>Exception during validation, skipping!</td></tr>");
+                sb.AppendLine("</table>");
+                sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
+
+                return false;
+            }
+
+            sb.AppendLine("<table class=\"info\">");
+            sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
+
+            if (this.Errors > 0)
+                sb.AppendFormat("	<tr class=\"error\"><td class=\"header\">Errors:</td><td>{0} (relative error is {1})</td></tr>", this.Errors, this.DeltaError).AppendLine();
+            else if (this.Errors == 0)
+                sb.AppendFormat("	<tr><td class=\"header\">Errors:</td><td>{0}</td></tr>", this.Errors).AppendLine();
+            else
+            {
+                sb.AppendLine("	<tr class=\"warning\"><td class=\"header\">Errors:</td><td>Result not found in base file.</td></tr>");
+                sb.AppendLine("</table>");
+                sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
+                return false;
+            }
+
+            sb.AppendLine("</table>");
+            return true;
+        }
+
+        private void SetAxes(NPlot.Bitmap.PlotSurface2D npSurface, Font AxisFont, Font TickFont)
+        {
+            //X axis
+            npSurface.XAxis1.Label = "Time";
+            npSurface.XAxis1.NumberFormat = "{0:####0.0}";
+            npSurface.XAxis1.TicksLabelAngle = 90;
+            npSurface.XAxis1.TickTextNextToAxis = true;
+            npSurface.XAxis1.FlipTicksLabel = true;
+            npSurface.XAxis1.LabelOffset = 110;
+            npSurface.XAxis1.LabelOffsetAbsolute = true;
+            npSurface.XAxis1.LabelFont = AxisFont;
+            npSurface.XAxis1.TickTextFont = TickFont;
+
+            //Y axis
+            npSurface.YAxis1.Label = this.Title;
+            npSurface.YAxis1.NumberFormat = "{0:####0.0}";
+            npSurface.YAxis1.LabelFont = AxisFont;
+            npSurface.YAxis1.TickTextFont = TickFont;
+
+            //Legend definition:
+            NPlot.Legend npLegend = new NPlot.Legend();
+            npLegend.AttachTo(NPlot.PlotSurface2D.XAxisPosition.Top, NPlot.PlotSurface2D.YAxisPosition.Right);
+            npLegend.VerticalEdgePlacement = Legend.Placement.Inside;
+            npLegend.HorizontalEdgePlacement = Legend.Placement.Outside;
+            npLegend.BorderStyle = NPlot.LegendBase.BorderType.Line;
+            npLegend.XOffset = -5;
+            npLegend.YOffset = -20;
+            npLegend.BackgroundColor = Color.White;
+
+            npSurface.Legend = npLegend;
+            
+            //Update PlotSurface:
+            npSurface.Refresh();
+        }
+
+        private void InitPlot(out NPlot.Bitmap.PlotSurface2D npSurface, out Font AxisFont, out Font TickFont, out NPlot.Grid p, int width, int height)
+        {
+            npSurface = new NPlot.Bitmap.PlotSurface2D(width, height);
+            npSurface.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            //Font definitions:
+            AxisFont = new Font("Arial", 10);
+            TickFont = new Font("Arial", 8);
+
+            //Prepare PlotSurface:
+            npSurface.Clear();
+            npSurface.Title = this.Title;
+            npSurface.BackColor = System.Drawing.Color.White;
+
+            //Left Y axis grid:
+            p = new Grid();
+            npSurface.Add(p, NPlot.PlotSurface2D.XAxisPosition.Bottom, NPlot.PlotSurface2D.YAxisPosition.Left);
         }
 
         /// Convert a .NET Color to a hex string.
@@ -257,6 +410,8 @@ namespace CsvCompare
         private Color _col;
         private string _sArrayString;
         private string _title;
+        private double[] _xAxis;
+        private double[] _yAxis;
 
         /// Holds the color of the plot as C# object. It is converted at runtime via ColorHelper.ColorToHexString(Color color).
         public Color Color { get { return _col; } set { _col = value; } }
@@ -264,15 +419,18 @@ namespace CsvCompare
         public string Title { get { return _title; } set { _title = value; } }
         /// Returns the string to be used in jQuery [[0,0],[1,0],...,[100,78]]
         public string ArrayString { get { return _sArrayString; } set { _sArrayString = value; } }
+        /// Holds arrays for plotting bimtap
+        public double[] XAxis { get { return this._xAxis; } set { this._xAxis = value; } }
+        public double[] YAxis { get { return this._yAxis; } set { this._yAxis = value; } }
+
         /// Encodes arrays for the use as a jquery array.
-        public static string GetArrayString(List<double> xValues, List<double> yValues)
+        public static string GetArrayString(double[] xValues, double[] yValues)
         {
             StringBuilder s = new StringBuilder("[");
             double dOffset = 0;
-
-            for (int i = 0; i < xValues.Count; i++)
+            for (int i = 0; i < xValues.Length; i++)
             {
-                if (i == yValues.Count)
+                if (i == yValues.Length)
                     break;
                 if (Double.IsNaN(yValues[i]) || Double.IsNaN(xValues[i]))
                     continue; //return string.Empty;
@@ -280,7 +438,7 @@ namespace CsvCompare
                     s.AppendFormat(CultureInfo.InvariantCulture, "[{0},{1}],", xValues[i], yValues[i] + dOffset);
             }
             return s.Remove(s.Length - 1, 1).Append("]").ToString();
-        }
+        }        
     }
 
     /// This class represents the "meta report"
@@ -420,41 +578,35 @@ namespace CsvCompare
                     {
                         if (null != r)// Catch empty report objects
                         {
-                            if (string.IsNullOrEmpty(r.FileName))
-                                r.FileName = Path.Combine(_path.DirectoryName, r.Chart[0].Id.ToString() + ".html");
-
                             if (_bReportDirSet)
                             {
                                 r.FileName = Path.Combine(_path.Directory.FullName, Path.GetFileName(r.FileName));
                                 r.RelativePaths = true;
                             }
 
-                            if (r.WriteReport(log, _path, options))
+
+                            if (r.TotalErrors > 0)
                             {
-                                if ((from c in r.Chart where c.Errors > 0 select c).Count() > 0)
-                                {
-                                    if (r.RelativePaths)
-                                        writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"{1}\">{1}</a></td></tr>", r.AverageError, Path.GetFileName(r.FileName));
-                                    else
-                                        writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
-                                }
-                                else if ((from c in r.Chart where c.Errors == -1 select c).Count() == r.Chart.Count) // if all results have not been checked, mark as "untested"
-                                {
-                                    if (r.RelativePaths)
-                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
-                                    else
-                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
-                                }
+                                if (r.RelativePaths)
+                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"{1}\">{1}</a></td></tr>", r.AverageError, Path.GetFileName(r.FileName));
                                 else
-                                {
-                                    if (r.RelativePaths)
-                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
-                                    else
-                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
-                                }
+                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                            }
+                            else if (r.TotalErrors==-1) // if all results have not been checked, mark as "untested"
+                            {
+                                if (r.RelativePaths)
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                else
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
                             }
                             else
-                                log.Error("Error writing report to {0}", r.FileName);
+                            {
+                                if (r.RelativePaths)
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                else
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><td class=\"ok\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                            }
+
                         }
                     }
 
@@ -470,7 +622,7 @@ namespace CsvCompare
             {
                 log.WriteLine("Skipping generation of metareport as \"--nometareport\" has been set.");
                 foreach (Report r in _reports)
-                    if (!r.WriteReport(log, _path, options))
+                    if (!r.WriteReport(log, _path.FullName, options))
                         log.Error("Error writing report to {0}", r.FileName);
             }
             return bRet;
@@ -490,6 +642,7 @@ namespace CsvCompare
         private double _dAvErr = 0;
         private int _iTotalErrors = -1;
         private bool _bRelative = false;
+
         public double Tolerance
         {
             get { return _tolerance; }
@@ -528,41 +681,82 @@ namespace CsvCompare
 
         public Report(string sFilePath) { _path = sFilePath; }
 
-        public bool WriteReport(Log log, FileSystemInfo metaPath, Options options)
+        public bool WriteReport(Log log, string metaPath, Options options)
         {
-            string path;
             if (null != metaPath)
-                _metaPath = metaPath.FullName;
+                _metaPath = metaPath;
             else
                 _metaPath = string.Empty;
-            try
+
+            if (!string.IsNullOrEmpty(options.ReportDir))
+                _path = Path.Combine(options.ReportDir, Path.GetFileName(_path));
+            else
             {
-                path = Path.GetFullPath(_path);
-            }
-            catch (PathTooLongException)
-            {
-                log.Error("The report path \"{0}\" is too long for the filesystem. Cannot write this report", _path);
-                return false;
+                try
+                {
+                    _path = Path.GetFullPath(_path);
+                }
+                catch (PathTooLongException)
+                {
+                    log.Error("The report path \"{0}\" is too long for the filesystem. Cannot write this report", _path);
+                    return false;
+                }
             }
             bool bRet = false;
 
             if (_bRelative)
-                path = Path.Combine(Path.GetDirectoryName(_metaPath), _path);
+                _path = Path.Combine(Path.GetDirectoryName(_metaPath), _path);
 
-            if (!options.OverrideOutput && File.Exists(path))
+            if (!options.OverrideOutput && File.Exists(_path))
             {
-                path = Path.Combine(Path.GetDirectoryName(path), string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-{1}", DateTime.Now, Path.GetFileName(path)));
-                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target filename to \"{0}\"", path);
-                _path = path;
+                _path = Path.Combine(Path.GetDirectoryName(_path), string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-{1}", DateTime.Now, Path.GetFileName(_path)));
+                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target filename to \"{0}\"", _path);
             }
-            using (TextWriter writer = new StreamWriter(path,false))
+            using (TextWriter writer = new StreamWriter(_path, false))
             {
-                WriteHeader(writer);
+                WriteHeader(writer, options);
                 WriteChart(writer);
                 WriteFooter(writer);
                 bRet = true;
             }
-            log.WriteLine("Report has been written to: {0}", path);
+            log.WriteLine("Report has been written to: {0}", _path);
+
+            if (!options.InlineScripts && !options.UseBitmapPlots)//Save script files from ressource to file system
+            {
+                Assembly ass = Assembly.GetExecutingAssembly();
+
+                foreach (string s in ass.GetManifestResourceNames())
+                    using (Stream stream = ass.GetManifestResourceStream(s))
+                    {
+                        string sPath = Path.GetDirectoryName(_path);
+                        if (s.ToLowerInvariant().EndsWith(".js"))
+                            sPath = Path.Combine(sPath, "js");
+                        else if (s.ToLowerInvariant().EndsWith(".css"))
+                            sPath = Path.Combine(sPath, "css");
+                        else
+                            continue;
+
+                        if (!Directory.Exists(sPath))
+                            Directory.CreateDirectory(sPath);
+
+                        sPath = Path.Combine(sPath, s);
+
+                        if (!File.Exists(sPath))
+                            using (FileStream fileStream = File.Create(sPath, (int)stream.Length))
+                            {
+                                // Initialize the bytes array with the stream length and then fill it with data
+                                byte[] bytesInStream = new byte[stream.Length];
+                                stream.Read(bytesInStream, 0, bytesInStream.Length);
+                                // Use write method to write to the file specified above
+                                fileStream.Write(bytesInStream, 0, bytesInStream.Length);
+                            }
+                    }
+            }
+
+            //Clear big data after writing
+            this._chart.Clear();
+            this._data.Clear();
+
             return bRet;
         }
 
@@ -577,31 +771,54 @@ namespace CsvCompare
         private void WriteChart(TextWriter writer)
         {
             foreach (Chart ch in _chart)
-                writer.WriteLine(ch.RenderChart());
+                if (!ch.UseBitmap)
+                    writer.WriteLine(ch.RenderChart());
+                else
+                    writer.WriteLine(ch.RenderBitmap(this._path));
         }
 
-        private void WriteHeader(TextWriter writer)
+        private void WriteHeader(TextWriter writer, Options options)
         {
-            writer.WriteLine("<!DOCTYPE html>");
-            writer.WriteLine("  <head>");
-            writer.WriteLine("    <style type=\"text/css\">");
-            writer.WriteLine(".jqplot-target{position:relative;color:#666;font-family:\"Trebuchet MS\",Arial,Helvetica,sans-serif;font-size:1em;}.jqplot-axis{font-size:.75em;}.jqplot-xaxis{margin-top:10px;}.jqplot-x2axis{margin-bottom:10px;}.jqplot-yaxis{margin-right:10px;}.jqplot-y2axis,.jqplot-y3axis,.jqplot-y4axis,.jqplot-y5axis,.jqplot-y6axis,.jqplot-y7axis,.jqplot-y8axis,.jqplot-y9axis{margin-left:10px;margin-right:10px;}.jqplot-axis-tick,.jqplot-xaxis-tick,.jqplot-yaxis-tick,.jqplot-x2axis-tick,.jqplot-y2axis-tick,.jqplot-y3axis-tick,.jqplot-y4axis-tick,.jqplot-y5axis-tick,.jqplot-y6axis-tick,.jqplot-y7axis-tick,.jqplot-y8axis-tick,.jqplot-y9axis-tick{position:absolute;}.jqplot-xaxis-tick{top:0;left:15px;vertical-align:top;}.jqplot-x2axis-tick{bottom:0;left:15px;vertical-align:bottom;}.jqplot-yaxis-tick{right:0;top:15px;text-align:right;}.jqplot-yaxis-tick.jqplot-breakTick{right:-20px;margin-right:0;padding:1px 5px 1px 5px;z-index:2;font-size:1.5em;}.jqplot-y2axis-tick,.jqplot-y3axis-tick,.jqplot-y4axis-tick,.jqplot-y5axis-tick,.jqplot-y6axis-tick,.jqplot-y7axis-tick,.jqplot-y8axis-tick,.jqplot-y9axis-tick{left:0;top:15px;text-align:left;}.jqplot-meterGauge-tick{font-size:.75em;color:#999;}.jqplot-meterGauge-label{font-size:1em;color:#999;}.jqplot-xaxis-label{margin-top:10px;font-size:11pt;position:absolute;}.jqplot-x2axis-label{margin-bottom:10px;font-size:11pt;position:absolute;}.jqplot-yaxis-label{margin-right:10px;font-size:11pt;position:absolute;}.jqplot-y2axis-label,.jqplot-y3axis-label,.jqplot-y4axis-label,.jqplot-y5axis-label,.jqplot-y6axis-label,.jqplot-y7axis-label,.jqplot-y8axis-label,.jqplot-y9axis-label{font-size:11pt;position:absolute;}table.jqplot-table-legend{margin-top:12px;margin-bottom:12px;margin-left:12px;margin-right:12px;}table.jqplot-table-legend,table.jqplot-cursor-legend{background-color:rgba(255,255,255,0.6);border:1px solid #ccc;position:absolute;font-size:.75em;}td.jqplot-table-legend{vertical-align:middle;}td.jqplot-seriesToggle:hover,td.jqplot-seriesToggle:active{cursor:pointer;}td.jqplot-table-legend>div{border:1px solid #ccc;padding:1px;}div.jqplot-table-legend-swatch{width:0;height:0;border-top-width:5px;border-bottom-width:5px;border-left-width:6px;border-right-width:6px;border-top-style:solid;border-bottom-style:solid;border-left-style:solid;border-right-style:solid;}.jqplot-title{top:0;left:0;padding-bottom:.5em;font-size:1.2em;}table.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;}.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}.jqplot-highlighter-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}.jqplot-point-label{font-size:.75em;z-index:2;}td.jqplot-cursor-legend-swatch{vertical-align:middle;text-align:center;}div.jqplot-cursor-legend-swatch{width:1.2em;height:.7em;}.jqplot-error{text-align:center;}.jqplot-error-message{position:relative;top:46%;display:inline-block;}div.jqplot-bubble-label{font-size:.8em;padding-left:2px;padding-right:2px;color:rgb(20%,20%,20%);}div.jqplot-bubble-label.jqplot-bubble-label-highlight{background:rgba(90%,90%,90%,0.7);}div.jqplot-noData-container{text-align:center;background-color:rgba(96%,96%,96%,0.3);}");
-            writer.WriteLine("</style>");
-            writer.WriteLine("  <title>Report " + DateTime.Now.ToString() + @"</title>");
-            writer.WriteLine("<style type=\"text/css\">");
-            writer.WriteLine("body{ background: #EEEEEE; color: #000; text-align: center;}");
-            writer.WriteLine("body, table{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; }");
-            writer.WriteLine("#page{ width: 700px; margin: auto; text-align: left; background-color: #FFF;}");
-            writer.WriteLine("table.info{ border: 0; width: 690px; margin: 5px;}");
-            writer.WriteLine("table.info td{ background-color: #efefef; padding: 1em;}");
-            writer.WriteLine("table.info td.header{ font-weight: bold; width: 150px; background-color: #EEE;}");
-            writer.WriteLine("tr.error td, tr.error td.header { background-color: #F5A9BC; color: red; }");
-            writer.WriteLine("tr.warning td, tr.warning td.header { background-color: #FFCC66; color: #FF6600; }");
-            writer.WriteLine("h1{ font-size: 16px; padding: 1em; }");
-            writer.WriteLine("</style>");
-			// javascript
-            var javascriptHeaders = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("CsvCompare.Resources.JavaScriptHeaders.js"));
-			writer.Write(javascriptHeaders.ReadToEnd());
+            writer.WriteLine("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">");
+            writer.WriteLine("<head>");
+            writer.WriteLine("<title>Report {0}</title>", DateTime.Now);
+
+            Assembly ass = Assembly.GetExecutingAssembly();
+            List<string> lScripts = new List<string>();
+            foreach (string s in ass.GetManifestResourceNames())
+            {
+                if (!s.ToLowerInvariant().EndsWith(".js"))
+                    continue;
+                if (options.InlineScripts)
+                {
+                    var javascriptHeaders = new StreamReader(ass.GetManifestResourceStream(s));
+                    lScripts.Add(string.Format("<script language=\"javascript\" type=\"text/javascript\">{0}</script>", javascriptHeaders.ReadToEnd()));
+                }
+                else
+                    lScripts.Add(string.Format("<script src=\"js/{0}\"></script>", s));
+            }
+            lScripts = lScripts.OrderByDescending(x => x).ToList<string>();//Sort alphabetically to ensure jquery is loaded first
+            writer.WriteLine(string.Join(Environment.NewLine, lScripts.ToArray()));
+            if (options.InlineScripts)
+            {
+                writer.WriteLine("<style type=\"text/css\">");
+                writer.WriteLine(".jqplot-target{position:relative;color:#666;font-family:\"Trebuchet MS\",Arial,Helvetica,sans-serif;font-size:1em;}.jqplot-axis{font-size:.75em;}.jqplot-xaxis{margin-top:10px;}.jqplot-x2axis{margin-bottom:10px;}.jqplot-yaxis{margin-right:10px;}.jqplot-y2axis,.jqplot-y3axis,.jqplot-y4axis,.jqplot-y5axis,.jqplot-y6axis,.jqplot-y7axis,.jqplot-y8axis,.jqplot-y9axis{margin-left:10px;margin-right:10px;}.jqplot-axis-tick,.jqplot-xaxis-tick,.jqplot-yaxis-tick,.jqplot-x2axis-tick,.jqplot-y2axis-tick,.jqplot-y3axis-tick,.jqplot-y4axis-tick,.jqplot-y5axis-tick,.jqplot-y6axis-tick,.jqplot-y7axis-tick,.jqplot-y8axis-tick,.jqplot-y9axis-tick{position:absolute;}.jqplot-xaxis-tick{top:0;left:15px;vertical-align:top;}.jqplot-x2axis-tick{bottom:0;left:15px;vertical-align:bottom;}.jqplot-yaxis-tick{right:0;top:15px;text-align:right;}.jqplot-yaxis-tick.jqplot-breakTick{right:-20px;margin-right:0;padding:1px 5px 1px 5px;z-index:2;font-size:1.5em;}.jqplot-y2axis-tick,.jqplot-y3axis-tick,.jqplot-y4axis-tick,.jqplot-y5axis-tick,.jqplot-y6axis-tick,.jqplot-y7axis-tick,.jqplot-y8axis-tick,.jqplot-y9axis-tick{left:0;top:15px;text-align:left;}.jqplot-meterGauge-tick{font-size:.75em;color:#999;}.jqplot-meterGauge-label{font-size:1em;color:#999;}.jqplot-xaxis-label{margin-top:10px;font-size:11pt;position:absolute;}.jqplot-x2axis-label{margin-bottom:10px;font-size:11pt;position:absolute;}.jqplot-yaxis-label{margin-right:10px;font-size:11pt;position:absolute;}.jqplot-y2axis-label,.jqplot-y3axis-label,.jqplot-y4axis-label,.jqplot-y5axis-label,.jqplot-y6axis-label,.jqplot-y7axis-label,.jqplot-y8axis-label,.jqplot-y9axis-label{font-size:11pt;position:absolute;}table.jqplot-table-legend{margin-top:12px;margin-bottom:12px;margin-left:12px;margin-right:12px;}table.jqplot-table-legend,table.jqplot-cursor-legend{background-color:rgba(255,255,255,0.6);border:1px solid #ccc;position:absolute;font-size:.75em;}td.jqplot-table-legend{vertical-align:middle;}td.jqplot-seriesToggle:hover,td.jqplot-seriesToggle:active{cursor:pointer;}td.jqplot-table-legend>div{border:1px solid #ccc;padding:1px;}div.jqplot-table-legend-swatch{width:0;height:0;border-top-width:5px;border-bottom-width:5px;border-left-width:6px;border-right-width:6px;border-top-style:solid;border-bottom-style:solid;border-left-style:solid;border-right-style:solid;}.jqplot-title{top:0;left:0;padding-bottom:.5em;font-size:1.2em;}table.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;}.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}.jqplot-highlighter-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}.jqplot-point-label{font-size:.75em;z-index:2;}td.jqplot-cursor-legend-swatch{vertical-align:middle;text-align:center;}div.jqplot-cursor-legend-swatch{width:1.2em;height:.7em;}.jqplot-error{text-align:center;}.jqplot-error-message{position:relative;top:46%;display:inline-block;}div.jqplot-bubble-label{font-size:.8em;padding-left:2px;padding-right:2px;color:rgb(20%,20%,20%);}div.jqplot-bubble-label.jqplot-bubble-label-highlight{background:rgba(90%,90%,90%,0.7);}div.jqplot-noData-container{text-align:center;background-color:rgba(96%,96%,96%,0.3);}");
+                writer.WriteLine("body{ background: #EEEEEE; color: #000; text-align: center;}");
+                writer.WriteLine("body, table{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; }");
+                writer.WriteLine("#page{ width: 700px; margin: auto; text-align: left; background-color: #FFF;}");
+                writer.WriteLine("table.info{ border: 0; width: 690px; margin: 5px;}");
+                writer.WriteLine("table.info td{ background-color: #efefef; padding: 1em;}");
+                writer.WriteLine("table.info td.header{ font-weight: bold; width: 150px; background-color: #EEE;}");
+                writer.WriteLine("tr.error td, tr.error td.header { background-color: #F5A9BC; color: red; }");
+                writer.WriteLine("tr.warning td, tr.warning td.header { background-color: #FFCC66; color: #FF6600; }");
+                writer.WriteLine("h1{ font-size: 16px; padding: 1em; }");
+                writer.WriteLine("</style>");
+            }
+            else
+            {
+                writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/CsvCompare.Resources.jquery.jqplot.min.css\">");
+                writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/CsvCompare.Resources.style.css\">");
+            }
             writer.WriteLine("</head>"); 
             writer.WriteLine("<body>");
             writer.WriteLine("<div id=\"page\">");

@@ -155,6 +155,56 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CurveCompare\Algorithms\Algorithm.cs" />
+    <Compile Include="CurveCompare\Algorithms\Ellipse.cs" />
+    <Compile Include="CurveCompare\Algorithms\Rectangle.cs" />
+    <Compile Include="CurveCompare\Curve.cs" />
+    <Compile Include="CurveCompare\CurveCompare.cs" />
+    <Compile Include="CurveCompare\DataImport\CsvFile.cs" />
+    <Compile Include="CurveCompare\DataImport\Options.cs" />
+    <Compile Include="CurveCompare\DataImport\ReadOptions.cs" />
+    <Compile Include="CurveCompare\DataImport\Report.cs" />
+    <Compile Include="CurveCompare\Options\IOptions.cs" />
+    <Compile Include="CurveCompare\Options\Options1.cs" />
+    <Compile Include="CurveCompare\Options\Options2.cs" />
+    <Compile Include="CurveCompare\Properties\Resources.Designer.cs" />
+    <Compile Include="CurveCompare\Report\ChartControl.cs" />
+    <Compile Include="CurveCompare\Report\ChartControl.Designer.cs">
+      <DependentUpon>ChartControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CurveCompare\Report\Log.cs" />
+    <Compile Include="CurveCompare\Report\TubeReport.cs" />
+    <Compile Include="CurveCompare\Tube.cs" />
+    <Compile Include="CurveCompare\TubeSize.cs" />
+    <Compile Include="nplot\AdapterUtils.cs" />
+    <Compile Include="nplot\AxesConstraint.cs" />
+    <Compile Include="nplot\Axis.cs" />
+    <Compile Include="nplot\BasePlot.cs" />
+    <Compile Include="nplot\BaseSequencePlot.cs" />
+    <Compile Include="nplot\Bitmap.PlotSurface2D.cs" />
+    <Compile Include="nplot\DateTimeAxis.cs" />
+    <Compile Include="nplot\Grid.cs" />
+    <Compile Include="nplot\IDrawable.cs" />
+    <Compile Include="nplot\IPlot.cs" />
+    <Compile Include="nplot\IPlotSurface2D.cs" />
+    <Compile Include="nplot\ISequencePlot.cs" />
+    <Compile Include="nplot\ITransform2D.cs" />
+    <Compile Include="nplot\Legend.cs" />
+    <Compile Include="nplot\LegendBase.cs" />
+    <Compile Include="nplot\LinearAxis.cs" />
+    <Compile Include="nplot\LinePlot.cs" />
+    <Compile Include="nplot\NPlotException.cs" />
+    <Compile Include="nplot\PageAlignedPhysicalAxis.cs" />
+    <Compile Include="nplot\PhysicalAxis.cs" />
+    <Compile Include="nplot\PlotSurface2D.cs" />
+    <Compile Include="nplot\PointD.cs" />
+    <Compile Include="nplot\RectangleBrushes.cs" />
+    <Compile Include="nplot\RectangleD.cs" />
+    <Compile Include="nplot\SequenceAdapter.cs" />
+    <Compile Include="nplot\StartStep.cs" />
+    <Compile Include="nplot\Transform2D.cs" />
+    <Compile Include="nplot\Utils.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandLine\Attributes\AssemblyLicenseAttribute.cs" />
     <Compile Include="CommandLine\Attributes\AssemblyUsageAttribute.cs" />
     <Compile Include="CommandLine\Attributes\BaseOptionAttribute.cs" />
@@ -209,10 +259,8 @@
     <Compile Include="CsvFile.cs" />
     <Compile Include="CommandLine\Info.cs" />
     <Compile Include="Log.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Tubes.cs" />
     <Compile Include="Report.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -239,7 +287,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <CodeAnalysisDictionary Include="CommandLine\CustomDictionary.xml" />
   </ItemGroup>
@@ -262,8 +309,28 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Resources\JavaScriptHeaders.js" />
+    <EmbeddedResource Include="CurveCompare\Properties\Resources.resx" />
+    <EmbeddedResource Include="CurveCompare\Report\ChartControl.resx">
+      <DependentUpon>ChartControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\excanvas.min.js" />
+    <EmbeddedResource Include="Resources\jquery.jqplot.min.css" />
+    <EmbeddedResource Include="Resources\jquery.jqplot.min.js" />
+    <EmbeddedResource Include="Resources\jquery.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\jqplot.cursor.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\jqplot.canvasAxisLabelRenderer.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\jqplot.canvasTextRenderer.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\style.css" />
   </ItemGroup>
 </Project>

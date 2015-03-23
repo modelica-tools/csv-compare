@@ -46,13 +46,11 @@ namespace CsvCompare
     {
         /// global Log object
         private static Log _log = new Log();
-        private static string _sCmdArgs;
+
         /// The main entry of the application
         /// @para cmdArgs contains an array of commandline parameters that are parsed using CommandLine.Dll
         public static void Main(string[] cmdArgs)
         {
-            //Save args for log file info
-            _sCmdArgs = String.Join(" ", cmdArgs);
             //Global catch to prevent crash
             try { Run(cmdArgs); }
             catch (Exception ex)
@@ -136,6 +134,8 @@ namespace CsvCompare
                 {
                     meta.ReportDirSet = true;
                     options.ReportDir = Path.GetFullPath(options.ReportDir);//normalize report dir (i.e. make absolut if relative)
+                    if (!Directory.Exists(options.ReportDir))
+                        Directory.CreateDirectory(options.ReportDir);
                 }
 
                 meta.FileName = new FileInfo(Path.Combine(options.ReportDir, string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-dd}-index.html", DateTime.Now)));
@@ -150,7 +150,7 @@ namespace CsvCompare
                             Environment.Exit(2);
                         }
                         Report rep = CheckFiles(options);
-                        if (null != rep)
+                        if (null != rep && !options.NoMetaReport)
                         {
                             meta.Reports.Add(rep);//Return "1" on invalid testresults
                             meta.WriteReport(_log, options);
@@ -164,7 +164,8 @@ namespace CsvCompare
                             Environment.Exit(2);
                         }
                         CheckTrees(meta, options);
-                        meta.WriteReport(_log, options);
+                        if(!options.NoMetaReport)
+                            meta.WriteReport(_log, options);
                         break;
                     case OperationMode.FmuChecker://run FMU checker on all fmus in directory given via option 1 and compare the result to CSVs in the source directory
                         if (options.Items.Count != 1)
@@ -190,10 +191,10 @@ namespace CsvCompare
                         break;
                     case OperationMode.PlotOnly:
                         foreach (string item in options.Items)
-                        {
-                            CsvFile file = new CsvFile(item, options, _log);
-                            meta.Reports.Add(file.PlotCsvFile(null, _log));                            
-                        }
+                            using (CsvFile file = new CsvFile(item, options, _log))
+                            {
+                                meta.Reports.Add(file.PlotCsvFile(null, _log));
+                            }
 
                         meta.WriteReport(_log, options);
                         break;
@@ -275,8 +276,9 @@ namespace CsvCompare
         {
             DirectoryInfo dirCompare = new DirectoryInfo(options.Items[0]);
             DirectoryInfo dirBase = new DirectoryInfo(options.Items[1]);
+            FileInfo[] files = dirCompare.GetFiles("*.csv", SearchOption.AllDirectories);
 
-            foreach (FileInfo file in dirCompare.GetFiles("*.csv", SearchOption.AllDirectories))
+            foreach (FileInfo file in files)
             {
                 _log.WriteLine(LogLevel.Debug, "Searching for file {0} in {1}", file.Name, dirBase.FullName);
 
@@ -306,11 +308,11 @@ namespace CsvCompare
                         continue;
                     }
                 }
-
-                meta.Reports.Add(CheckFiles(options, file.FullName, sBaseFile));
+                Report r = CheckFiles(options, file.FullName, sBaseFile);
+                meta.Reports.Add(r);
             }
         }
-
+        
         private static Report CheckFiles(Options options, string Compare = null, string Base = null)
         {
             //Check Arguments
@@ -325,53 +327,53 @@ namespace CsvCompare
                 else
                     throw new ArgumentException("You have to set compare and base csv files!");
 
-            CsvFile csvCompare, csvBase;
-
             try
             {
-                csvCompare = new CsvFile(Compare, options, _log);
-                csvCompare.ShowRelativeErrors = !options.AbsoluteError;
+                using (CsvFile csvCompare = new CsvFile(Compare, options, _log))
+                {
+                    csvCompare.ShowRelativeErrors = !options.AbsoluteError;
+                    try
+                    {
+                        using (CsvFile csvBase = new CsvFile(Base, options, _log))
+                        {
+//#if DEBUG   //Save csv files during DEBUG session
+//                            if (!string.IsNullOrEmpty(options.ReportDir))
+//                            {
+//                                csvBase.Save(options.ReportDir, options);
+//                                csvCompare.Save(options.ReportDir, options);
+//                            }
+//                            else
+//                            {
+//                                csvBase.Save(options);
+//                                csvCompare.Save(options);
+//                            }
+//#endif
+                            _log.WriteLine(LogLevel.Debug, "Exiting with exit code \"{0}\".", Environment.ExitCode);
+                            return csvCompare.CompareFiles(_log, csvBase, ref options);
+                        }
+                    }
+                    catch (ArgumentException argEx)
+                    {
+                        _log.Error(argEx.Message);
+                        return null;
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "Base file \"{0}\" does not exist, exiting.", Base));
+                    }
+                }
             }
-            catch (ArgumentException ex)          
+            catch (ArgumentException ex)
             {
                 _log.Error("Nothing has been parsed; maybe wrong csv format?");
                 _log.Error("Exception said: {0}", ex.Message);
-                Environment.ExitCode=2;
+                Environment.ExitCode = 2;
                 return null;
             }
             catch (FileNotFoundException)
             {
                 throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "Compare file \"{0}\" does not exist, exiting.", Compare));
             }
-
-            try
-            {
-                csvBase = new CsvFile(Base, options, _log);
-            }
-            catch (ArgumentException argEx)
-            {
-                _log.Error(argEx.Message);
-                return null;
-            }
-            catch (FileNotFoundException)
-            {
-                throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "Base file \"{0}\" does not exist, exiting.", Base));
-            }
-
-#if DEBUG   //Save csv files during DEBUG session
-            if (!string.IsNullOrEmpty(options.ReportDir))
-            {
-                csvBase.Save(options.ReportDir, options);
-                csvCompare.Save(options.ReportDir, options);
-            }
-            else
-            {
-                csvBase.Save(options);
-                csvCompare.Save(options);
-            }
-#endif
-            _log.WriteLine(LogLevel.Debug, "Exiting with exit code \"{0}\".", Environment.ExitCode);
-            return csvCompare.CompareFiles(_log, csvBase, ref options);
         }
 
         private static bool RunFMUChecker(Options options, DirectoryInfo dirCompare, ref string outFile, FileInfo file)

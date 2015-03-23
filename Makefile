@@ -1,5 +1,18 @@
-all: Modelica_ResultCompare/Properties/AssemblyInfo.cs
-	xbuild /p:Configuration=Release
-Modelica_ResultCompare/Properties/AssemblyInfo.cs: Modelica_ResultCompare/Properties/AssemblyInfo.cs.template
-	sed 's/[.]$$WCREV[$$]'"/`svn info | grep '^Revision:' | cut -d\  -f2 | sed 's/^\(.*\)/.\1/'`"/ $< > $@.tmp
-	mv $@.tmp $@
+BIN=Modelica_ResultCompare/bin/
+OBJ=Modelica_ResultCompare/obj/
+BUILD_CMD=xbuild
+DBG_ARG=/p:Configuration=Debug
+REL_ARG=/p:Configuration=Release
+ARGS=/verbosity:quiet /filelogger /flp:logfile=build.log;verbosity=diagnostic
+
+all: clean debug release
+
+debug:
+	$(BUILD_CMD) $(DBG_ARG) $(ARGS)
+release:
+	$(BUILD_CMD) $(REL_ARG) $(ARGS)
+publish: clean
+	sh ./deploy.sh
+clean:
+	rm -rf $(BIN)
+	rm -rf $(OBJ)
