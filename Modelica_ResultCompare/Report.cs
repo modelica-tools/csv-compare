@@ -71,6 +71,7 @@ namespace CsvCompare
 
             sb.AppendLine("];");
             sb.AppendLine("        var plot1 = $.jqplot ('" + _guid.ToString() + @"', data, {");
+            sb.AppendLine("        sortData: false,");
             sb.AppendLine("        seriesDefaults: {show: true, xaxis: 'xaxis', yaxis: 'yaxis', lineWidth: 1, shadow: false, showLine: true, showMarker: false,},");
             sb.Append("        series:[");
             i = 0;
