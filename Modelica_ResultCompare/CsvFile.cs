@@ -124,10 +124,11 @@ namespace CsvCompare
 
                         //values = reg.Split(sLine); //splitting using regular expressions is slow
                         IEnumerable<string> dataValues;
-                        if (options.Delimiter.Equals(options.Separator))
-                            dataValues = Tokenize(sLine, options.Delimiter); //use custom tokenizer for improved performance
+                        if ( options.Delimiter.Equals( options.Separator ) )
+                            throw new ArgumentException( String.Format( CultureInfo.CurrentCulture, "The delimiter \"{0}\" and separator \"{1}\" are equal. This makes correct parsing impossible.",
+                                options.Delimiter, options.Separator ) );
                         else
-                            dataValues = sLine.Split(options.Delimiter); //use ordinary Split function for simple cases
+                            dataValues = Tokenize( sLine, options.Delimiter ); //use custom tokenizer for improved performance
                         
                         int iCol = 0;
 
