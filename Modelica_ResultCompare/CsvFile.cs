@@ -75,7 +75,7 @@ namespace CsvCompare
                     List<string> map = new List<string>();
 
                     //skip comments
-                    while (!string.IsNullOrEmpty(sLine) && sLine.StartsWith("#", StringComparison.OrdinalIgnoreCase))
+                    while ( string.IsNullOrEmpty( sLine ) || sLine.StartsWith( "#", StringComparison.OrdinalIgnoreCase ) )
                         sLine = reader.ReadLine();
 
                     Regex reg = new Regex(string.Format(CultureInfo.CurrentCulture, "{0}(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))", options.Delimiter));
