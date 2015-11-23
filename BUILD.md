@@ -21,3 +21,19 @@ $ cd csv-compare
 $ make
 ```
 After the build you can use `Modelica_ResultCompare/bin/Release/Compare.exe` on Linux
+
+## Docker
+
+A Docker image can be built as follows:
+```bash
+$ git clone https://github.com/modelica-tools/csv-compare.git
+$ cd csv-compare
+$ docker build -tag="csv-compare" .
+```
+
+This can then be run with the same command-line arguments as the Compare.exe application. It is
+required to use the -v argument for docker in order to specify volumes so that the docker
+container can access the files:
+```
+$ docker run -v /localdir1:/data1 -v /localdir2:/data2 csv-compare /data1 /data2
+```
