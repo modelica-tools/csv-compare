@@ -312,11 +312,11 @@ namespace CurveCompare
         /// <summary>
         /// Saves the chart as image to a file.
         /// </summary>
-        /// <param name="filename">Full path of file.</param>
+        /// <param name="fileName">Full path of file.</param>
         /// <param name="format">Image format.</param>
-        public void saveAsImage(string filename, System.Drawing.Imaging.ImageFormat format) 
+        public void saveAsImage(string fileName, System.Drawing.Imaging.ImageFormat format) 
         {
-            chart1.SaveImage(filename, format);
+            chart1.SaveImage(fileName, format);
         }
         /// <summary>
         /// Add context menu.

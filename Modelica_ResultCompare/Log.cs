@@ -141,7 +141,7 @@ namespace CsvCompare
                     if (level == LogLevel.Logger)
                     {
                         logFile.WriteLine("* * *");
-                        _lastLog = string.Format(CultureInfo.CurrentCulture, "New logging session startet at {0} by {1} ...",
+                        _lastLog = string.Format(CultureInfo.CurrentCulture, "New logging session started at {0} by {1} ...",
                             timeStamp.ToString("yyyy-MM-ddZHH:mm:ss", CultureInfo.CurrentCulture),
                             Environment.UserName);
                         logFile.WriteLine(_lastLog);
@@ -246,4 +246,3 @@ namespace CsvCompare
         Done
     }
 }
-

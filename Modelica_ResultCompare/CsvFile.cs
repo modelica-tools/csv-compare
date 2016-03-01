@@ -39,12 +39,12 @@ namespace CsvCompare
             set { _bShowRelativeErrors = value; }
         }
 
-        /// The constructor reads the csv file to this object
-        /// @para filename The full path of the csv file
+        /// The constructor reads the CSV file to this object
+        /// @para fileName The full path of the CSV file
         /// @para dTolerance Double value containing the delta for the tube generation
         public CsvFile(string fileName, Options options, Log log)
         {
-            //Parse tolerance from commandline
+            //Parse tolerance from command line
             NumberFormatInfo toleranceProvider = new NumberFormatInfo();
             toleranceProvider.NumberDecimalSeparator = ".";
 
@@ -100,7 +100,7 @@ namespace CsvCompare
                                 }
                                 catch (ArgumentException)
                                 {
-                                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Error parsing the csv file \"{0}\". The result {1} is already in the list (maybe you set no or a wrong delimiter for the parser? I used \"{2}\").",
+                                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Error parsing the CSV file \"{0}\". The result {1} is already in the list (maybe you set no or a wrong delimiter for the parser? I used \"{2}\").",
                                         fileName, sTemp, options.Delimiter));
                                 }
                             }
@@ -115,7 +115,7 @@ namespace CsvCompare
                     log.WriteLine(LogLevel.Debug, "Checked header in {0}ms", timer.ElapsedMilliseconds);
                     timer.Restart();
 #endif
-                    //read the rest of the csv file
+                    //read the rest of the CSV file
                     while ((sLine = reader.ReadLine()) != null)
                     {
                         //Skip comments
@@ -168,7 +168,7 @@ namespace CsvCompare
 #endif
 
                     if (_xAxis.Count <= 1)
-                        throw new ArgumentNullException(string.Format(CultureInfo.CurrentCulture, "{0} could not be parsed and might be an invalid csv file.", fileName));
+                        throw new ArgumentNullException(string.Format(CultureInfo.CurrentCulture, "{0} could not be parsed and might be an invalid CSV file.", fileName));
                 }
             }
             else
@@ -463,7 +463,7 @@ namespace CsvCompare
 
                         if (i < compare.X.Length - 1)
                             lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])) + (Math.Abs(compare.X[i + 1] - compare.X[i])))) / 2);
-                        else // handle errors in the last point (ther is no i+1)
+                        else // handle errors in the last point (there is no i+1)
                             lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])))) / 2);
                         j++;
                     }

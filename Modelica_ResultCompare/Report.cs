@@ -420,7 +420,7 @@ namespace CsvCompare
         public string Title { get { return _title; } set { _title = value; } }
         /// Returns the string to be used in jQuery [[0,0],[1,0],...,[100,78]]
         public string ArrayString { get { return _sArrayString; } set { _sArrayString = value; } }
-        /// Holds arrays for plotting bimtap
+        /// Holds arrays for plotting bitmap
         public double[] XAxis { get { return this._xAxis; } set { this._xAxis = value; } }
         public double[] YAxis { get { return this._yAxis; } set { this._yAxis = value; } }
 
@@ -458,7 +458,7 @@ namespace CsvCompare
 
         /// Write the report to a html file
         /// @para log logfile object from the main program
-        /// @para options options from commandline
+        /// @para options options from command line
         /// @return FALSE on error
         public bool WriteReport(Log log, Options options)
         {
@@ -488,7 +488,7 @@ namespace CsvCompare
                 if (!options.OverrideOutput && _path.Exists)
                 {
                     _path = new FileInfo(Path.Combine(_path.DirectoryName, string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-index.html", DateTime.Now)));
-                    log.WriteLine(LogLevel.Warning, "Meta report already exists and --override has been set to false. Changed target filename to \"{0}\"", _path);
+                    log.WriteLine(LogLevel.Warning, "Meta report already exists and --override has been set to false. Changed target file name to \"{0}\"", _path);
                 }
 
                 //if (!_path.Exists)
@@ -699,7 +699,7 @@ namespace CsvCompare
                 }
                 catch (PathTooLongException)
                 {
-                    log.Error("The report path \"{0}\" is too long for the filesystem. Cannot write this report", _path);
+                    log.Error("The report path \"{0}\" is too long for the file system. Cannot write this report", _path);
                     return false;
                 }
             }
@@ -711,7 +711,7 @@ namespace CsvCompare
             if (!options.OverrideOutput && File.Exists(_path))
             {
                 _path = Path.Combine(Path.GetDirectoryName(_path), string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-{1}", DateTime.Now, Path.GetFileName(_path)));
-                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target filename to \"{0}\"", _path);
+                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target file name to \"{0}\"", _path);
             }
             using (TextWriter writer = new StreamWriter(_path, false))
             {
@@ -722,7 +722,7 @@ namespace CsvCompare
             }
             log.WriteLine("Report has been written to: {0}", _path);
 
-            if (!options.InlineScripts && !options.UseBitmapPlots)//Save script files from ressource to file system
+            if (!options.InlineScripts && !options.UseBitmapPlots)//Save script files from resource to file system
             {
                 Assembly ass = Assembly.GetExecutingAssembly();
 

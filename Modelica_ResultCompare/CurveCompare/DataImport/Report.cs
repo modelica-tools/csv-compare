@@ -89,7 +89,7 @@ namespace CurveCompare
             if (sb.ToString().EndsWith(","))
                 sb = sb.Remove(sb.Length - 1, 1);
 
-            //Add some tolerance for graph scaling and remeber values to get equal scaling for graph and error graph
+            //Add some tolerance for graph scaling and remember values to get equal scaling for graph and error graph
             if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
             {
                 double d1 = _dMin;
@@ -304,7 +304,7 @@ namespace CurveCompare
 
         /// Write the report to a html file
         /// @para log logfile object from the main program
-        /// @para options options from commandline
+        /// @para options options from command line
         /// @return FALSE on error
         public bool WriteReport(Log log, Options options)
         {
@@ -334,7 +334,7 @@ namespace CurveCompare
                 if (!options.OverrideOutput && _path.Exists)
                 {
                     _path = new FileInfo(Path.Combine(_path.DirectoryName, string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-index.html", DateTime.Now)));
-                    log.WriteLine(LogLevel.Warning, "Meta report already exists and --override has been set to false. Changed target filename to \"{0}\"", _path);
+                    log.WriteLine(LogLevel.Warning, "Meta report already exists and --override has been set to false. Changed target file name to \"{0}\"", _path);
                 }
 
                 //if (!_path.Exists)
@@ -546,7 +546,7 @@ namespace CurveCompare
             }
             catch (PathTooLongException)
             {
-                log.Error("The report path \"{0}\" is too long for the filesystem. Cannot write this report", _path);
+                log.Error("The report path \"{0}\" is too long for the file system. Cannot write this report", _path);
                 return false;
             }
             bool bRet = false;
@@ -557,7 +557,7 @@ namespace CurveCompare
             if (!options.OverrideOutput && File.Exists(path))
             {
                 path = Path.Combine(Path.GetDirectoryName(path), string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-{1}", DateTime.Now, Path.GetFileName(path)));
-                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target filename to \"{0}\"", path);
+                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target file name to \"{0}\"", path);
                 _path = path;
             }
             using (TextWriter writer = new StreamWriter(path,false))
