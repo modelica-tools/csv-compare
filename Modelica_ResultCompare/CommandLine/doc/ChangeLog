@@ -1190,14 +1190,14 @@
 		Modified. (#DGN0001)
 
 	* HelpText.cs (HelpText)
-		Modified. In order to fullfill the user pruiz request (#REQ0002; see
+		Modified. In order to fulfill the user pruiz request (#REQ0002; see
 		[3] http://commandline.codeplex.com/WorkItem/View.aspx?WorkItemId=8015).
 
 	* HelpTextFixture.cs (HelpTextFixture)
 		Modified. (#REQ0002)
 		
 	* CommandLineParserFixture.Mocks.cs (MockOptionsCaseSensitive)
-		Modified. In order to fullfill design choice #DGN0001:
+		Modified. In order to fulfill design choice #DGN0001:
 		moving the ParserSettings type from method to class constructor removes the
 		obligation to have an HelpOption attribute (HelpOptionAttribute.cs) defined.
 		

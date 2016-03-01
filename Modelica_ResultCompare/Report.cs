@@ -90,7 +90,7 @@ namespace CsvCompare
 
             sb.AppendLine("], title: '" + this.Title + "',");
             sb.AppendLine("    grid: {");
-            sb.AppendLine("            drawGridLines: false,        // wether to draw lines across the grid or not.");
+            sb.AppendLine("            drawGridLines: false,        // whether to draw lines across the grid or not.");
             sb.AppendLine("            gridLineColor: '#cccccc',    // *Color of the grid lines.");
             sb.AppendLine("            background: '#ffffff',      // CSS color spec for background color of grid.");
             sb.AppendLine("            borderColor: '#000000',     // CSS color spec for border around grid.");
@@ -114,7 +114,7 @@ namespace CsvCompare
             sb.AppendLine("          // Allowable axes are xaxis, x2axis, yaxis, y2axis, y3axis, ...");
             sb.AppendLine("          // Up to 9 y axes are supported.");
             sb.AppendLine("          axes: {");
-            sb.AppendLine("            // options for each axis are specified in seperate option objects.");
+            sb.AppendLine("            // options for each axis are specified in separate option objects.");
             sb.AppendLine("            xaxis: {");
             sb.AppendFormat("              label: \"{0}\",", this.LabelX).AppendLine();
             //Min and Max might break the scaling of the graph if the value format is "smaller" than the tick format
@@ -156,7 +156,7 @@ namespace CsvCompare
 
                 sb.AppendLine("], title: '',");
                 sb.AppendLine("    grid: {");
-                sb.AppendLine("            drawGridLines: false,        // wether to draw lines across the grid or not.");
+                sb.AppendLine("            drawGridLines: false,        // whether to draw lines across the grid or not.");
                 sb.AppendLine("            gridLineColor: '#cccccc',    // *Color of the grid lines.");
                 sb.AppendLine("            background: '#ffffff',      // CSS color spec for background color of grid.");
                 sb.AppendLine("            borderColor: '#000000',     // CSS color spec for border around grid.");
@@ -180,7 +180,7 @@ namespace CsvCompare
                 sb.AppendLine("          // Allowable axes are xaxis, x2axis, yaxis, y2axis, y3axis, ...");
                 sb.AppendLine("          // Up to 9 y axes are supported.");
                 sb.AppendLine("          axes: {");
-                sb.AppendLine("            // options for each axis are specified in seperate option objects.");
+                sb.AppendLine("            // options for each axis are specified in separate option objects.");
                 sb.AppendLine("            xaxis: {");
                 sb.AppendLine("              label: \"time\",");
                 //Min and Max might break the scaling of the graph if the value format is "smaller" than the tick format
