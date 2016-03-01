@@ -1,4 +1,4 @@
-﻿// TubeAlgorithm.cs
+﻿// Algorithm.cs
 // author: Susanne Walther
 // date: 22.12.2014
 

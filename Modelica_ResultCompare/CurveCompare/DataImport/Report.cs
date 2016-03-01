@@ -1,5 +1,5 @@
 ﻿// Report.cs
-// copy from project Modeloca-ResultCompare
+// copy from project Modelica-ResultCompare
 // author: Sven Rütz
 // date: 20.10.2014
 
