@@ -516,7 +516,7 @@ namespace CsvCompare
                     writer.WriteLine("<body>");
                     writer.WriteLine("<div id=\"page\">");
                     writer.WriteLine("<table class=\"info\">");
-                    writer.WriteLine("	<tr><td colspan=\"3\" class=\"header\"><h1>Metareport - CSV file comaprison</h1></td></tr>");
+                    writer.WriteLine("	<tr><td colspan=\"3\" class=\"header\"><h1>Metareport - CSV file comparison</h1></td></tr>");
                     writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Timestamp:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
                     writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Mode:</td><td>{0}</td></tr>", options.Mode.ToString());
                     switch (options.Mode)
