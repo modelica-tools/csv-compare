@@ -19,7 +19,7 @@ namespace CsvCompare
         private Guid _guid = Guid.NewGuid();
         private double _dMin, _dMax;
         private double _lDeltaError;
-        
+
         public Guid Id { get { return _guid; } }
         public string Title { get; set; }
         public string LabelX { get; set; }
@@ -45,7 +45,7 @@ namespace CsvCompare
             sb.AppendLine("<script class=\"code\" type=\"text/javascript\">");
             sb.AppendLine("    $(document).ready(function(){");
             sb.Append("        var data = [");
-            //sValues 
+            //sValues
             int i = 0;
             foreach (Series s in this.Series)
             {
@@ -60,7 +60,7 @@ namespace CsvCompare
             if (sb.ToString().EndsWith(","))
                 sb = sb.Remove(sb.Length - 1, 1);
 
-            //Add some tolerance for graph scaling and remeber values to get equal scaling for graph and error graph
+            //Add some tolerance for graph scaling and remember values to get equal scaling for graph and error graph
             if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
             {
                 double d1 = _dMin;
@@ -78,8 +78,8 @@ namespace CsvCompare
             foreach (Series s in this.Series)
             {
                 if (string.IsNullOrEmpty(s.ArrayString))
-                    continue; 
-                
+                    continue;
+
                 sb.AppendFormat("{{color:'#{0}', label:'{1}'}}", ColorToHexString(s.Color), s.Title);
                 if (i<this.Series.Count)
                     sb.Append(",");
@@ -217,7 +217,7 @@ namespace CsvCompare
             string ImagePath = Path.Combine(path, @"img", Filename);
 
             StringBuilder sb;
-            
+
             if (!GetHeaderTable(out sb))//no charts? skip the rest
                 return sb.ToString();
 
@@ -361,7 +361,7 @@ namespace CsvCompare
             npLegend.BackgroundColor = Color.White;
 
             npSurface.Legend = npLegend;
-            
+
             //Update PlotSurface:
             npSurface.Refresh();
         }
@@ -439,7 +439,7 @@ namespace CsvCompare
                     s.AppendFormat(CultureInfo.InvariantCulture, "[{0},{1}],", xValues[i], yValues[i] + dOffset);
             }
             return s.Remove(s.Length - 1, 1).Append("]").ToString();
-        }        
+        }
     }
 
     /// This class represents the "meta report"
@@ -448,7 +448,7 @@ namespace CsvCompare
         private FileInfo _path;
         private List<Report> _reports = new List<Report>();
         private bool _bReportDirSet = false;
-        
+
         public bool ReportDirSet { get { return _bReportDirSet; } set { _bReportDirSet = value; } }
         public FileInfo FileName { get { return _path; } set { _path = value; } }
         public List<Report> Reports { get { return _reports; } }
@@ -820,7 +820,7 @@ namespace CsvCompare
                 writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/CsvCompare.Resources.jquery.jqplot.min.css\">");
                 writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/CsvCompare.Resources.style.css\">");
             }
-            writer.WriteLine("</head>"); 
+            writer.WriteLine("</head>");
             writer.WriteLine("<body>");
             writer.WriteLine("<div id=\"page\">");
             writer.WriteLine("<a id=\"top\"/>");
@@ -831,12 +831,12 @@ namespace CsvCompare
                     writer.WriteLine("	<tr><td class=\"header\">Meta Report:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", _metaPath.Replace("\\", "/"), _metaPath);
                 else
                     writer.WriteLine("	<tr><td class=\"header\">Meta Report:</td><td><a href=\"{0}\">{1}</a></td></tr>", Path.GetFileName(_metaPath), Path.GetFileName(_metaPath));
-            
+
             if(null != this.BaseFile)
             writer.WriteLine("	<tr><td class=\"header\">Base File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.BaseFile.Replace("\\", "/"), this.BaseFile);
             if (null != this.CompareFile)
                 writer.WriteLine("	<tr><td class=\"header\">Compare File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.CompareFile.Replace("\\", "/"), this.CompareFile);
-            
+
             writer.WriteLine("	<tr><td class=\"header\">Tolerance:</td><td>{0}</td></tr>", _tolerance);
             writer.WriteLine("	<tr><td class=\"header\">Tested:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
 
@@ -848,7 +848,7 @@ namespace CsvCompare
                dSuccess = 0;
             else
                dSuccess = ((1 - ((double)iErrors / (double)iTested)));
-            
+
             writer.WriteLine("	<tr><td class=\"header\">&nbsp;</td><td>The compare file contained {0} results. {1} results have been tested. {2} failed, success rate is {3:0.0%}.</td></tr>",
                 _chart.Count,   //All results
                 iTested,    //All tested results
