@@ -27,7 +27,7 @@ namespace CsvCompare
         /// Holds values for x axis (time)
         public List<double> XAxis { get { return _xAxis; } }
         /// Holds values for the results in a dictionary.
-        /// 
+        ///
         /// The key is the result identifier.
         public Dictionary<string, List<double>> Results { get { return _values; } }
         /// This value can be used to produce a offset between base and comparison values
@@ -106,12 +106,12 @@ namespace CsvCompare
                             }
                         }
 
-#if DEBUG 
+#if DEBUG
                     log.WriteLine(LogLevel.Debug, "Parsed header in {0}ms", timer.ElapsedMilliseconds);
                     timer.Restart();
 #endif
                     CheckHeaderForNumbers(log, map);
-#if DEBUG 
+#if DEBUG
                     log.WriteLine(LogLevel.Debug, "Checked header in {0}ms", timer.ElapsedMilliseconds);
                     timer.Restart();
 #endif
@@ -129,7 +129,7 @@ namespace CsvCompare
                                 options.Delimiter, options.Separator ) );
                         else
                             dataValues = Tokenize( sLine, options.Delimiter ); //use custom tokenizer for improved performance
-                        
+
                         int iCol = 0;
 
                         NumberFormatInfo provider = new NumberFormatInfo();
@@ -162,7 +162,7 @@ namespace CsvCompare
                             iCol++;
                         }
                     }
-#if DEBUG 
+#if DEBUG
                     timer.Stop();
                     log.WriteLine(LogLevel.Debug, "Time to parse: {0}", timer.Elapsed);
 #endif
@@ -201,7 +201,7 @@ namespace CsvCompare
 
             while (pos < end) {
                 char c = str[pos];
-                
+
                 if (c == '"')
                     withinQuotes = !withinQuotes;
 
@@ -257,7 +257,7 @@ namespace CsvCompare
             else
                 return CompareFiles(log, csvBase, null, ref options);
         }
-        
+
         public Report CompareFiles(Log log, CsvFile csvBase, string sReportPath, ref Options options)
         {
             int iInvalids = 0;
@@ -271,7 +271,7 @@ namespace CsvCompare
             Curve reference = new Curve();
             Curve compareCurve = new Curve();
             TubeReport tubeReport = new TubeReport();
-            TubeSize size = null;            
+            TubeSize size = null;
             Tube tube = new Tube(size);
             IOptions tubeOptions = new Options1(_dRangeDelta, Axes.X);
 
@@ -343,11 +343,11 @@ namespace CsvCompare
                     if (rep.TotalErrors > 0)
                     {
                         Chart pairMax = rep.Chart.Aggregate((l, r) => l.DeltaError > r.DeltaError ? l : r);
-                        writer.WriteLine(". Biggest error: {0}=>{1}", pairMax.Title, pairMax.DeltaError);
+                        writer.WriteLine(". Biggest error: {0}=>{1}", pairMax.Title, pairMax.DeltaError.ToString(CultureInfo.InvariantCulture));
                         writer.WriteLine(". Failed values:");
 
                         foreach (Chart c in (from r in rep.Chart where r.DeltaError > 0 select r).OrderByDescending(er => er.DeltaError))
-                            writer.WriteLine("{0}=>{1}", c.Title, c.DeltaError);
+                            writer.WriteLine("{0}=>{1}", c.Title, c.DeltaError.ToString(CultureInfo.InvariantCulture));
                     }
                 }
 
@@ -513,7 +513,7 @@ namespace CsvCompare
                         }
                         catch (ArgumentException) { }
                     }
-                    
+
                     writer.WriteLine();
                     iCount++;
                 }
