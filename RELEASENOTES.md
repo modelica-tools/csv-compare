@@ -5,7 +5,7 @@
 * reports in tree mode are now written per compared csv files, this keeps a lower memory consumption
 * a significantly faster csv parsing has been implemented
 * locale independence has been ensured
-* new option `--separator` can now be set to change the seperator used in csv files
+* new option `--separator` can now be set to change the separator used in csv files
 * moved repository from modelica.org svn to github
 
 ## 2013-06-26 Version 1.0.0.6751
@@ -34,7 +34,7 @@
 
 ## 2013-05-30 Version 1.0.0.6573 beta
 * added option `--delimiter` to set the delimiter of the input csv files
-* changed the csv parser algorith to use regular expressions
+* changed the csv parser algorithm to use regular expressions
 * merged CommandLineParser source code to project
 * changed project settings to enable build with Mono 2.*
 * added x64 platform configuration
