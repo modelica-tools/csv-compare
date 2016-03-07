@@ -48,7 +48,7 @@ namespace CsvCompare
         private static Log _log = new Log();
 
         /// The main entry of the application
-        /// @para cmdArgs contains an array of commandline parameters that are parsed using CommandLine.Dll
+        /// @para cmdArgs contains an array of command line parameters that are parsed using CommandLine.Dll
         public static void Main(string[] cmdArgs)
         {
             //Global catch to prevent crash
@@ -83,7 +83,7 @@ namespace CsvCompare
 #endif
                 _log.WriteLine(LogLevel.Debug, "Using CSV Compare Version {0} ({1})", Info.AssemblyVersion, Assembly.GetExecutingAssembly().GetName().ProcessorArchitecture);
                 _log.WriteLine(LogLevel.Debug, "Starting new result check @{0}", DateTime.Now);
-                _log.WriteLine(LogLevel.Debug, "Parsing commandline options: {0} * {1}", Environment.NewLine, string.Join(" ", cmdArgs));
+                _log.WriteLine(LogLevel.Debug, "Parsing command line options: {0} * {1}", Environment.NewLine, string.Join(" ", cmdArgs));
                 _log.WriteLine(LogLevel.Debug, "Successfully parsed the following options:");
                 _log.WriteLine(LogLevel.Debug, "Operation mode is {0}", options.Mode);
                 _log.WriteLine(LogLevel.Debug, "Tolerance is {0}", options.Tolerance);
@@ -94,7 +94,7 @@ namespace CsvCompare
                     options.Delimiter = ';';
                 }
                 else
-                    _log.WriteLine(LogLevel.Debug, "Delimiter to be used to parse csv has been explicitly set and is \"{0}\"", options.Delimiter);
+                    _log.WriteLine(LogLevel.Debug, "Delimiter to be used to parse CSV has been explicitly set and is \"{0}\"", options.Delimiter);
 
                 if (null == options.Logfile)
                     _log.WriteLine(LogLevel.Debug, "Logfile is empty");
@@ -167,7 +167,7 @@ namespace CsvCompare
                         if(!options.NoMetaReport)
                             meta.WriteReport(_log, options);
                         break;
-                    case OperationMode.FmuChecker://run FMU checker on all fmus in directory given via option 1 and compare the result to CSVs in the source directory
+                    case OperationMode.FmuChecker://run FMU checker on all FMUs in directory given via option 1 and compare the result to CSVs in the source directory
                         if (options.Items.Count != 1)
                         {
                             if (options.Items.Count == 0)
@@ -220,7 +220,7 @@ namespace CsvCompare
             dirBase = new DirectoryInfo(options.Items[0]);
             if (!dirBase.Exists)
             {
-                _log.Error("The directory \"{0}\" containing fmu files does not exist.", dirBase.FullName);
+                _log.Error("The directory \"{0}\" containing FMU files does not exist.", dirBase.FullName);
                 Environment.Exit(2);
             }            
 
@@ -241,7 +241,7 @@ namespace CsvCompare
                     continue;
 
                 string sBase = Path.Combine(file.Directory.FullName, Path.GetFileNameWithoutExtension(file.Name) + ".csv");
-                _log.WriteLine(LogLevel.Debug, "Searching for csv {0} ", sBase);
+                _log.WriteLine(LogLevel.Debug, "Searching for CSV {0} ", sBase);
                 if (!File.Exists(sBase))//if $FILENAME$.csv could not be found search for protocol.csv
                 {
                     sBase = Path.Combine(file.Directory.FullName, "protocol.csv");
@@ -284,7 +284,7 @@ namespace CsvCompare
 
                 //Try different locations for the base file
                 string sBaseFile = string.Empty;
-                if (dirBase.GetFiles(file.Name).Length == 1)//1. Base file is in the, via commandline, given base directory
+                if (dirBase.GetFiles(file.Name).Length == 1)//1. Base file is in the, via command line, given base directory
                 {
                     sBaseFile = Path.Combine(dirBase.FullName, file.Name);
                     _log.WriteLine(LogLevel.Debug, "Found base file in given base directory \"{0}\", comparing ...", dirBase.Name);
@@ -320,12 +320,12 @@ namespace CsvCompare
                 if (options.Items.Count == 2)
                     Compare = options.Items[0];
                 else
-                    throw new ArgumentException("You have to set compare and base csv files!");
+                    throw new ArgumentException("You have to set compare and base CSV files!");
             if (string.IsNullOrEmpty(Base))
                 if (options.Items.Count == 2)
                     Base = options.Items[1];
                 else
-                    throw new ArgumentException("You have to set compare and base csv files!");
+                    throw new ArgumentException("You have to set compare and base CSV files!");
 
             try
             {
@@ -336,7 +336,7 @@ namespace CsvCompare
                     {
                         using (CsvFile csvBase = new CsvFile(Base, options, _log))
                         {
-//#if DEBUG   //Save csv files during DEBUG session
+//#if DEBUG   //Save CSV files during DEBUG session
 //                            if (!string.IsNullOrEmpty(options.ReportDir))
 //                            {
 //                                csvBase.Save(options.ReportDir, options);
@@ -365,7 +365,7 @@ namespace CsvCompare
             }
             catch (ArgumentException ex)
             {
-                _log.Error("Nothing has been parsed; maybe wrong csv format?");
+                _log.Error("Nothing has been parsed; maybe wrong CSV format?");
                 _log.Error("Exception said: {0}", ex.Message);
                 Environment.ExitCode = 2;
                 return null;

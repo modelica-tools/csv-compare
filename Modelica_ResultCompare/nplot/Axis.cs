@@ -1418,7 +1418,7 @@ namespace NPlot
 		/// <summary>
 		/// Moves the world min and max values so that the world axis
 		/// length is [percent] bigger. If the current world
-		/// max and min values are the same, they are moved appart 
+		/// max and min values are the same, they are moved apart 
 		/// an arbitrary amount. This arbitrary amount is currently
 		/// 0.01, and will probably be configurable in the future.
 		/// </summary>

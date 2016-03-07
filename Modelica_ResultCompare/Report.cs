@@ -19,7 +19,7 @@ namespace CsvCompare
         private Guid _guid = Guid.NewGuid();
         private double _dMin, _dMax;
         private double _lDeltaError;
-        
+
         public Guid Id { get { return _guid; } }
         public string Title { get; set; }
         public string LabelX { get; set; }
@@ -45,7 +45,7 @@ namespace CsvCompare
             sb.AppendLine("<script class=\"code\" type=\"text/javascript\">");
             sb.AppendLine("    $(document).ready(function(){");
             sb.Append("        var data = [");
-            //sValues 
+            //sValues
             int i = 0;
             foreach (Series s in this.Series)
             {
@@ -60,7 +60,7 @@ namespace CsvCompare
             if (sb.ToString().EndsWith(","))
                 sb = sb.Remove(sb.Length - 1, 1);
 
-            //Add some tolerance for graph scaling and remeber values to get equal scaling for graph and error graph
+            //Add some tolerance for graph scaling and remember values to get equal scaling for graph and error graph
             if (!Double.IsNaN(_dMin) && !Double.IsNaN(_dMax))
             {
                 double d1 = _dMin;
@@ -78,8 +78,8 @@ namespace CsvCompare
             foreach (Series s in this.Series)
             {
                 if (string.IsNullOrEmpty(s.ArrayString))
-                    continue; 
-                
+                    continue;
+
                 sb.AppendFormat("{{color:'#{0}', label:'{1}'}}", ColorToHexString(s.Color), s.Title);
                 if (i<this.Series.Count)
                     sb.Append(",");
@@ -90,7 +90,7 @@ namespace CsvCompare
 
             sb.AppendLine("], title: '" + this.Title + "',");
             sb.AppendLine("    grid: {");
-            sb.AppendLine("            drawGridLines: false,        // wether to draw lines across the grid or not.");
+            sb.AppendLine("            drawGridLines: false,        // whether to draw lines across the grid or not.");
             sb.AppendLine("            gridLineColor: '#cccccc',    // *Color of the grid lines.");
             sb.AppendLine("            background: '#ffffff',      // CSS color spec for background color of grid.");
             sb.AppendLine("            borderColor: '#000000',     // CSS color spec for border around grid.");
@@ -114,7 +114,7 @@ namespace CsvCompare
             sb.AppendLine("          // Allowable axes are xaxis, x2axis, yaxis, y2axis, y3axis, ...");
             sb.AppendLine("          // Up to 9 y axes are supported.");
             sb.AppendLine("          axes: {");
-            sb.AppendLine("            // options for each axis are specified in seperate option objects.");
+            sb.AppendLine("            // options for each axis are specified in separate option objects.");
             sb.AppendLine("            xaxis: {");
             sb.AppendFormat("              label: \"{0}\",", this.LabelX).AppendLine();
             //Min and Max might break the scaling of the graph if the value format is "smaller" than the tick format
@@ -156,7 +156,7 @@ namespace CsvCompare
 
                 sb.AppendLine("], title: '',");
                 sb.AppendLine("    grid: {");
-                sb.AppendLine("            drawGridLines: false,        // wether to draw lines across the grid or not.");
+                sb.AppendLine("            drawGridLines: false,        // whether to draw lines across the grid or not.");
                 sb.AppendLine("            gridLineColor: '#cccccc',    // *Color of the grid lines.");
                 sb.AppendLine("            background: '#ffffff',      // CSS color spec for background color of grid.");
                 sb.AppendLine("            borderColor: '#000000',     // CSS color spec for border around grid.");
@@ -180,7 +180,7 @@ namespace CsvCompare
                 sb.AppendLine("          // Allowable axes are xaxis, x2axis, yaxis, y2axis, y3axis, ...");
                 sb.AppendLine("          // Up to 9 y axes are supported.");
                 sb.AppendLine("          axes: {");
-                sb.AppendLine("            // options for each axis are specified in seperate option objects.");
+                sb.AppendLine("            // options for each axis are specified in separate option objects.");
                 sb.AppendLine("            xaxis: {");
                 sb.AppendLine("              label: \"time\",");
                 //Min and Max might break the scaling of the graph if the value format is "smaller" than the tick format
@@ -217,7 +217,7 @@ namespace CsvCompare
             string ImagePath = Path.Combine(path, @"img", Filename);
 
             StringBuilder sb;
-            
+
             if (!GetHeaderTable(out sb))//no charts? skip the rest
                 return sb.ToString();
 
@@ -361,7 +361,7 @@ namespace CsvCompare
             npLegend.BackgroundColor = Color.White;
 
             npSurface.Legend = npLegend;
-            
+
             //Update PlotSurface:
             npSurface.Refresh();
         }
@@ -420,7 +420,7 @@ namespace CsvCompare
         public string Title { get { return _title; } set { _title = value; } }
         /// Returns the string to be used in jQuery [[0,0],[1,0],...,[100,78]]
         public string ArrayString { get { return _sArrayString; } set { _sArrayString = value; } }
-        /// Holds arrays for plotting bimtap
+        /// Holds arrays for plotting bitmap
         public double[] XAxis { get { return this._xAxis; } set { this._xAxis = value; } }
         public double[] YAxis { get { return this._yAxis; } set { this._yAxis = value; } }
 
@@ -439,7 +439,7 @@ namespace CsvCompare
                     s.AppendFormat(CultureInfo.InvariantCulture, "[{0},{1}],", xValues[i], yValues[i] + dOffset);
             }
             return s.Remove(s.Length - 1, 1).Append("]").ToString();
-        }        
+        }
     }
 
     /// This class represents the "meta report"
@@ -448,7 +448,7 @@ namespace CsvCompare
         private FileInfo _path;
         private List<Report> _reports = new List<Report>();
         private bool _bReportDirSet = false;
-        
+
         public bool ReportDirSet { get { return _bReportDirSet; } set { _bReportDirSet = value; } }
         public FileInfo FileName { get { return _path; } set { _path = value; } }
         public List<Report> Reports { get { return _reports; } }
@@ -458,7 +458,7 @@ namespace CsvCompare
 
         /// Write the report to a html file
         /// @para log logfile object from the main program
-        /// @para options options from commandline
+        /// @para options options from command line
         /// @return FALSE on error
         public bool WriteReport(Log log, Options options)
         {
@@ -488,7 +488,7 @@ namespace CsvCompare
                 if (!options.OverrideOutput && _path.Exists)
                 {
                     _path = new FileInfo(Path.Combine(_path.DirectoryName, string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-index.html", DateTime.Now)));
-                    log.WriteLine(LogLevel.Warning, "Meta report already exists and --override has been set to false. Changed target filename to \"{0}\"", _path);
+                    log.WriteLine(LogLevel.Warning, "Meta report already exists and --override has been set to false. Changed target file name to \"{0}\"", _path);
                 }
 
                 //if (!_path.Exists)
@@ -516,7 +516,7 @@ namespace CsvCompare
                     writer.WriteLine("<body>");
                     writer.WriteLine("<div id=\"page\">");
                     writer.WriteLine("<table class=\"info\">");
-                    writer.WriteLine("	<tr><td colspan=\"3\" class=\"header\"><h1>Metareport - CSV file comaprison</h1></td></tr>");
+                    writer.WriteLine("	<tr><td colspan=\"3\" class=\"header\"><h1>Metareport - CSV file comparison</h1></td></tr>");
                     writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Timestamp:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
                     writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Mode:</td><td>{0}</td></tr>", options.Mode.ToString());
                     switch (options.Mode)
@@ -699,7 +699,7 @@ namespace CsvCompare
                 }
                 catch (PathTooLongException)
                 {
-                    log.Error("The report path \"{0}\" is too long for the filesystem. Cannot write this report", _path);
+                    log.Error("The report path \"{0}\" is too long for the file system. Cannot write this report", _path);
                     return false;
                 }
             }
@@ -711,7 +711,7 @@ namespace CsvCompare
             if (!options.OverrideOutput && File.Exists(_path))
             {
                 _path = Path.Combine(Path.GetDirectoryName(_path), string.Format(CultureInfo.CurrentCulture, "{0:yyyy-MM-ddTHH-mm-ss}-{1}", DateTime.Now, Path.GetFileName(_path)));
-                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target filename to \"{0}\"", _path);
+                log.WriteLine(LogLevel.Warning, "Report already exists and --override has been set to false. Changed target file name to \"{0}\"", _path);
             }
             using (TextWriter writer = new StreamWriter(_path, false))
             {
@@ -722,7 +722,7 @@ namespace CsvCompare
             }
             log.WriteLine("Report has been written to: {0}", _path);
 
-            if (!options.InlineScripts && !options.UseBitmapPlots)//Save script files from ressource to file system
+            if (!options.InlineScripts && !options.UseBitmapPlots)//Save script files from resource to file system
             {
                 Assembly ass = Assembly.GetExecutingAssembly();
 
@@ -820,7 +820,7 @@ namespace CsvCompare
                 writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/CsvCompare.Resources.jquery.jqplot.min.css\">");
                 writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/CsvCompare.Resources.style.css\">");
             }
-            writer.WriteLine("</head>"); 
+            writer.WriteLine("</head>");
             writer.WriteLine("<body>");
             writer.WriteLine("<div id=\"page\">");
             writer.WriteLine("<a id=\"top\"/>");
@@ -831,12 +831,12 @@ namespace CsvCompare
                     writer.WriteLine("	<tr><td class=\"header\">Meta Report:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", _metaPath.Replace("\\", "/"), _metaPath);
                 else
                     writer.WriteLine("	<tr><td class=\"header\">Meta Report:</td><td><a href=\"{0}\">{1}</a></td></tr>", Path.GetFileName(_metaPath), Path.GetFileName(_metaPath));
-            
+
             if(null != this.BaseFile)
             writer.WriteLine("	<tr><td class=\"header\">Base File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.BaseFile.Replace("\\", "/"), this.BaseFile);
             if (null != this.CompareFile)
                 writer.WriteLine("	<tr><td class=\"header\">Compare File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.CompareFile.Replace("\\", "/"), this.CompareFile);
-            
+
             writer.WriteLine("	<tr><td class=\"header\">Tolerance:</td><td>{0}</td></tr>", _tolerance);
             writer.WriteLine("	<tr><td class=\"header\">Tested:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
 
@@ -848,7 +848,7 @@ namespace CsvCompare
                dSuccess = 0;
             else
                dSuccess = ((1 - ((double)iErrors / (double)iTested)));
-            
+
             writer.WriteLine("	<tr><td class=\"header\">&nbsp;</td><td>The compare file contained {0} results. {1} results have been tested. {2} failed, success rate is {3:0.0%}.</td></tr>",
                 _chart.Count,   //All results
                 iTested,    //All tested results

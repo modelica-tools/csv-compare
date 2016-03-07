@@ -26,10 +26,10 @@ namespace CurveCompare
 
     public class Options
     {
-        [Option('a', "args", Required = false, HelpText = "Arguments to run fmu checker with. [Default is \"-l 5 -h 1e-2 -s 1.5\"]")]
+        [Option('a', "args", Required = false, HelpText = "Arguments to run FMU checker with. [Default is \"-l 5 -h 1e-2 -s 1.5\"]")]
         public string CheckerArgs { get; set; }
 
-        [Option('c', "checker", Required = false, HelpText = "Complete path of the FMU Checker binary without arguments.")]
+        [Option('c', "checker", Required = false, HelpText = "Complete path of the FMU checker binary without arguments.")]
         public string CheckerPath { get; set; }
 
         [Option('l', "logfile", Required = false, HelpText = "Log the output to the given file.")]
@@ -38,7 +38,7 @@ namespace CurveCompare
         [Option('m', "mode", DefaultValue = OperationMode.CsvFileCompare, Required = false, HelpText = "Set the tools operation mode. Valid modes are: CsvFileCompare, CsvTreeCompare, FmuChecker, PlotOnly(experimental)")]
         public OperationMode Mode { get; set; }
 
-        [Option('o', "override", DefaultValue = false, HelpText = "Override output files if they already exist (Default behaviour is to put the output next to the foudn file with a timestamp in the filename).")]
+        [Option('o', "override", DefaultValue = false, HelpText = "Override output files if they already exist (Default behaviour is to put the output next to the found file with a timestamps in the file name).")]
         public bool OverrideOutput { get; set; }
 
         [Option('e', "abserror", DefaultValue = false, HelpText = "Shows, if set, only 0 and 1 in the error graph (peeks) instead of the difference between the error and the penetrated tube.")]
@@ -56,7 +56,7 @@ namespace CurveCompare
         [Option('t', "tolerance", DefaultValue = "0.002", Required = false, HelpText = "Set the width of the tube at discontinuity in x-direction [Default is 0.002].")]
         public string Tolerance { get; set; }
 
-        [Option('v', "verbosity", DefaultValue = 4, Required = false, HelpText = "Sets the verbositiy of the output (1 most to 4[Default] less verbose).")]
+        [Option('v', "verbosity", DefaultValue = 4, Required = false, HelpText = "Sets the verbosity of the output (1 most to 4[Default] less verbose).")]
         public int Verbosity { get; set; }
 
         [Option('d', "delimiter", Required = false, HelpText = "Sets the delimiter that is used to parse and write csv files. Default value is \";\".")]

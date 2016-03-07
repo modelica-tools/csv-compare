@@ -49,7 +49,7 @@ namespace CurveCompare.DataImport
         /// </summary>
         /// <param name="fileName">Full path of the csv file</param>
         /// <param name="delimiter">Delimiter, that separates columns.</param>
-        /// <param name="seperator">Decimal separator.</param>
+        /// <param name="separator">Decimal separator.</param>
         /// <param name="log">Log for saving to log file.</param>
         public CsvFile(string fileName, ReadOptions options, Log log)
         {
