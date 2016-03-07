@@ -343,11 +343,11 @@ namespace CsvCompare
                     if (rep.TotalErrors > 0)
                     {
                         Chart pairMax = rep.Chart.Aggregate((l, r) => l.DeltaError > r.DeltaError ? l : r);
-                        writer.WriteLine(". Biggest error: {0}=>{1}", pairMax.Title, pairMax.DeltaError);
+                        writer.WriteLine(". Biggest error: {0}=>{1}", pairMax.Title, pairMax.DeltaError.ToString(CultureInfo.InvariantCulture));
                         writer.WriteLine(". Failed values:");
 
                         foreach (Chart c in (from r in rep.Chart where r.DeltaError > 0 select r).OrderByDescending(er => er.DeltaError))
-                            writer.WriteLine("{0}=>{1}", c.Title, c.DeltaError);
+                            writer.WriteLine("{0}=>{1}", c.Title, c.DeltaError.ToString(CultureInfo.InvariantCulture));
                     }
                 }
 
