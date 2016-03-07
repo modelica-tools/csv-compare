@@ -1,6 +1,6 @@
 ﻿// Rectangle.cs
 // authors: Susanne Walther, Dr. Uwe Schnabel
-// date: 14.01.2014
+// date: 15.05.2015
 
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ using System.Threading;
 namespace CurveCompare.Algorithms
 {
     /// <summary>
-    /// Represents an algorithm, that calculates a lower and an upper tube curve. Around each point of reference curve imagine an rectangle. 
+    /// Represents an algorithm, that calculates a lower and an upper tube curve. Around each point of reference curve imagine an rectangle.
     /// The upper tube curve is above all rectangles, and the lower tube curve is beneath all rectangles.
     /// </summary>
     public class Rectangle : Algorithm
@@ -48,7 +48,7 @@ namespace CurveCompare.Algorithms
             {
                 report.Reference = reference;
                 report.Size = size;
-                report.Algorithm = AlgorithmOptions.Rectangle;                
+                report.Algorithm = AlgorithmOptions.Rectangle;
                 report.Lower = CalculateLower(reference, size);
                 report.Upper = CalculateUpper(reference, size);
                 if (report.Lower.ImportSuccessful && report.Upper.ImportSuccessful)
@@ -68,49 +68,57 @@ namespace CurveCompare.Algorithms
             List<double> LX = new List<double>(2 * reference.Count); // x-values of lower tube curve
             List<double> LY = new List<double>(2 * reference.Count); // y-values of lower tube curve
 
-            // -------------------------------------------------------------------------------------------------------------             
+            // -------------------------------------------------------------------------------------------------------------
             // ---------------------------------- 1. Add corner points of the rectangle  -----------------------------------
             // -------------------------------------------------------------------------------------------------------------
 
             double m0, m1;                                           // slopes before and after point i of reference curve
-            double s0, s1;                                           // signum of slopes of reference curve: 1 - increasing, 0 - constant, -1 - decreasing           
+            double s0, s1;                                           // signum of slopes of reference curve: 1 - increasing, 0 - constant, -1 - decreasing
+            // machine accuracy, the least positive floating point number, with 1 + epsilon > 1, is ~ 2.2e-16
+            double epsilon = 1e-15;
+            int b;
 
             // -------------------------------------------------------------------------------------------------------------
             // 1.1. Start: Rectangle with center (x,y) = (reference.X[0], reference.Y[0])
             // -------------------------------------------------------------------------------------------------------------
 
+            // ignore identical point at the beginning
+            b = 0;
+            while ((reference.X[b] - reference.X[b + 1] == 0) && (reference.Y[b] - reference.Y[b + 1] == 0))
+                b++;
             // slopes of reference curve (initialization)
-            s0 = Math.Sign(reference.Y[1] - reference.Y[0]);
-            if (reference.X[1] != reference.X[0])
-                m0 = (reference.Y[1] - reference.Y[0]) / (reference.X[1] - reference.X[0]);
+            s0 = Math.Sign(reference.Y[b + 1] - reference.Y[b]);
+            if (reference.X[b + 1] != reference.X[b])
+                m0 = (reference.Y[b + 1] - reference.Y[b]) / (reference.X[b + 1] - reference.X[b]);
             else
                 if (s0 > 0)
                     m0 = Double.PositiveInfinity;
                 else
                     m0 = Double.NegativeInfinity;
 
-            // add point down left 
-            LX.Add(reference.X[0] - size.X);
-            LY.Add(reference.Y[0] - size.Y);
+            // add point down left
+            LX.Add(reference.X[b] - size.X);
+            LY.Add(reference.Y[b] - size.Y);
 
             if (s0 == 1)
             {
                 // add point down right
-                LX.Add(reference.X[0] + size.X);
-                LY.Add(reference.Y[0] - size.Y);
+                LX.Add(reference.X[b] + size.X);
+                LY.Add(reference.Y[b] - size.Y);
             }
 
             // -------------------------------------------------------------------------------------------------------------
             // 1.2. Iteration: Rectangle with center (x,y) = (reference.X[i], reference.Y[i])
             // -------------------------------------------------------------------------------------------------------------
-            for (int i = 1; i < reference.Count - 1; i++)
+            for (int i = b + 1; i < reference.Count - 1; i++)
             {
-                if (reference.X[i] == reference.X[i + 1] && reference.Y[i] == reference.Y[i + 1]) // ignore identical points
+                // ignore identical points
+                if ((reference.X[i] - reference.X[i + 1] == 0) && (reference.Y[i] - reference.Y[i + 1] == 0))
                     continue;
 
                 // slopes of reference curve
                 s1 = Math.Sign(reference.Y[i + 1] - reference.Y[i]);
-                if (reference.X[i + 1] != reference.X[i])
+                if (reference.X[i + 1] - reference.X[i] != 0)
                     m1 = (reference.Y[i + 1] - reference.Y[i]) / (reference.X[i + 1] - reference.X[i]);
                 else
                     if (s1 > 0)
@@ -123,40 +131,55 @@ namespace CurveCompare.Algorithms
                 {
                     if ((s0 != -1) && (s1 != -1))
                     {
-                        // add point down right 
+                        // add point down right
                         LX.Add(reference.X[i] + size.X);
                         LY.Add(reference.Y[i] - size.Y);
                     }
                     else if ((s0 != 1) && (s1 != 1))
                     {
-                        // add point down left 
+                        // add point down left
                         LX.Add(reference.X[i] - size.X);
                         LY.Add(reference.Y[i] - size.Y);
                     }
                     else if ((s0 == -1) && (s1 == 1))
                     {
-                        // add point down left 
+                        // add point down left
                         LX.Add(reference.X[i] - size.X);
+
                         LY.Add(reference.Y[i] - size.Y);
-                        // add point down right 
+                        // add point down right
                         LX.Add(reference.X[i] + size.X);
                         LY.Add(reference.Y[i] - size.Y);
                     }
                     else if ((s0 == 1) && (s1 == -1))
                     {
-                        // add point down right 
+                        // add point down right
                         LX.Add(reference.X[i] + size.X);
                         LY.Add(reference.Y[i] - size.Y);
-                        // add point down left 
+                        // add point down left
                         LX.Add(reference.X[i] - size.X);
                         LY.Add(reference.Y[i] - size.Y);
                     }
-                    // remove point for equal slopes equal 0 of tube curve
+                    // remove the last added points in case of equal slopes equal 0 of tube curve
                     int last = LY.Count - 1;
-                    if (reference.Y[i + 1] - size.Y == LY[last] && LY[last - 1] == LY[last])
+                    if (reference.Y[i + 1] - size.Y == LY[last])
                     {
-                        LX.RemoveAt(last);
-                        LY.RemoveAt(last);
+                        // remove two points, if two points were added at last
+                        // (last - 2 >= 0, because start point + two added points)
+                        if (s0 * s1 == -1 && LY[last - 2] == LY[last])
+                        {
+                            LX.RemoveAt(last);
+                            LY.RemoveAt(last);
+                            LX.RemoveAt(last - 1);
+                            LY.RemoveAt(last - 1);
+                        }
+                        // remove one point, if one point was added at last
+                        // (last - 1 >= 0, because start point + one added point)
+                        else if (s0 * s1 != -1 && LY[last - 1] == LY[last])
+                        {
+                            LX.RemoveAt(last);
+                            LY.RemoveAt(last);
+                        }
                     }
                 }
                 s0 = s1;
@@ -171,7 +194,7 @@ namespace CurveCompare.Algorithms
                 LX.Add(reference.X[reference.Count - 1] - size.X);
                 LY.Add(reference.Y[reference.Count - 1] - size.Y);
             }
-            // add point down right 
+            // add point down right
             LX.Add(reference.X[reference.Count - 1] + size.X);
             LY.Add(reference.Y[reference.Count - 1] - size.Y);
 
@@ -197,49 +220,57 @@ namespace CurveCompare.Algorithms
             List<double> UX = new List<double>(2 * reference.Count); // x-values of upper tube curve
             List<double> UY = new List<double>(2 * reference.Count); // y-values of upper tube curve
 
-            // ---------------------------------------------------------------------------------------------------------            
+            // ---------------------------------------------------------------------------------------------------------
             // ---------------------------------- 1. Add corner points of the rectangle  -------------------------------
             // ---------------------------------------------------------------------------------------------------------
 
             double m0, m1;                                           // slopes before and after point i of reference curve
             double s0, s1;                                           // signum of slopes of reference curve: 1 - increasing, 0 - constant, -1 - decreasing
+            // machine accuracy, the least positive floating point number, with 1 + epsilon > 1, is ~ 2.2e-16
+            double epsilon = 1e-15;
+            int b;
 
             // ---------------------------------------------------------------------------------------------------------
             // 1.1. Start: Rectangle with center (x,y) = (reference.X[0], reference.Y[0])
             // ---------------------------------------------------------------------------------------------------------
 
+            // ignore identical point at the beginning
+            b = 0;
+            while ((reference.X[b] - reference.X[b + 1] == 0) && (reference.Y[b] - reference.Y[b + 1] == 0))
+                b++;
             // slopes of reference curve (initialization)
-            s0 = Math.Sign(reference.Y[1] - reference.Y[0]);
-            if (reference.X[1] != reference.X[0])
-                m0 = (reference.Y[1] - reference.Y[0]) / (reference.X[1] - reference.X[0]);
+            s0 = Math.Sign(reference.Y[b + 1] - reference.Y[b]);
+            if (reference.X[b + 1] != reference.X[b])
+                m0 = (reference.Y[b + 1] - reference.Y[b]) / (reference.X[b + 1] - reference.X[b]);
             else
                 if (s0 > 0)
                     m0 = Double.PositiveInfinity;
                 else
                     m0 = Double.NegativeInfinity;
 
-            // add point top left 
-            UX.Add(reference.X[0] - size.X);
-            UY.Add(reference.Y[0] + size.Y);
+            // add point top left
+            UX.Add(reference.X[b] - size.X);
+            UY.Add(reference.Y[b] + size.Y);
 
             if (s0 == -1)
             {
                 // add point top right
-                UX.Add(reference.X[0] + size.X);
-                UY.Add(reference.Y[0] + size.Y);
+                UX.Add(reference.X[b] + size.X);
+                UY.Add(reference.Y[b] + size.Y);
             }
 
             // ---------------------------------------------------------------------------------------------------------
             // 1.2. Iteration: Rectangle with center (x,y) = (reference.X[i], reference.Y[i])
             // ---------------------------------------------------------------------------------------------------------
-            for (int i = 1; i < reference.Count - 1; i++)
+            for (int i = b + 1; i < reference.Count - 1; i++)
             {
-                if (reference.X[i] == reference.X[i + 1] && reference.Y[i] == reference.Y[i + 1]) // ignore identical points
+                // ignore identical points
+                if ((reference.X[i] - reference.X[i + 1] == 0) && (reference.Y[i] - reference.Y[i + 1] == 0))
                     continue;
 
                 // slopes of reference curve
                 s1 = Math.Sign(reference.Y[i + 1] - reference.Y[i]);
-                if (reference.X[i + 1] != reference.X[i])
+                if (reference.X[i + 1] - reference.X[i] != 0)
                     m1 = (reference.Y[i + 1] - reference.Y[i]) / (reference.X[i + 1] - reference.X[i]);
                 else
                     if (s1 > 0)
@@ -252,13 +283,13 @@ namespace CurveCompare.Algorithms
                 {
                     if ((s0 != -1) && (s1 != -1))
                     {
-                        // add point top left 
+                        // add point top left
                         UX.Add(reference.X[i] - size.X);
                         UY.Add(reference.Y[i] + size.Y);
                     }
                     else if ((s0 != 1) && (s1 != 1))
                     {
-                        // add point top right 
+                        // add point top right
                         UX.Add(reference.X[i] + size.X);
                         UY.Add(reference.Y[i] + size.Y);
                     }
@@ -276,16 +307,30 @@ namespace CurveCompare.Algorithms
                         // add point top right
                         UX.Add(reference.X[i] + size.X);
                         UY.Add(reference.Y[i] + size.Y);
-                        // add point top left 
+                        // add point top left
                         UX.Add(reference.X[i] - size.X);
                         UY.Add(reference.Y[i] + size.Y);
                     }
-                    // remove point for equal slopes equal 0 of tube curve
+                    // remove the last added points in case of equal slopes equal 0 of tube curve
                     int last = UY.Count - 1;
-                    if (reference.Y[i + 1] + size.Y == UY[last] && UY[last - 1] == UY[last])
+                    if (reference.Y[i + 1] + size.Y == UY[last])
                     {
-                        UX.RemoveAt(last);
-                        UY.RemoveAt(last);
+                        // remove two points, if two points were added at last
+                        // (last - 2 >= 0, because start point + two added points)
+                        if (s0 * s1 == -1 && UY[last - 2] == UY[last])
+                        {
+                            UX.RemoveAt(last);
+                            UY.RemoveAt(last);
+                            UX.RemoveAt(last - 1);
+                            UY.RemoveAt(last - 1);
+                        }
+                        // remove one point, if one point was added at last
+                        // (last - 1 >= 0, because start point + one added point)
+                        else if (s0 * s1 != -1 && UY[last - 1] == UY[last])
+                        {
+                            UX.RemoveAt(last);
+                            UY.RemoveAt(last);
+                        }
                     }
                 }
                 s0 = s1;
@@ -303,7 +348,7 @@ namespace CurveCompare.Algorithms
             // add point top right
             UX.Add(reference.X[reference.Count - 1] + size.X);
             UY.Add(reference.Y[reference.Count - 1] + size.Y);
-            
+
             // ---------------------------------------------------------------------------------------------------------
             // -------------- 2. Remove points and add intersection points in case of backward order -------------------
             // ---------------------------------------------------------------------------------------------------------
@@ -323,14 +368,13 @@ namespace CurveCompare.Algorithms
         /// <return>Number of loops, that are removed.</return>
         private static int removeLoop(List<double> X, List<double> Y, bool lower)
         {
-            // Visualization of working of removeLoop 
+            // Visualization of working of removeLoop
             bool visualize = false;
-            
             List<double> XLoops = new List<double>(X);
             List<double> YLoops = new List<double>(Y);
             int j = 1;
             int countLoops = 0;
-            
+
 #if GUI
             // Visualization
             if (visualize)
@@ -357,6 +401,7 @@ namespace CurveCompare.Algorithms
                     bool addPoint = true;
                     double ix = 0;
                     double iy = 0;
+                    int kMax;
 
                     i = j;
                     iPrevious = i;
@@ -365,22 +410,32 @@ namespace CurveCompare.Algorithms
                     while (X[j + 1] < X[i - 1]) // X[j + 1] < X[i - 1] => (i - 1 > 0 && Y[i - 2] <= Y[i - 1]) (in case of lower)
                         i--;
 
-                    // initial value for k                 
+                    // j + 1 < k <= kMax
+                    kMax = j + 1;
+                    while (X[kMax] < X[j] && kMax < Y.Count - 1)
+                        kMax++;
+
+                    // initial value for k
                     k = j + 1;
                     y = Y[i - 1]; // X[i - 1] <= X[j + 1] == X[k] < X[i] && in case of lower: y == Y[i - 1] <= Y[i] <= Y[j] == Y[j + 1] == Y[k]
-                    
+
                     // Find k
-                    while (((lower && y < Y[k]) || (!lower && Y[k] < y)) && k + 1 < Y.Count)// y < Y[k] => k < X.Count
+                    while (((lower && y < Y[k]) || (!lower && Y[k] < y)) && k < kMax)// y < Y[k] => k < X.Count
                     {
                         iPrevious = i;
                         k++;
-                        while (X[i] < X[k] && i < j)
-                            i++;
+                        //while ((X[i] < X[k] || (X[i] == X[k] && Y[i] < Y[k])) && i < j)
+                        while ((X[i] < X[k] || (lower && X[i] == X[k] && Y[i] < Y[k] && !(k + 1 < X.Count && X[k] == X[k + 1] && Y[k + 1] < Y[k])) || (!lower && X[i] == X[k] && Y[i] > Y[k] && !(k + 1 < X.Count && X[k] == X[k + 1] && Y[k + 1] > Y[k]))) && i < j)
+                                i++;
                         // it holds X[i - 1] < X[k] <= X[i], particularly X[i] != X[i - 1]
+                        // for i < j and X[i - 1] < X[k] it holds X[i - 1] < X[k] <= X[i], particularly X[i] != X[i - 1]
                         // linear interpolation of (x, y) = (X[k], y) on segment (i - 1, i)
-                        y = (Y[i] - Y[i - 1]) / (X[i] - X[i - 1]) * (X[k] - X[i - 1]) + Y[i - 1];
+                        if (X[i] - X[i - 1] != 0)
+                            y = (Y[i] - Y[i - 1]) / (X[i] - X[i - 1]) * (X[k] - X[i - 1]) + Y[i - 1];
+                        else
+                            y = Y[i];
                     }
-                    // k located: intersection point is on segment (k - 1, k) 
+                    // k located: intersection point is on segment (k - 1, k)
                     // i approximately located: intersection point is on polygonal line (iPrevoius - 1, i)
                     // Regular case
                     if (iPrevious > 1)
@@ -466,7 +521,7 @@ namespace CurveCompare.Algorithms
                     j = i;
                     // ----------------------------------------------------------------------------------------------------
                     // 6. Delete points that are doubled
-                    // ----------------------------------------------------------------------------------------------------                    
+                    // ----------------------------------------------------------------------------------------------------
                     if (X[i - 1] == X[i] && Y[i - 1] == Y[i])
                     {
                         X.RemoveAt(i);
