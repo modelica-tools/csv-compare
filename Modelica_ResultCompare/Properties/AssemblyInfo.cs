@@ -12,7 +12,7 @@ using CommandLine.Text;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ITI GmbH")]
 [assembly: AssemblyProduct("compare")]
-[assembly: AssemblyCopyright("Copyright ©  2015 - ITI GmbH")]
+[assembly: AssemblyCopyright("Copyright ©  2015-2016 - ITI GmbH")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyInformationalVersionAttribute("2.0.0.1")]
@@ -26,7 +26,7 @@ using CommandLine.Text;
 [assembly: AssemblyVersion("2.0.0.1")]
 [assembly: AssemblyFileVersion("2.0.0.1")]
 
-[assembly: AssemblyLicense("\nThis software is free software and released under The BSD 3-Clause License <http://opensource.org/licenses/BSD-3-Clause>.\n")]
+[assembly: AssemblyLicense("\nThis software is free software and released under the BSD 3-Clause License <http://opensource.org/licenses/BSD-3-Clause>.\n")]
 [assembly: AssemblyUsage(@"Example Usage:
  -m csvtreecompare -v 1 -r ""C:\test\report"" ""C:\test\compare\"" ""C:\test\base""
 
