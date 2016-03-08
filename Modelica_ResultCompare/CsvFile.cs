@@ -234,8 +234,16 @@ namespace CsvCompare
             return _fileName;
         }
 
-        public Report PlotCsvFile(string sReportPath, Log log)
+        public Report PlotCsvFile(Log log)
         {
+            string sReportPath;
+            if (null != _fileName)
+                if (Path.GetDirectoryName(_fileName).Length > 0)
+                    sReportPath = string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}_plot.html", Path.GetDirectoryName(_fileName), Path.DirectorySeparatorChar, Path.GetFileNameWithoutExtension(_fileName));
+                else
+                    sReportPath = Path.GetFileNameWithoutExtension(_fileName) + ".html";
+            else
+                sReportPath = string.Empty;
             Report r = new Report(sReportPath);
             log.WriteLine("Generating plot for report");
 
@@ -358,7 +366,7 @@ namespace CsvCompare
 
         private void PrepareCharts(Report rep, Curve compare)//Draw result only
         {
-            PrepareCharts(compare, null, null, rep, null, new KeyValuePair<string, List<double>>(), false);
+            PrepareCharts(compare, null, null, rep, null, new KeyValuePair<string, List<double>>(compare.Name, null), false);
         }
 
         private void PrepareCharts(Curve reference, Curve compare, Curve error, Report rep, TubeReport tubeReport, KeyValuePair<string, List<double>> res, bool bDrawBitmapPlots)
@@ -473,7 +481,7 @@ namespace CsvCompare
                 }
                 ch.DeltaError = lDeltas.Sum() / (1e-3 + compare.Y.Max(x => Math.Abs(x)));
             }
-            if (tubeReport.Lower.X.ToList<double>().Count > 2)//Remember Start and Stop values for graph scaling
+            if (null != tubeReport && tubeReport.Lower.X.ToList<double>().Count > 2)//Remember Start and Stop values for graph scaling
             {
                 ch.MinValue = tubeReport.Lower.X[0];
                 ch.MaxValue = tubeReport.Lower.X.Last();

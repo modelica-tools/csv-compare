@@ -4,10 +4,10 @@
 /// Redistribution and use in source and binary forms, with or without
 /// modification, are permitted provided that the following conditions are met:
 ///
-///  Redistributions of source code must retain the above copyright notice, 
+///  Redistributions of source code must retain the above copyright notice,
 ///  this list of conditions and the following disclaimer.
 ///  Redistributions in binary form must reproduce the above copyright notice,
-///  this list of conditions and the following disclaimer in the documentation 
+///  this list of conditions and the following disclaimer in the documentation
 ///  and/or other materials provided with the distribution.
 ///
 ///  Neither the name of the ITI GmbH nor the names of its contributors may be
@@ -193,10 +193,14 @@ namespace CsvCompare
                         foreach (string item in options.Items)
                             using (CsvFile file = new CsvFile(item, options, _log))
                             {
-                                meta.Reports.Add(file.PlotCsvFile(null, _log));
+                                meta.Reports.Add(file.PlotCsvFile(_log));
                             }
 
-                        meta.WriteReport(_log, options);
+                        foreach (Report r in meta.Reports)
+                            if (!r.WriteReport(_log, options.NoMetaReport ? null : meta.FileName.FullName, options))
+                                _log.Error("Error writing report to {0}", r.FileName);
+                        if (!options.NoMetaReport)
+                            meta.WriteReport(_log, options);
                         break;
                     default://Invalid mode
                         Console.WriteLine(options.GetUsage());
@@ -222,7 +226,7 @@ namespace CsvCompare
             {
                 _log.Error("The directory \"{0}\" containing FMU files does not exist.", dirBase.FullName);
                 Environment.Exit(2);
-            }            
+            }
 
             string outFile = string.Empty;
 
@@ -312,7 +316,7 @@ namespace CsvCompare
                 meta.Reports.Add(r);
             }
         }
-        
+
         private static Report CheckFiles(Options options, string Compare = null, string Base = null)
         {
             //Check Arguments
