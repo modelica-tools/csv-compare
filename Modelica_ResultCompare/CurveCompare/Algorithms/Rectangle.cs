@@ -17,7 +17,7 @@ using System.Threading;
 namespace CurveCompare.Algorithms
 {
     /// <summary>
-    /// Represents an algorithm, that calculates a lower and an upper tube curve. Around each point of reference curve imagine an rectangle.
+    /// Represents an algorithm, that calculates a lower and an upper tube curve. Around each point of reference curve imagine a rectangle.
     /// The upper tube curve is above all rectangles, and the lower tube curve is beneath all rectangles.
     /// </summary>
     public class Rectangle : Algorithm
