@@ -351,7 +351,7 @@ namespace CsvCompare
                     }
                 }
 
-            rep.WriteReport(log, (!string.IsNullOrEmpty(options.ReportDir)) ? options.ReportDir : string.Empty, options);
+            rep.WriteReport(log, (string.IsNullOrEmpty(options.ReportDir) || options.NoMetaReport) ? string.Empty : options.ReportDir, options);
             GC.Collect();//immediately forget big charts and data
             return rep;
         }

@@ -623,7 +623,7 @@ namespace CsvCompare
             {
                 log.WriteLine("Skipping generation of metareport as \"--nometareport\" has been set.");
                 foreach (Report r in _reports)
-                    if (!r.WriteReport(log, _path.FullName, options))
+                    if (!r.WriteReport(log, null, options))
                         log.Error("Error writing report to {0}", r.FileName);
             }
             return bRet;
