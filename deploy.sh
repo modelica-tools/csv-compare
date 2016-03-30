@@ -19,7 +19,7 @@ then
         echo file version set to $fileversion
         sed -i 's/\(AssemblyInformationalVersionAttribute\)(.*/\1("'$version'")]/' $output
         echo informational version set to $version
-        sed -i 's/\(AssemblyCopyright\).*/AssemblyCopyright("Copyright © '$dt' ITI GmbH")]/' $output
+        sed -i 's/\(AssemblyCopyright\).*/AssemblyCopyright("Copyright © '$dt' ESI ITI GmbH")]/' $output
 else
         echo "No template found @"$input!
         exit 1
