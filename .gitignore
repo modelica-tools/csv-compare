@@ -1,5 +1,6 @@
 test/
 deliver/
+msbuild.log
 Modelica_ResultCompare/obj/
 Modelica_ResultCompare/bin/
 *.suo
