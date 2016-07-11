@@ -193,11 +193,19 @@ namespace CurveCompare.Algorithms
                 // add point down left
                 LX.Add(reference.X[reference.Count - 1] - size.X);
                 LY.Add(reference.Y[reference.Count - 1] - size.Y);
-            }
-            // add point down right
-            LX.Add(reference.X[reference.Count - 1] + size.X);
-            LY.Add(reference.Y[reference.Count - 1] - size.Y);
 
+                // add point top right
+                LX.Add(reference.X[reference.Count - 1] + size.X);
+                // take into account the slope between last two points for Y value,
+                // to avoid false positive for curves with hight derivative twords the end
+                LY.Add(LY.Last() + (size.X * m0 * 2));
+            }
+            else
+            {
+                // add point down right
+                LX.Add(reference.X[reference.Count - 1] + size.X);
+                LY.Add(reference.Y[reference.Count - 1] - size.Y);
+            }
             // -------------------------------------------------------------------------------------------------------------
             // -------------- 2. Remove points and add intersection points in case of backward order -----------------------
             // -------------------------------------------------------------------------------------------------------------
@@ -344,10 +352,19 @@ namespace CurveCompare.Algorithms
                 // add point top left
                 UX.Add(reference.X[reference.Count - 1] - size.X);
                 UY.Add(reference.Y[reference.Count - 1] + size.Y);
+
+                // add point top right
+                UX.Add(reference.X[reference.Count - 1] + size.X);
+                // take into account the slope between last two points for Y value,
+                // to avoid false positive for curves with hight derivative twords the end
+                UY.Add(UY.Last() + (size.X * m0 * 2));
             }
-            // add point top right
-            UX.Add(reference.X[reference.Count - 1] + size.X);
-            UY.Add(reference.Y[reference.Count - 1] + size.Y);
+            else
+            {
+                // add point top right
+                UX.Add(reference.X[reference.Count - 1] + size.X);
+                UY.Add(reference.Y[reference.Count - 1] + size.Y);
+            }
 
             // ---------------------------------------------------------------------------------------------------------
             // -------------- 2. Remove points and add intersection points in case of backward order -------------------
