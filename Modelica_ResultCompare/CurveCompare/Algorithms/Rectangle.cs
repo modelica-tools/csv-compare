@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 // for visualization with ChartControl
 #if GUI
@@ -16,6 +17,40 @@ using System.Threading;
 
 namespace CurveCompare.Algorithms
 {
+    class Line
+    {
+        private double x, y, slope;
+
+        public Line(double x, double y, double slope)
+        {
+            this.x = x;
+            this.y = y;
+            this.slope = slope;
+        }
+
+        /// <summary>
+        /// Calculate the Y value of the point where this line and v line intersects.
+        ///
+        /// Note that his methid is not defined for parallel lines.
+        /// </summary>
+        public double IntersectsY(Line v)
+        {
+            /*
+             * this method is not defined for parallel lines,
+             * we only need to calculate intersection for lines
+             * with different slopes
+             */
+            Trace.Assert(slope != v.slope, "parallel lines");
+
+            double C1 = -slope * x + y;
+            double C2 = -v.slope * v.x + v.y;
+
+            double det = slope - v.slope;
+
+            return (slope * C2 - v.slope * C1) / det;
+        }
+    }
+
     /// <summary>
     /// Represents an algorithm, that calculates a lower and an upper tube curve. Around each point of reference curve imagine a rectangle.
     /// The upper tube curve is above all rectangles, and the lower tube curve is beneath all rectangles.
@@ -33,6 +68,7 @@ namespace CurveCompare.Algorithms
             get { return successful; }
             set { successful = value; }
         }
+
         /// <summary>
         /// Calculates a lower and an upper tube curve.
         /// </summary>
@@ -143,13 +179,35 @@ namespace CurveCompare.Algorithms
                     }
                     else if ((s0 == -1) && (s1 == 1))
                     {
+
                         // add point down left
                         LX.Add(reference.X[i] - size.X);
-
                         LY.Add(reference.Y[i] - size.Y);
+
+                        // create left-slope line object,
+                        // which is defined as a line going through down-left point
+                        // and having the same slope as left part of reference line segment (m0)
+                        var leftLine = new Line(
+                            reference.X[i] - size.X,
+                            reference.Y[i] - size.Y,
+                            m0);
+
+                        // create right-slope line object,
+                        // which is defined as a line going through down-right point
+                        // and having the same slope as right part of reference line segment (m1)
+                        var rightLine = new Line(
+                            reference.X[i] + size.X,
+                            reference.Y[i] - size.Y,
+                            m1);
+
+                        LX.Add(reference.X[i]);
+                        LY.Add(leftLine.IntersectsY(rightLine));
+
                         // add point down right
                         LX.Add(reference.X[i] + size.X);
                         LY.Add(reference.Y[i] - size.Y);
+
+
                     }
                     else if ((s0 == 1) && (s1 == -1))
                     {
@@ -295,9 +353,31 @@ namespace CurveCompare.Algorithms
                     }
                     else if ((s0 == 1) && (s1 == -1))
                     {
+
                         // add point top left
                         UX.Add(reference.X[i] - size.X);
                         UY.Add(reference.Y[i] + size.Y);
+
+                        // create left-slope line object,
+                        // which is defined as a line going through top-left point
+                        // and having the same slope as left part of reference line segment (m0)
+                        var leftLine = new Line(
+                            reference.X[i] - size.X,
+                            reference.Y[i] + size.Y,
+                            m0);
+
+                        // create right-slope line object,
+                        // which is defined as a line going through top-right point
+                        // and having the same slope as right part of reference line segment (m1)
+                        var rightLine = new Line(
+                            reference.X[i] + size.X,
+                            reference.Y[i] + size.Y,
+                            m1);
+
+                        // add an intersection point between left-slope and right-slope lines
+                        UX.Add(reference.X[i]);
+                        UY.Add(leftLine.IntersectsY(rightLine));
+
                         // add point top right
                         UX.Add(reference.X[i] + size.X);
                         UY.Add(reference.Y[i] + size.Y);
