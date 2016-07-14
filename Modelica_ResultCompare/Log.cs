@@ -126,15 +126,15 @@ namespace CsvCompare
                 Console.WriteLine("---------------");
             }
 
-            if (null == _logFileInfo)
-                _logFileInfo = new FileInfo(Path.GetTempFileName());
-
             _lastLog = string.Format(CultureInfo.CurrentCulture, "{0} [ {1,11} ] {2}",
                             timeStamp.ToString("yyyy-MM-ddZHH:mm:ss", CultureInfo.CurrentCulture),
                             level.ToString(), message);
 
             if (_logToFile)
             {
+                if (null == _logFileInfo)
+                    _logFileInfo = new FileInfo(Path.GetTempFileName());
+
                 using (TextWriter logFile = new StreamWriter(_logFileInfo.FullName, true, Encoding.UTF8))
                 {
 
