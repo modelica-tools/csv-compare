@@ -1,6 +1,6 @@
-﻿// IOptions.cs
+// IOptions.cs
 // author: Susanne Walther
-// date: 18.12.2014 
+// date: 18.12.2014
 
 using System;
 using System.Collections.Generic;
@@ -36,13 +36,13 @@ namespace CurveCompare
         /// </summary>
         Log Log { get; set; }
         /// <summary>
-        /// Path name of folder for image. 
+        /// Path name of folder for image.
         /// </summary>
         string ReportFolder { get; set; }
         /// <summary>
         /// The window with image will be shown, if true; <para> the window with image won't be shown, if false.</para>
         /// </summary>
-        bool ShowWindow { get; set; } 
+        bool ShowWindow { get; set; }
         /// <summary>
         /// States the cases of validity, that will be shown. Possible options are: all cases, just valid cases or just invalid cases.
         /// </summary>

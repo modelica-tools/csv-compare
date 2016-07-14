@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // <copyright file="HelpOptionAttribute.cs" company="Giacomo Stelluti Scala">
 //   Copyright 2015-2013 Giacomo Stelluti Scala
 // </copyright>
@@ -113,12 +113,12 @@ namespace CommandLine
         {
             text = null;
             var method = pair.Left;
-            
+
             if (!CheckMethodSignature(method))
             {
                 throw new MemberAccessException();
             }
-            
+
             text = (string)method.Invoke(target, null);
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -64,7 +64,7 @@ namespace CsvCompare
 
             InstantiateLogTable();
         }
-        
+
         public Log(string fileName) : this(fileName, false) { }
         public Log(string fileName, bool logToConsole): this()
         {

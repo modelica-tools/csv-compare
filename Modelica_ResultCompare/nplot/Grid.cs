@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * Grid.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -38,14 +38,14 @@ namespace NPlot
 {
 
 	/// <summary>
-	/// Encapsulates a Grid IDrawable object. Instances of this  to a PlotSurface2D 
+	/// Encapsulates a Grid IDrawable object. Instances of this  to a PlotSurface2D
 	/// instance to produce a grid.
 	/// </summary>
 	public class Grid : IDrawable
 	{
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		public enum GridType
 		{
@@ -72,11 +72,11 @@ namespace NPlot
 			minorGridPen_ = new Pen( Color.LightGray );
 			float[] pattern = {1.0f, 2.0f};
 			minorGridPen_.DashPattern = pattern;
-			
+
 			majorGridPen_ = new Pen( Color.LightGray );
 
 			horizontalGridType_ = GridType.Coarse;
-			
+
 			verticalGridType_ = GridType.Coarse;
 		}
 
@@ -158,7 +158,7 @@ namespace NPlot
 		/// <param name="a">the list of world values to draw grid lines at.</param>
 		/// <param name="horizontal">true if want horizontal lines, false otherwise.</param>
 		/// <param name="p">the pen to use to draw the grid lines.</param>
-		private void DrawGridLines( 
+		private void DrawGridLines(
 			Graphics g, PhysicalAxis axis, PhysicalAxis orthogonalAxis,
 			System.Collections.ArrayList a, bool horizontal, Pen p )
 		{
@@ -200,7 +200,7 @@ namespace NPlot
 			if (this.horizontalGridType_ != GridType.None)
 			{
 				xAxis.Axis.WorldTickPositions_FirstPass( xAxis.PhysicalMin, xAxis.PhysicalMax, out xLargePositions, out xSmallPositions );
-				DrawGridLines( g, xAxis, yAxis, xLargePositions, true, this.MajorGridPen );	
+				DrawGridLines( g, xAxis, yAxis, xLargePositions, true, this.MajorGridPen );
 			}
 
 			if (this.verticalGridType_ != GridType.None)

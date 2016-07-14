@@ -1,6 +1,6 @@
-﻿// Report.cs
+// Report.cs
 // copy from project Modelica-ResultCompare
-// author: Sven Rütz
+// author: Sven Ruetz
 // date: 20.10.2014
 
 using System;

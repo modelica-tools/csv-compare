@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //
 // Command Line Library: ParsingErrorsHandler.cs
 //

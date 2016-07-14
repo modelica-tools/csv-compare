@@ -1,5 +1,5 @@
-﻿// Log.cs
-// author: Sven Rütz, Susane Walther
+// Log.cs
+// author: Sven Ruetz, Susane Walther
 // date: 4.12.2014
 
 using System;
@@ -68,7 +68,7 @@ namespace CurveCompare
 
             InstantiateLogTable();
         }
-        
+
         public Log(string fileName) : this(fileName, false) { }
         public Log(string fileName, bool logToConsole): this()
         {

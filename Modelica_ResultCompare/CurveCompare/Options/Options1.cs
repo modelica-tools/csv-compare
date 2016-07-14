@@ -1,6 +1,6 @@
-﻿// Options1.cs
+// Options1.cs
 // author: Susanne Walther
-// date: 19.12.2014 
+// date: 19.12.2014
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace CurveCompare
         private Validity showValidity;
         private int drawFastAbove, drawPointsBelow;
         private bool drawLabelNumber;
-        
+
         /// <summary>
         /// Value of TubeSize.
         /// </summary>
@@ -49,7 +49,7 @@ namespace CurveCompare
             get { return formerBaseAndRatio; }
         }
         /// <summary>
-        /// States, if values are relative or absolute. 
+        /// States, if values are relative or absolute.
         /// </summary>
         public Relativity Relativity
         {

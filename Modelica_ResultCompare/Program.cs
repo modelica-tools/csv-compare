@@ -1,4 +1,4 @@
-﻿/// Copyright (c) 2013-2016, ITI GmbH
+/// Copyright (c) 2013-2016, ITI GmbH
 /// All rights reserved.
 ///
 /// Redistribution and use in source and binary forms, with or without

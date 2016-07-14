@@ -1,5 +1,5 @@
-﻿// CsvFile.cs
-// author: Sven Rütz, Susanne Walther
+// CsvFile.cs
+// author: Sven Ruetz, Susanne Walther
 // date: 18.12.2014
 
 using System;
@@ -29,7 +29,7 @@ namespace CurveCompare.DataImport
         /// <summary>
         /// Holds values for x axis.
         /// </summary>
-        public List<double> XAxis { get { return _xAxis; } }        
+        public List<double> XAxis { get { return _xAxis; } }
         /// <summary>
         /// Holds values for the results in a dictionary. The key is the result identifier.
         /// </summary>
@@ -43,7 +43,7 @@ namespace CurveCompare.DataImport
         public CsvFile(string fileName, ReadOptions options)
             : this(fileName, options, null)
         { }
-       
+
         /// <summary>
         /// The constructor reads the csv file to this object
         /// </summary>
@@ -54,7 +54,7 @@ namespace CurveCompare.DataImport
         public CsvFile(string fileName, ReadOptions options, Log log)
         {
             bool writeLogFile = (log != null);
-            
+
             if (File.Exists(fileName))
             {
                 _fileName = Path.GetFullPath(fileName);
@@ -113,7 +113,7 @@ namespace CurveCompare.DataImport
                             dataValues = Tokenize(sLine, options.Delimiter); //use custom tokenizer for improved performance
                         else
                             dataValues = sLine.Split(options.Delimiter); //use ordinary Split function for simple cases
-                        
+
                         int iCol = 0;
 
                         NumberFormatInfo provider = new NumberFormatInfo();
@@ -165,7 +165,7 @@ namespace CurveCompare.DataImport
                     log.WriteLine(LogLevel.Warning, "Column \"{0}\" seems to be a number and should be a column title. Maybe you forgot to add a header line?", sCol);
             }
         }
-        
+
         private List<string> Tokenize(string str, char delimiter)
         {
             List<string> tokens = new List<string>();
@@ -179,7 +179,7 @@ namespace CurveCompare.DataImport
 
             while (pos < end) {
                 char c = str[pos];
-                
+
                 if (c == '"')
                     withinQuotes = !withinQuotes;
 

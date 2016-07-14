@@ -1,4 +1,4 @@
-﻿// TubeSize.cs
+// TubeSize.cs
 // author: Susanne Walther
 // date: 2.12.2014
 
@@ -10,7 +10,7 @@ using System.Text;
 namespace CurveCompare
 {
     /// <summary>
-    /// The Class represents measures for the tube size in x- and y-direction: <para> 
+    /// The Class represents measures for the tube size in x- and y-direction: <para>
     /// X (Width), Y (Height). <para/>
     /// The class provides methods for conversion from relative in absolute measures and for calculation of width from height. </para>
     /// </summary>
@@ -19,11 +19,11 @@ namespace CurveCompare
         private double x, y, baseX, baseY, ratio;
         private Curve reference;
         bool successful;
-               
+
         /// <summary>
         /// X = Absolute Width = 1/2 Rectangle Width
         /// </summary>
-        public double X 
+        public double X
         {
             get { return x; }
             set { x = value; }
@@ -64,7 +64,7 @@ namespace CurveCompare
         /// true, if calculation of X and Y successful; <para>
         /// false, if calculation fails.</para>
         /// </summary>
-        public bool Successful 
+        public bool Successful
         {
             get { return successful; }
             set { successful = value; }
@@ -106,7 +106,7 @@ namespace CurveCompare
             if (baseX == 0) // nonsense case, no data
                 baseX = Math.Abs(reference.X.Max());
             if (baseX == 0) // nonsense case, no data
-                baseX = 1; 
+                baseX = 1;
             // set baseY
             baseY = reference.Y.Max() - reference.Y.Min();
             if (baseY == 0) // rare special case
@@ -132,7 +132,7 @@ namespace CurveCompare
                 ratio = 0;
         }
         /// <summary>
-        /// Calculates or sets X and Y. 
+        /// Calculates or sets X and Y.
         /// </summary>
         /// <param name="value">Value.</param>
         /// <param name="axes">States, if value is x (half width of rectangle) or y (half height of rectangle).</param>
@@ -191,7 +191,7 @@ namespace CurveCompare
         /// Calculation fails, if (BaseX = 0 or BaseY = 0).<para/>
         /// If calculation fails, [call Calculate with parameter Relativity.Absolute] or [set BaseX and BaseY != 0]</para></remarks>
         /// <exception cref="ArgumentOutOfRangeException">Relative value is out of expected range [0,1].</exception>
-        public void Calculate(double x, double y, Relativity relativity) 
+        public void Calculate(double x, double y, Relativity relativity)
         {
             successful = false;
 
@@ -223,7 +223,7 @@ namespace CurveCompare
         Y
     };
     /// <summary>
-    /// Option for TubeSize. 
+    /// Option for TubeSize.
     /// </summary>
     public enum Relativity
     {

@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * PlotSurface2D.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -127,7 +127,7 @@ namespace NPlot
 		{
 			get
 			{
-				if (plotAreaBoundingBoxCache_ == null) 
+				if (plotAreaBoundingBoxCache_ == null)
 				{
 					return Rectangle.Empty;
 				}
@@ -139,7 +139,7 @@ namespace NPlot
 		}
 
 		/// <summary>
-		/// Performs a hit test with the given point and returns information 
+		/// Performs a hit test with the given point and returns information
 		/// about the object being hit.
 		/// </summary>
 		/// <param name="p">The point to test.</param>
@@ -392,7 +392,7 @@ namespace NPlot
 			}
 		}
 
-		
+
 		/// <summary>
 		/// An imaged used to paint the plot background. Mutually exclusive with PlotBackColor and PlotBackBrush
 		/// </summary>
@@ -424,8 +424,8 @@ namespace NPlot
 		/// <summary>
 		/// Smoothing mode to use when drawing plots.
 		/// </summary>
-		public System.Drawing.Drawing2D.SmoothingMode SmoothingMode 
-		{ 
+		public System.Drawing.Drawing2D.SmoothingMode SmoothingMode
+		{
 			get
 			{
 				return smoothingMode_;
@@ -460,7 +460,7 @@ namespace NPlot
 			pYAxis2Cache_ = null;
 			titleBrush_ = new SolidBrush( Color.Black );
 			plotBackColor_ = Color.White;
-			
+
 			this.legend_ = null;
 
 			smoothingMode_ = System.Drawing.Drawing2D.SmoothingMode.None;
@@ -487,7 +487,7 @@ namespace NPlot
 
 			float diag = (float)Math.Sqrt( w*w +  h*h );
 			float scaleFactor = (diag / 1400.0f)*2.4f;
-			
+
 			if ( scaleFactor > 1.0f )
 			{
 				return scaleFactor;
@@ -501,7 +501,7 @@ namespace NPlot
 
         /// <summary>
         /// Adds a drawable object to the plot surface with z-order 0. If the object is an IPlot,
-        /// the PlotSurface2D axes will also be updated. 
+        /// the PlotSurface2D axes will also be updated.
         /// </summary>
         /// <param name="p">The IDrawable object to add to the plot surface.</param>
         public void Add(IDrawable p)
@@ -511,7 +511,7 @@ namespace NPlot
 
 
         /// <summary>
-		/// Adds a drawable object to the plot surface. If the object is an IPlot, 
+		/// Adds a drawable object to the plot surface. If the object is an IPlot,
 		/// the PlotSurface2D axes will also be updated.
 		/// </summary>
 		/// <param name="p">The IDrawable object to add to the plot surface.</param>
@@ -534,8 +534,8 @@ namespace NPlot
         {
             Add(p, xp, yp, 0);
         }
-        
-        
+
+
         /// <summary>
         /// Adds a drawable object to the plot surface against the specified axes. If
 		/// the object is an IPlot, the PlotSurface2D axes will also be updated.
@@ -550,10 +550,10 @@ namespace NPlot
 			xAxisPositions_.Add( xp );
 			yAxisPositions_.Add( yp );
             zPositions_.Add((double)zOrder);
-            // fraction is to make key unique. With 10 million plots at same z, this buggers up.. 
-            double fraction = (double)(++uniqueCounter_)/10000000.0f; 
+            // fraction is to make key unique. With 10 million plots at same z, this buggers up..
+            double fraction = (double)(++uniqueCounter_)/10000000.0f;
             ordering_.Add( (double)zOrder + fraction, drawables_.Count - 1 );
-            
+
             // if p is just an IDrawable, then it can't affect the axes.
 			if ( p is IPlot )
 			{
@@ -786,9 +786,9 @@ namespace NPlot
 		}
 
 
-		private void DeterminePhysicalAxesToDraw( Rectangle bounds, 
+		private void DeterminePhysicalAxesToDraw( Rectangle bounds,
 			Axis xAxis1, Axis xAxis2, Axis yAxis1, Axis yAxis2,
-			out PhysicalAxis pXAxis1, out PhysicalAxis pXAxis2, 
+			out PhysicalAxis pXAxis1, out PhysicalAxis pXAxis2,
 			out PhysicalAxis pYAxis1, out PhysicalAxis pYAxis2 )
 		{
 
@@ -804,7 +804,7 @@ namespace NPlot
 				new Point( cb.Right, cb.Bottom ), new Point( cb.Right, cb.Top ) );
 
 			int bottomIndent = padding_;
-			if (!pXAxis1.Axis.Hidden) 
+			if (!pXAxis1.Axis.Hidden)
 			{
 				// evaluate its bounding box
 				Rectangle bb = pXAxis1.GetBoundingBox();
@@ -813,7 +813,7 @@ namespace NPlot
 			}
 
 			int leftIndent = padding_;
-			if (!pYAxis1.Axis.Hidden) 
+			if (!pYAxis1.Axis.Hidden)
 			{
 				// evaluate its bounding box
 				Rectangle bb = pYAxis1.GetBoundingBox();
@@ -842,7 +842,7 @@ namespace NPlot
 			}
 			titleHeight = (int)( ((float)nlCount*0.75 + 1.0f) * (float)titleHeight);
 
-			if (!pXAxis2.Axis.Hidden)  
+			if (!pXAxis2.Axis.Hidden)
 			{
 				// evaluate its bounding box
 				Rectangle bb = pXAxis2.GetBoundingBox();
@@ -857,7 +857,7 @@ namespace NPlot
 			}
 
 			int rightIndent = padding_;
-			if (!pYAxis2.Axis.Hidden) 
+			if (!pYAxis2.Axis.Hidden)
 			{
 				// evaluate its bounding box
 				Rectangle bb = pYAxis2.GetBoundingBox();
@@ -886,7 +886,7 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Draw the the PlotSurface2D and all contents [axes, drawables, and legend] on the 
+		/// Draw the the PlotSurface2D and all contents [axes, drawables, and legend] on the
 		/// supplied graphics surface.
 		/// </summary>
 		/// <param name="g">The graphics surface on which to draw.</param>
@@ -926,7 +926,7 @@ namespace NPlot
 
 			// apply scale factor to axes as desired.
 
-			if (xAxis1.AutoScaleTicks) 
+			if (xAxis1.AutoScaleTicks)
 				xAxis1.TickScale = scale;
 			if (xAxis1.AutoScaleText)
 				xAxis1.FontScale = scale;
@@ -948,7 +948,7 @@ namespace NPlot
 			PhysicalAxis pYAxis1 = null;
 			PhysicalAxis pXAxis2 = null;
 			PhysicalAxis pYAxis2 = null;
-			this.DeterminePhysicalAxesToDraw( 
+			this.DeterminePhysicalAxesToDraw(
 				bounds, xAxis1, xAxis2, yAxis1, yAxis2,
 				out pXAxis1, out pXAxis2, out pYAxis1, out pYAxis2 );
 
@@ -957,30 +957,30 @@ namespace NPlot
 			// Apply axes constraints
 			for (int i=0; i<axesConstraints_.Count; ++i)
 			{
-				((AxesConstraint)axesConstraints_[i]).ApplyConstraint( 
+				((AxesConstraint)axesConstraints_[i]).ApplyConstraint(
 					pXAxis1, pYAxis1, pXAxis2, pYAxis2 );
 			}
 
 			/////////////////////////////////////////////////////////////////////////
 			// draw legend if have one.
-			// Note: this will update axes if necessary. 
+			// Note: this will update axes if necessary.
 
 			Point legendPosition = new Point(0,0);
 			if (this.legend_ != null)
 			{
-				legend_.UpdateAxesPositions( 
+				legend_.UpdateAxesPositions(
 					pXAxis1, pYAxis1, pXAxis2, pYAxis2,
-					this.drawables_, scale, this.padding_, bounds, 
+					this.drawables_, scale, this.padding_, bounds,
 					out legendPosition );
 			}
 
 			float newXAxis2Height = pXAxis2.PhysicalMin.Y;
 
 			float titleExtraOffset = oldXAxis2Height - newXAxis2Height;
-	
+
 			// now we are ready to define the bounding box for the plot area (to use in clipping
 			// operations.
-			plotAreaBoundingBoxCache_ = new Rectangle( 
+			plotAreaBoundingBoxCache_ = new Rectangle(
 				Math.Min( pXAxis1.PhysicalMin.X, pXAxis1.PhysicalMax.X ),
 				Math.Min( pYAxis1.PhysicalMax.Y, pYAxis1.PhysicalMin.Y ),
 				Math.Abs( pXAxis1.PhysicalMax.X - pXAxis1.PhysicalMin.X + 1 ),
@@ -991,7 +991,7 @@ namespace NPlot
 			bbYAxis1Cache_ = pYAxis1.GetBoundingBox();
 			bbYAxis2Cache_ = pYAxis2.GetBoundingBox();
 
-			// Fill in the background. 
+			// Fill in the background.
 			if ( this.plotBackColor_ != null )
 			{
 				g.FillRectangle(
@@ -1000,16 +1000,16 @@ namespace NPlot
 			}
 			else if (this.plotBackBrush_ != null)
 			{
-				g.FillRectangle( 
+				g.FillRectangle(
 					this.plotBackBrush_.Get( (Rectangle)plotAreaBoundingBoxCache_ ),
 					(Rectangle)plotAreaBoundingBoxCache_ );
 			}
 			else if (this.plotBackImage_ != null)
 			{
-				g.DrawImage( 
-					Utils.TiledImage( this.plotBackImage_ , new Size( 
+				g.DrawImage(
+					Utils.TiledImage( this.plotBackImage_ , new Size(
 						((Rectangle)plotAreaBoundingBoxCache_).Width,
-						((Rectangle)plotAreaBoundingBoxCache_).Height ) ), 
+						((Rectangle)plotAreaBoundingBoxCache_).Height ) ),
 					(Rectangle)plotAreaBoundingBoxCache_ );
 			}
 
@@ -1026,7 +1026,7 @@ namespace NPlot
 				scaledFont = titleFont_;
 			}
 			g.DrawString( title_, scaledFont, this.titleBrush_,	new PointF(xt,yt), titleDrawFormat_ );
-			
+
 			//count number of new lines in title.
 			int nlCount = 0;
 			for (int i=0; i<title_.Length; ++i)
@@ -1047,7 +1047,7 @@ namespace NPlot
 
 			for ( int i_o = 0; i_o < ordering_.Count; ++i_o )
 			{
-	
+
                 int i = (int)ordering_.GetByIndex(i_o);
 				double zOrder = (double)ordering_.GetKey( i_o );
 				if (zOrder > this.legendZOrder_)
@@ -1084,7 +1084,7 @@ namespace NPlot
 				{
 					drawYAxis = pYAxis2;
 				}
-	
+
 				// set the clipping region.. (necessary for zoom)
 				g.Clip = new Region((Rectangle)plotAreaBoundingBoxCache_);
 				// plot.
@@ -1092,7 +1092,7 @@ namespace NPlot
 				// reset it..
 				g.ResetClip();
 			}
-			
+
 			if ( !legendDrawn && this.legend_ != null )
 			{
 				legend_.Draw( g, legendPosition, this.drawables_, scale );
@@ -1153,7 +1153,7 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Add an axis constraint to the plot surface. Axes constraints give you 
+		/// Add an axis constraint to the plot surface. Axes constraints give you
 		/// control over where NPlot positions each axes, and the world - pixel
 		/// ratio.
 		/// </summary>
@@ -1182,7 +1182,7 @@ namespace NPlot
 
 		/// <summary>
 		/// When plots are added to the plot surface, the axes they are attached to
-		/// are immediately modified to reflect data of the plot. If 
+		/// are immediately modified to reflect data of the plot. If
 		/// AutoScaleAutoGeneratedAxes is true when a plot is added, the axes will
 		/// be turned in to auto scaling ones if they are not already [tick marks,
 		/// tick text and label size scaled to size of plot surface]. If false,
@@ -1202,12 +1202,12 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Remove a drawable object. 
+		/// Remove a drawable object.
 		/// Note that axes are not updated.
 		/// </summary>
 		/// <param name="p">Drawable to remove.</param>
 		/// <param name="updateAxes">if true, the axes are updated.</param>
-		public void Remove( IDrawable p, bool updateAxes ) 
+		public void Remove( IDrawable p, bool updateAxes )
 		{
 			int index = drawables_.IndexOf( p );
 			if (index < 0)
@@ -1227,14 +1227,14 @@ namespace NPlot
 
 
 		/// <summary>
-		/// If a plot is removed, then the ordering_ list needs to be 
-		/// recalculated. 
+		/// If a plot is removed, then the ordering_ list needs to be
+		/// recalculated.
 		/// </summary>
-		private void RefreshZOrdering() 
+		private void RefreshZOrdering()
 		{
 			uniqueCounter_ = 0;
 			ordering_ = new SortedList();
-			for (int i = 0; i < zPositions_.Count; ++i) 
+			for (int i = 0; i < zPositions_.Count; ++i)
 			{
 				double zpos = Convert.ToDouble(zPositions_[i]);
 				double fraction = (double)(++uniqueCounter_) / 10000000.0f;
@@ -1307,7 +1307,7 @@ namespace NPlot
 		int legendZOrder_ = -1;
 
 
-    } 
-} 
+    }
+}
 
 

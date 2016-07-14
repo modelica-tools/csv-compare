@@ -1,4 +1,4 @@
-﻿// ChartControl.cs
+// ChartControl.cs
 // author: Susanne Walther
 // date: 18.12.2014
 
@@ -27,7 +27,7 @@ namespace CurveCompare
         bool minMaxAssigned = false;
         int intervalCount = 20;
         ToolTip toolTip;
-        bool drawLabelNumber = false;    
+        bool drawLabelNumber = false;
 
         /// <summary>
         /// Initializes ChartControl. The method AddLine draws always lines between the points, but not always points.
@@ -60,12 +60,12 @@ namespace CurveCompare
             InitializeComponent();
             chart1.Series.Clear();
             chart1.ChartAreas.Clear();
-            
+
             // Add chart areas
             ChartArea curveChartArea = new ChartArea("curve");
             ChartArea errorChartArea = new ChartArea("error");
             initialize(curveChartArea, 0, 20, 100, 60);
-            initialize(errorChartArea, 0, 80, 100, 20); 
+            initialize(errorChartArea, 0, 80, 100, 20);
 
             // Set the alignment properties
             errorChartArea.AlignmentOrientation = AreaAlignmentOrientations.Vertical;
@@ -74,7 +74,7 @@ namespace CurveCompare
 
             // Set the alignment type
             errorChartArea.AlignmentStyle = AreaAlignmentStyles.PlotPosition | AreaAlignmentStyles.Cursor | AreaAlignmentStyles.AxesView;
-            
+
             chart1.ChartAreas.Add(curveChartArea);
             chart1.ChartAreas.Add(errorChartArea);
 
@@ -90,9 +90,9 @@ namespace CurveCompare
 
             // context menu
             AddContextMenuAndItems();
-            
+
             toolTip = new System.Windows.Forms.ToolTip();
-            
+
             this.drawFastAbove = drawFastAbove;
             this.drawPointsBelow = drawPointsBelow;
         }
@@ -104,7 +104,7 @@ namespace CurveCompare
         /// <param name="y">Position.Y of chart area</param>
         /// <param name="width">Position.Width of chart area</param>
         /// <param name="height">Position.Height of chart area</param>
-        private void initialize(ChartArea chartArea, float x, float y, float width, float height) 
+        private void initialize(ChartArea chartArea, float x, float y, float width, float height)
         {
             // zoom enabled
             chartArea.CursorX.IsUserSelectionEnabled = true;
@@ -136,7 +136,7 @@ namespace CurveCompare
         /// Adds a title to the chart.
         /// </summary>
         /// <param name="title">Title text.</param>
-        public void addTitle(string title) 
+        public void addTitle(string title)
         {
             if (!String.IsNullOrWhiteSpace(title))
                 chart1.Titles.Add("Title1");
@@ -189,7 +189,7 @@ namespace CurveCompare
             if (fast)
                 lineSeries.ChartType = SeriesChartType.FastLine;
             else
-                lineSeries.ChartType = SeriesChartType.Line;           
+                lineSeries.ChartType = SeriesChartType.Line;
             lineSeries.Points.DataBindXY(X, Y);
 
             if (drawLabelNumber)
@@ -201,7 +201,7 @@ namespace CurveCompare
             chart1.Series.Add(lineSeries);
 
             // Add Points
-            if (showPoints) 
+            if (showPoints)
             {
                 System.Windows.Forms.DataVisualization.Charting.Series pointSeries = new System.Windows.Forms.DataVisualization.Charting.Series();
                 pointSeries.Name = name + "Points";
@@ -251,7 +251,7 @@ namespace CurveCompare
         /// <param name="name">Name, visible in legend.</param>
         /// <param name="errors">Error points, x and y values.</param>
         public void AddErrors(string name, List<double> X, List<double> Y)
-        { 
+        {
             AddErrors(name, X.ToArray(), Y.ToArray());
         }
         /// <summary>
@@ -266,9 +266,9 @@ namespace CurveCompare
                 return;
 
             bool fast = (X.Length > drawFastAbove);
-            
+
             // Create a data series
-            System.Windows.Forms.DataVisualization.Charting.Series series = new System.Windows.Forms.DataVisualization.Charting.Series();            
+            System.Windows.Forms.DataVisualization.Charting.Series series = new System.Windows.Forms.DataVisualization.Charting.Series();
 
             // Set name
             series.Name = name;
@@ -284,10 +284,10 @@ namespace CurveCompare
 
             // Set Style
             series.MarkerStyle = MarkerStyle.Cross;
-                       
+
             // Add data points to the series
             series.Points.DataBindXY(X, Y);
-           
+
             // Add series to the chart
             chart1.Series.Add(series);
             chart1.Series[name].ChartArea = "error";
@@ -304,7 +304,7 @@ namespace CurveCompare
                 max = Math.Max(max, X[X.Length - 1]);
                 minMaxAssigned = true;
             }
-            
+
             chart1.ChartAreas["error"].AxisX.Minimum = min;
             chart1.ChartAreas["error"].AxisX.Maximum = max;
             chart1.ChartAreas["error"].AxisX.Interval = (max - min) / intervalCount;
@@ -314,7 +314,7 @@ namespace CurveCompare
         /// </summary>
         /// <param name="fileName">Full path of file.</param>
         /// <param name="format">Image format.</param>
-        public void saveAsImage(string fileName, System.Drawing.Imaging.ImageFormat format) 
+        public void saveAsImage(string fileName, System.Drawing.Imaging.ImageFormat format)
         {
             chart1.SaveImage(fileName, format);
         }

@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * AdapterUtils.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -61,12 +61,12 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Implements functionality for suggesting an axis suitable for charting 
+		/// Implements functionality for suggesting an axis suitable for charting
 		/// data in multiple columns of a DataRowCollection.
 		/// </summary>
 		/// <remarks>This is currently not used.</remarks>
 		public class AxisSuggester_MultiColumns : IAxisSuggester
-		{			
+		{
 
 			DataRowCollection rows_;
 			string abscissaName_;
@@ -94,11 +94,11 @@ namespace NPlot
 				double t_max = double.MinValue;
 
 				System.Collections.IEnumerator en = rows_[0].Table.Columns.GetEnumerator();
-				
+
 				while (en.MoveNext())
 				{
 					string colName = ((DataColumn)en.Current).Caption;
-					
+
 					if (colName == abscissaName_)
 					{
 						continue;
@@ -121,10 +121,10 @@ namespace NPlot
 
 				return new LinearAxis(t_min, t_max);
 			}
-		
+
 		}
 
-	
+
         /// <summary>
         /// This class gets an axis suitable for plotting the data contained in an IList.
         /// </summary>
@@ -133,7 +133,7 @@ namespace NPlot
             private IList data_;
 
             /// <summary>
-            /// Constructor. 
+            /// Constructor.
             /// </summary>
             /// <param name="data">the data we want to find a suitable axis for.</param>
             public AxisSuggester_IList(IList data)
@@ -162,7 +162,7 @@ namespace NPlot
                         return new LinearAxis(min, max);
                     }
 
-                    // perhaps return LogAxis here if range large enough 
+                    // perhaps return LogAxis here if range large enough
                     // + other constraints?
                 }
 
@@ -233,7 +233,7 @@ namespace NPlot
         /// </summary>
         public class AxisSuggester_Auto : IAxisSuggester
         {
-            
+
 			IList ordinateData_;
 
             /// <summary>
@@ -536,7 +536,7 @@ namespace NPlot
         public class DataGetter_IList : IDataGetter
         {
             private IList data_;
-            
+
             /// <summary>
             /// Constructor
             /// </summary>
@@ -572,17 +572,17 @@ namespace NPlot
 			/// Constructor
 			/// </summary>
 			/// <param name="data">array of doubles that contains the data</param>
-			public DataGetter_DoublesArray(double[] data)          
+			public DataGetter_DoublesArray(double[] data)
 			{
 				data_ = data;
 			}
-		
+
 			/// <summary>
 			/// Gets the ith data value.
 			/// </summary>
 			/// <param name="i">sequence number of data to get.</param>
 			/// <returns>ith data value.</returns>
-			public double Get(int i)          
+			public double Get(int i)
 			{
 				return data_[i];
 			}
@@ -710,14 +710,14 @@ namespace NPlot
 
         }
 
-		
+
 		/// <summary>
-		/// Gets data 
+		/// Gets data
 		/// </summary>
 		/// <remarks>Note: Does not implement IDataGetter... Currently this class is not used.</remarks>
-		public class DataGetter_MultiRows 
+		public class DataGetter_MultiRows
 		{
-			
+
 			DataRowCollection rows_;
 			string abscissaName_;
 			int abscissaColumnNumber_;

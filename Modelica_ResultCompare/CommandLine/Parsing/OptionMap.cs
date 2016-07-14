@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // <copyright file="OptionMap.cs" company="Giacomo Stelluti Scala">
 //   Copyright 2015-2013 Giacomo Stelluti Scala
 // </copyright>
@@ -37,14 +37,14 @@ namespace CommandLine.Parsing
         private readonly Dictionary<string, string> _names;
         private readonly Dictionary<string, OptionInfo> _map;
         private readonly Dictionary<string, MutuallyExclusiveInfo> _mutuallyExclusiveSetMap;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionMap"/> class.
         /// It is internal rather than private for unit testing purpose.
         /// </summary>
         /// <param name="capacity">Initial internal capacity.</param>
         /// <param name="settings">Parser settings instance.</param>
-        internal OptionMap(int capacity, ParserSettings settings) 
+        internal OptionMap(int capacity, ParserSettings settings)
         {
             _settings = settings;
 
@@ -269,7 +269,7 @@ namespace CommandLine.Parsing
 
             _mutuallyExclusiveSetMap[setName].IncrementOccurrence();
         }
-  
+
         private sealed class MutuallyExclusiveInfo
         {
             private int _count;

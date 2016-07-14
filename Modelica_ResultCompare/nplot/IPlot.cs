@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * IPlot.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -35,25 +35,25 @@ namespace NPlot
 {
 
 	/// <summary>
-	/// Defines the interface for objects that (a) can draw a representation of 
+	/// Defines the interface for objects that (a) can draw a representation of
 	/// themselves in the legend and (b) can recommend a good axis to draw themselves
 	/// against.
 	/// </summary>
 	public interface IPlot : IDrawable
-	{	
-	
+	{
+
 		/// <summary>
 		/// Method used to draw a representation of the plot in a legend.
 		/// </summary>
 		void DrawInLegend( Graphics g, Rectangle startEnd );
 
-		
+
 		/// <summary>
 		/// The label associated with the plot [used in legend]
 		/// </summary>
 		string Label { get; set; }
 
-		
+
 		/// <summary>
 		/// Whether or not to include an entry for this plot in the legend if it exists.
 		/// </summary>
@@ -65,7 +65,7 @@ namespace NPlot
 		/// </summary>
 		Axis SuggestXAxis();
 
-		
+
 		/// <summary>
 		/// The method used to set the default ordinate axis.
 		/// </summary>

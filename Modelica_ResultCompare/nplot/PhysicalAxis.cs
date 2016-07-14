@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * PhysicalAxis.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -38,11 +38,11 @@ namespace NPlot
 {
 	/// <summary>
 	/// This class adds physical positioning information [PhysicalMin, PhysicalMax]
-	/// and related functionality on top of a specific Axis class. 
-	/// 
+	/// and related functionality on top of a specific Axis class.
+	///
 	/// It's an interesting
 	/// question where to put this information. It belongs with every specific axis
-	/// type, but on the other hand, users of the library as it is normally used 
+	/// type, but on the other hand, users of the library as it is normally used
 	/// should not see it because
 	/// positioning of axes is handled internally by PlotSurface2D. Therefore it doesn't make sense
 	/// to put it in the Axis class unless it is internal. But if this were done it would restrict
@@ -50,8 +50,8 @@ namespace NPlot
 	/// The main disadvantage with the method chosen is that there is a lot of passing
 	/// of the positional information between physical axis and the underlying logical
 	/// axis type.
-	/// 
-	///	C# doesn't have templates. If it did, I might derive PhysicalAxis from the 
+	///
+	///	C# doesn't have templates. If it did, I might derive PhysicalAxis from the
 	/// templated Axis type (LinearAxis etc). Instead, have used a has-a relationship
 	/// with an Axis superclass.
 	/// </summary>
@@ -93,7 +93,7 @@ namespace NPlot
 			return bounds;
 		}
 
-	
+
 		/// <summary>
 		/// Draws the axis on the given graphics surface.
 		/// </summary>
@@ -107,7 +107,7 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Given a world coordinate value, returns the physical position of the 
+		/// Given a world coordinate value, returns the physical position of the
 		/// coordinate along the axis.
 		/// </summary>
 		/// <param name="coord">the world coordinate</param>
@@ -121,7 +121,7 @@ namespace NPlot
 
 		/// <summary>
 		/// Given a physical point on the graphics surface, returns the world
-		/// value of it's projection onto the axis [i.e. closest point on the axis]. 
+		/// value of it's projection onto the axis [i.e. closest point on the axis].
 		/// The function is implemented for axes of arbitrary orientation.
 		/// </summary>
 		/// <param name="p">Physical point to find corresponding world value of.</param>
@@ -149,7 +149,7 @@ namespace NPlot
 			{
 				minc = Axis.WorldMin;
 				maxc = Axis.WorldMax;
-				if ( !Axis.Reversed ) 
+				if ( !Axis.Reversed )
 				{
 					double tmp = this.PhysicalToWorld(min,true);
 					Axis.WorldMax = this.PhysicalToWorld(max,true);
@@ -161,9 +161,9 @@ namespace NPlot
 					Axis.WorldMin = this.PhysicalToWorld(max,true);
 					Axis.WorldMax = tmp;
 				}
-				// need to trap somehow if the user selects an 
-				// arbitrarily small range. Otherwise the GDI+ 
-				// drawing routines lead to an overflow in painting 
+				// need to trap somehow if the user selects an
+				// arbitrarily small range. Otherwise the GDI+
+				// drawing routines lead to an overflow in painting
 				// the picture. This may be not the optimal solution,
 				// but if the GDI+ draw leads to an overflow the
 				// graphic surface becomes unusable anymore and I
@@ -228,7 +228,7 @@ namespace NPlot
 			}
 		}
 		private Axis axis_;
-	
+
 
 		/// <summary>
 		/// The length in pixels of the axis.
@@ -242,7 +242,7 @@ namespace NPlot
 		}
 
 		/// <summary>
-		/// The length in world coordinates of one pixel. 
+		/// The length in world coordinates of one pixel.
 		/// </summary>
 		public double PixelWorldLength
 		{

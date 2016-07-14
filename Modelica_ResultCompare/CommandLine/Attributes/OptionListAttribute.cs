@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // <copyright file="OptionListAttribute.cs" company="Giacomo Stelluti Scala">
 //   Copyright 2015-2013 Giacomo Stelluti Scala
 // </copyright>

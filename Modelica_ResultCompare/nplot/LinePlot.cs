@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * LinePlot.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -88,13 +88,13 @@ namespace NPlot
 				shadowPen.Color = this.ShadowColor;
 			}
 
-			SequenceAdapter data = 
+			SequenceAdapter data =
 				new SequenceAdapter( this.DataSource, this.DataMember, this.OrdinateData, this.AbscissaData );
 
 			ITransform2D t = Transform2D.GetTransformer( xAxis, yAxis );
-			
+
 			int numberPoints = data.Count;
-			
+
 			if (data.Count == 0)
 			{
 				return;
@@ -105,10 +105,10 @@ namespace NPlot
 			if (numberPoints == 1)
 			{
 				PointF physical = t.Transform( data[0] );
-				
+
 				if (drawShadow)
 				{
-					g.DrawLine( shadowPen, 
+					g.DrawLine( shadowPen,
 						physical.X - 0.5f + this.ShadowOffset.X,
 						physical.Y + this.ShadowOffset.Y,
 						physical.X + 0.5f + this.ShadowOffset.X,
@@ -161,7 +161,7 @@ namespace NPlot
 					// else draw line.
 					PointF p1 = t.Transform( data[i-1] );
 					PointF p2 = t.Transform( data[i] );
-                    
+
                     // when very far zoomed in, points can fall ontop of each other,
                     // and g.DrawLine throws an overflow exception
                     if (p1.Equals(p2))
@@ -169,7 +169,7 @@ namespace NPlot
 
 					if (drawShadow)
 					{
-						g.DrawLine( shadowPen, 
+						g.DrawLine( shadowPen,
 							p1.X + ShadowOffset.X,
 							p1.Y + ShadowOffset.Y,
 							p2.X + ShadowOffset.X,
@@ -208,7 +208,7 @@ namespace NPlot
 		/// <returns>A suitable x-axis.</returns>
 		public Axis SuggestXAxis()
 		{
-			SequenceAdapter data_ = 
+			SequenceAdapter data_ =
 				new SequenceAdapter( this.DataSource, this.DataMember, this.OrdinateData, this.AbscissaData );
 
 			return data_.SuggestXAxis();
@@ -221,7 +221,7 @@ namespace NPlot
 		/// <returns>A suitable y-axis.</returns>
 		public Axis SuggestYAxis()
 		{
-			SequenceAdapter data_ = 
+			SequenceAdapter data_ =
 				new SequenceAdapter( this.DataSource, this.DataMember, this.OrdinateData, this.AbscissaData );
 
 			return data_.SuggestYAxis();
@@ -243,7 +243,7 @@ namespace NPlot
 			}
 		}
 		private bool shadow_ = false;
-	
+
 
 		/// <summary>
 		/// Color of line shadow if drawn. Use Shadow method to turn shadow on and off.
@@ -330,6 +330,6 @@ namespace NPlot
             }
         }
 
-    
+
     }
 }

@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // <copyright file="ParserSettings.cs" company="Giacomo Stelluti Scala">
 //   Copyright 2015-2013 Giacomo Stelluti Scala
 // </copyright>
@@ -134,7 +134,7 @@ namespace CommandLine
         {
             Dispose(false);
         }
-        
+
         /// <summary>
         /// Gets or sets a value indicating whether perform case sensitive comparisons.
         /// </summary>
