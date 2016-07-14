@@ -1,4 +1,4 @@
-﻿// Ellipse.cs
+// Ellipse.cs
 // authors: Susanne Walther, Dr. Uwe Schnabel
 // date: 4.12.2014
 
@@ -11,7 +11,7 @@ using System.Collections;
 namespace CurveCompare.Algorithms
 {
     /// <summary>
-    ///  Represents an algorithm, that calculates a lower and an upper tube curve. Around each point of reference curve imagine an ellipse. 
+    ///  Represents an algorithm, that calculates a lower and an upper tube curve. Around each point of reference curve imagine an ellipse.
     ///  The upper tube curve is above all ellipses, and the lower tube curve is beneath all ellipses.
     /// </summary>
     public class Ellipse : Algorithm
@@ -40,7 +40,7 @@ namespace CurveCompare.Algorithms
         #endregion
 
         public static bool RelativeErrors = true;
-        
+
         /// <summary>
         /// true, if calculation of tube successful; <para>
         /// false, if calculation fails.</para>
@@ -87,7 +87,7 @@ namespace CurveCompare.Algorithms
                 report.Size = size;
                 report.Algorithm = AlgorithmOptions.Ellipse;
 
-                /// SBR: Wir gehen erstmal prinzipiell davon aus das der Algorithmus korrekt verläuft.
+                /// SBR: Always assume the algorithm works correctly.
                 //_bAllIntervals = true;
                 // set tStart and tStop
                 _dtStart = x[0];

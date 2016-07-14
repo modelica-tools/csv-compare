@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * AxesConstraint.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -37,7 +37,7 @@ namespace NPlot
 {
 
 	/// <summary>
-	/// Classes derived from this abstract base class define and can apply 
+	/// Classes derived from this abstract base class define and can apply
 	/// some form of constraint to the positioning and length of one or more
 	/// of the four axes of a PlotSurface2D.
 	/// </summary>
@@ -46,8 +46,8 @@ namespace NPlot
 
 		/// <summary>
 		/// Defines an AxisConstraint that forces the world length corresponding
-		/// to one pixel on the bottom x-axis to be a certain value. 
-		/// 
+		/// to one pixel on the bottom x-axis to be a certain value.
+		///
 		/// TODO: Allow the pixel world length to be set for the top axis.
 		/// </summary>
 		public class XPixelWorldLength : AxesConstraint
@@ -56,7 +56,7 @@ namespace NPlot
 			private object holdFixedY_ = null;
 
 			/// <summary>
-			/// Constructor, which defines the world pixel length only. Both 
+			/// Constructor, which defines the world pixel length only. Both
 			/// y-axes will be moved by equal amounts in order to force this
 			/// constraint.
 			/// </summary>
@@ -65,15 +65,15 @@ namespace NPlot
 			{
 				this.pWorldLength_ = p;
 			}
-		
+
 			/// <summary>
 			/// Constructor, which defines the world pixel length together with
-			/// the y-axis that should be held constant when forcing this 
+			/// the y-axis that should be held constant when forcing this
 			/// constraint [the other y-axis only will be moved].
 			/// </summary>
 			/// <param name="p">The world pixel length</param>
-			/// <param name="holdFixedY">The position of this y-axis will be 
-			/// held constant. The other y-axis will be moved in order to 
+			/// <param name="holdFixedY">The position of this y-axis will be
+			/// held constant. The other y-axis will be moved in order to
 			/// force the constraint.</param>
 			public XPixelWorldLength( double p, PlotSurface2D.YAxisPosition holdFixedY )
 			{
@@ -88,8 +88,8 @@ namespace NPlot
 			/// <param name="pYAxis1">The left y-axis.</param>
 			/// <param name="pXAxis2">The top x-axis.</param>
 			/// <param name="pYAxis2">The right y-axis.</param>
-			public override void ApplyConstraint( 
-				PhysicalAxis pXAxis1, PhysicalAxis pYAxis1, 
+			public override void ApplyConstraint(
+				PhysicalAxis pXAxis1, PhysicalAxis pYAxis1,
 				PhysicalAxis pXAxis2, PhysicalAxis pYAxis2 )
 			{
 				int desiredLength = (int)(pXAxis1.Axis.WorldLength / (double)this.pWorldLength_);
@@ -121,15 +121,15 @@ namespace NPlot
 				pYAxis1.PhysicalMax = new Point( pYAxis1.PhysicalMax.X+changeLeft, pYAxis1.PhysicalMax.Y );
 				pYAxis2.PhysicalMin = new Point( pYAxis2.PhysicalMin.X-changeRight, pYAxis2.PhysicalMin.Y );
 				pYAxis2.PhysicalMax = new Point( pYAxis2.PhysicalMax.X-changeRight, pYAxis2.PhysicalMax.Y );
-		
+
 			}
 		}
 
 
 		/// <summary>
 		/// Defines an AxisConstraint that forces the world length corresponding
-		/// to one pixel on the left y-axis to be a certain value. 
-		/// 
+		/// to one pixel on the left y-axis to be a certain value.
+		///
 		/// TODO: Allow the pixel world length to be set for the right axis.
 		/// </summary>
 		public class YPixelWorldLength : AxesConstraint
@@ -138,7 +138,7 @@ namespace NPlot
 			private object holdFixedX_ = null;
 
 			/// <summary>
-			/// Constructor, which defines the world pixel length only. Both 
+			/// Constructor, which defines the world pixel length only. Both
 			/// x-axes will be moved by equal amounts in order to force this
 			/// constraint.
 			/// </summary>
@@ -147,10 +147,10 @@ namespace NPlot
 			{
 				this.pWorldLength_ = p;
 			}
-		
+
 			/// <summary>
 			/// Constructor, which defines the world pixel length together with
-			/// the x-axis that should be held constant when forcing this 
+			/// the x-axis that should be held constant when forcing this
 			/// constraint [the other x-axis only will be moved].
 			/// </summary>
 			/// <param name="p">The world pixel length</param>
@@ -169,8 +169,8 @@ namespace NPlot
 			/// <param name="pYAxis1">The left y-axis.</param>
 			/// <param name="pXAxis2">The top x-axis.</param>
 			/// <param name="pYAxis2">The right y-axis.</param>
-			public override void ApplyConstraint( 
-				PhysicalAxis pXAxis1, PhysicalAxis pYAxis1, 
+			public override void ApplyConstraint(
+				PhysicalAxis pXAxis1, PhysicalAxis pYAxis1,
 				PhysicalAxis pXAxis2, PhysicalAxis pYAxis2 )
 			{
 
@@ -209,8 +209,8 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Defines an AxisConstraint that forces the specified axis to be placed at a 
-		/// specific physical position. The position of the axis opposite is held 
+		/// Defines an AxisConstraint that forces the specified axis to be placed at a
+		/// specific physical position. The position of the axis opposite is held
 		/// constant.
 		/// </summary>
 		public class AxisPosition : AxesConstraint
@@ -220,7 +220,7 @@ namespace NPlot
 			private object yAxisPosition_;
 			private int position_;
 
-			
+
 			/// <summary>
 			/// Constructor, which defines an horizontal axis and the physical
 			/// y position it should be drawn at.
@@ -253,8 +253,8 @@ namespace NPlot
 			/// <param name="pYAxis1">The left y-axis.</param>
 			/// <param name="pXAxis2">The top x-axis.</param>
 			/// <param name="pYAxis2">The right y-axis.</param>
-			public override void ApplyConstraint( 
-				PhysicalAxis pXAxis1, PhysicalAxis pYAxis1, 
+			public override void ApplyConstraint(
+				PhysicalAxis pXAxis1, PhysicalAxis pYAxis1,
 				PhysicalAxis pXAxis2, PhysicalAxis pYAxis2 )
 			{
 
@@ -265,7 +265,7 @@ namespace NPlot
 					{
 						pXAxis1.PhysicalMin = new Point( pXAxis1.PhysicalMin.X, position_ );
 						pXAxis1.PhysicalMax = new Point( pXAxis1.PhysicalMax.X, position_ );
-			
+
 						pYAxis1.PhysicalMin = new Point( pYAxis1.PhysicalMin.X, position_ );
 						pYAxis2.PhysicalMin = new Point( pYAxis2.PhysicalMin.X, position_ );
 					}
@@ -294,7 +294,7 @@ namespace NPlot
 					{
 						pYAxis2.PhysicalMin = new Point( position_, pYAxis2.PhysicalMin.Y );
 						pYAxis2.PhysicalMax = new Point( position_, pYAxis2.PhysicalMax.Y );
-				
+
 						pXAxis1.PhysicalMax = new Point( position_, pXAxis1.PhysicalMax.Y );
 						pXAxis2.PhysicalMax = new Point( position_, pXAxis2.PhysicalMax.Y );
 					}
@@ -311,12 +311,12 @@ namespace NPlot
 		/// to be at the provided ratio. For example, an aspect ratio of 3:2 or
 		/// 1.5 indicates that there should be 1.5 times as many pixels per fixed
 		/// world length along the x direction than for the same world length along
-		/// the y direction. In other words, the world length of one pixel along 
+		/// the y direction. In other words, the world length of one pixel along
 		/// the x direction is 2/3rds that of the world length of one pixel height
 		/// in the y direction.
 		/// </summary>
 		/// <remarks>
-		/// This class will never increase the size of the plot bounding box. It 
+		/// This class will never increase the size of the plot bounding box. It
 		/// will always be made smaller.
 		/// </remarks>
 		public class AspectRatio : AxesConstraint
@@ -353,7 +353,7 @@ namespace NPlot
 			/// </summary>
 			/// <param name="a">Aspect Ratio</param>
 			/// <param name="holdFixedY">
-			/// When adjusting the position of axes, the 
+			/// When adjusting the position of axes, the
 			/// specified axis will never be moved.
 			/// </param>
 			public AspectRatio( double a, PlotSurface2D.YAxisPosition holdFixedY )
@@ -368,16 +368,16 @@ namespace NPlot
 			/// <param name="a">Aspect Ratio</param>
 			/// <param name="holdFixedX">When adjusting the position of axes, the specified axis will never be moved.</param>
 			/// <param name="holdFixedY">When adjusting the position of axes, the specified axis will never be moved.</param>
-			public AspectRatio( 
+			public AspectRatio(
 				double a,
-				PlotSurface2D.XAxisPosition holdFixedX, 
+				PlotSurface2D.XAxisPosition holdFixedX,
 				PlotSurface2D.YAxisPosition holdFixedY )
 			{
 				this.a_ = a;
 				this.holdFixedX_ = holdFixedX;
 				this.holdFixedY_ = holdFixedY;
 			}
-							
+
 			/// <summary>
 			/// Applies the constraint to the axes.
 			/// </summary>
@@ -385,14 +385,14 @@ namespace NPlot
 			/// <param name="pYAxis1">The left y-axis.</param>
 			/// <param name="pXAxis2">The top x-axis.</param>
 			/// <param name="pYAxis2">The right y-axis.</param>
-			public override void ApplyConstraint( 
-				PhysicalAxis pXAxis1, PhysicalAxis pYAxis1, 
+			public override void ApplyConstraint(
+				PhysicalAxis pXAxis1, PhysicalAxis pYAxis1,
 				PhysicalAxis pXAxis2, PhysicalAxis pYAxis2 )
 			{
 				double xWorldRange = Math.Abs( pXAxis1.Axis.WorldMax - pXAxis1.Axis.WorldMin );
 				double xPhysicalRange = Math.Abs( pXAxis1.PhysicalMax.X - pXAxis1.PhysicalMin.X );
 				double xDirPixelSize =  xWorldRange / xPhysicalRange;
-			
+
 				double yWorldRange = Math.Abs( pYAxis1.Axis.WorldMax - pYAxis1.Axis.WorldMin );
 				double yPhysicalRange = Math.Abs( pYAxis1.PhysicalMax.Y - pYAxis1.PhysicalMin.Y );
 				double yDirPixelSize =  yWorldRange / yPhysicalRange;
@@ -440,14 +440,14 @@ namespace NPlot
 
 				}
 
-				else 
+				else
 				{
 
 					// want to decrease aspect ratio. Therefore, want to add some amount
 					// to xDirPixelSize (denominator).
 
 					double toAdd = yDirPixelSize / this.a_ - xDirPixelSize;
-					int newWidth = 
+					int newWidth =
 						(int)( Math.Abs(pXAxis1.Axis.WorldMax - pXAxis1.Axis.WorldMin) / (xDirPixelSize + toAdd) );
 					int changeInWidth = (int)xPhysicalRange - newWidth;
 
@@ -482,7 +482,7 @@ namespace NPlot
 			}
 
 		}
-		
+
 
 		/// <summary>
 		/// Applies the constraint to the axes. Must be overriden.
@@ -491,8 +491,8 @@ namespace NPlot
 		/// <param name="pYAxis1">The left y-axis.</param>
 		/// <param name="pXAxis2">The top x-axis.</param>
 		/// <param name="pYAxis2">The right y-axis.</param>
-		public abstract void ApplyConstraint( 
-			PhysicalAxis pXAxis1, PhysicalAxis pYAxis1, 
+		public abstract void ApplyConstraint(
+			PhysicalAxis pXAxis1, PhysicalAxis pYAxis1,
 			PhysicalAxis pXAxis2, PhysicalAxis pYAxis2 );
 	}
 

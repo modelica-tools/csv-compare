@@ -1,4 +1,4 @@
-﻿// Algorithm.cs
+// Algorithm.cs
 // author: Susanne Walther
 // date: 22.12.2014
 
@@ -12,7 +12,7 @@ namespace CurveCompare.Algorithms
     /// <summary>
     /// Represents an algorithm, that calculates a lower and an upper tube curve.
     /// </summary>
-    public class Algorithm 
+    public class Algorithm
     {
         /// <summary>
         /// true, if calculation of tube successful; <para>
@@ -33,7 +33,7 @@ namespace CurveCompare.Algorithms
     }
 
     /// <summary>
-    /// Option for the tube calculation algorithm. Defines how the distance between the reference curve and the tube is measured. 
+    /// Option for the tube calculation algorithm. Defines how the distance between the reference curve and the tube is measured.
     /// </summary>
     /// <remarks>Standard = Max</remarks>
     public enum AlgorithmOptions
@@ -44,7 +44,7 @@ namespace CurveCompare.Algorithms
         /// For curves, that are monotonic in x.</para>
         /// </summary>
         Rectangle,
-        /// <summary> 
+        /// <summary>
         /// Weighted Euclidean Norm:<para>
         /// Ellipses around the points of reference curve. <para/>
         /// For curves, that are monotonic in x.</para>

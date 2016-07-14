@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * Utils.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -48,7 +48,7 @@ namespace NPlot
 		/// bigger than double.Epsilon.
 		/// </summary>
 		public const double Epsilon = double.Epsilon * 1000.0;
-		
+
 
 		/// <summary>
 		/// Returns true if the absolute difference between parameters is less than Epsilon
@@ -86,7 +86,7 @@ namespace NPlot
 		/// <param name="b">Second point</param>
 		/// <returns>Distance between points a and b</returns>
 		public static float Distance( PointF a, PointF b )
-		{ 
+		{
 			return (float)System.Math.Sqrt( (a.X - b.X)*(a.X - b.X) + (a.Y - b.Y)*(a.Y - b.Y) );
 		}
 
@@ -104,8 +104,8 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Converts an object of type DateTime or IConvertible to double representation. 
-		/// Mapping is 1:1. Note: the System.Convert.ToDouble method can not convert a boxed 
+		/// Converts an object of type DateTime or IConvertible to double representation.
+		/// Mapping is 1:1. Note: the System.Convert.ToDouble method can not convert a boxed
 		/// DateTime to double. This implementation can - but the "is" check probably makes
 		/// it much slower.
 		/// </summary>
@@ -148,7 +148,7 @@ namespace NPlot
 
 			min = Utils.ToDouble(a[0]);
 			max = Utils.ToDouble(a[0]);
-			
+
 			foreach ( object o in a )
 			{
 
@@ -173,7 +173,7 @@ namespace NPlot
 					}
 				}
 			}
-			
+
 			if (min.Equals (double.NaN))
 			{
 				// if min == double.NaN, then max is also double.NaN
@@ -194,13 +194,13 @@ namespace NPlot
 		/// <param name="max">The maximum value.</param>
 		/// <param name="columnName">The name of the column in the row collection to search over.</param>
 		/// <returns>true is min max set, false otherwise (a = null or zero length).</returns>
-		public static bool RowArrayMinMax( DataRowCollection rows, 
+		public static bool RowArrayMinMax( DataRowCollection rows,
 			out double min, out double max, string columnName )
 		{
 			// double[] is a reference type and can be null, if it is then I reckon the best
 			// values for min and max are also null. double is a value type so can't be set
 			//	to null. So min an max return object, and we understand that if it is not null
-			// it is a boxed double (same trick I use lots elsewhere in the lib). The 
+			// it is a boxed double (same trick I use lots elsewhere in the lib). The
 			// wonderful comment I didn't write at the top should explain everything.
 			if ( rows == null || rows.Count == 0 )
 			{
@@ -212,7 +212,7 @@ namespace NPlot
 			min = Utils.ToDouble( (rows[0])[columnName] );
 			max = Utils.ToDouble( (rows[0])[columnName] );
 
-			foreach ( DataRow r in rows ) 
+			foreach ( DataRow r in rows )
 			{
 				double e = Utils.ToDouble( r[columnName] );
 
@@ -257,13 +257,13 @@ namespace NPlot
 		/// <param name="max">The maximum value.</param>
 		/// <param name="columnName">The name of the column in the row collection to search over.</param>
 		/// <returns>true is min max set, false otherwise (a = null or zero length).</returns>
-		public static bool DataViewArrayMinMax( DataView data, 
+		public static bool DataViewArrayMinMax( DataView data,
 			out double min, out double max, string columnName )
 		{
 			// double[] is a reference type and can be null, if it is then I reckon the best
 			// values for min and max are also null. double is a value type so can't be set
 			//	to null. So min an max return object, and we understand that if it is not null
-			// it is a boxed double (same trick I use lots elsewhere in the lib). The 
+			// it is a boxed double (same trick I use lots elsewhere in the lib). The
 			// wonderful comment I didn't write at the top should explain everything.
 			if ( data == null || data.Count == 0 )
 			{
@@ -284,8 +284,8 @@ namespace NPlot
 				{
 					min = e;
 				}
-			
-				if (e > max) 
+
+				if (e > max)
 				{
 					max = e;
 				}
@@ -308,8 +308,8 @@ namespace NPlot
 			double dirNorm = System.Math.Sqrt( dir.X*dir.X + dir.Y*dir.Y );
 			if ( dirNorm > 0.0f )
 			{
-				dir = new PointF( 
-					(float)((1.0f/dirNorm)*dir.X), 
+				dir = new PointF(
+					(float)((1.0f/dirNorm)*dir.X),
 					(float)((1.0f/dirNorm)*dir.Y) ); // normalised axis direction vector
 			}
 			return dir;
@@ -341,7 +341,7 @@ namespace NPlot
 		public static System.Drawing.Bitmap TiledImage( System.Drawing.Bitmap image, Size size )
 		{
 			System.Drawing.Bitmap final = new System.Drawing.Bitmap( size.Width, size.Height );
-			
+
 			for (int i=0; i<(size.Width / image.Width)+1; ++i)
 			{
 				for (int j=0; j<(size.Height / image.Height)+1; ++j)

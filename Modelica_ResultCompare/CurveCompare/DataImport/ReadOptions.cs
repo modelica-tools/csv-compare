@@ -1,6 +1,6 @@
-﻿// ReadOptions.cs
+// ReadOptions.cs
 // author: Susanne Walther
-// date: 18.12.2014 
+// date: 18.12.2014
 
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace CurveCompare.DataImport
             set { separator = value; }
         }
         public ReadOptions()
-        {            
+        {
             delimiter = ';';
             separator = '.';
         }

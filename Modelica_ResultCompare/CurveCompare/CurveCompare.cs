@@ -1,4 +1,4 @@
-﻿// CurveCompare.cs
+// CurveCompare.cs
 // author: Susanne Walther
 // date: 05.01.2014
 
@@ -16,7 +16,7 @@ using CurveCompare.DataImport;
 namespace CurveCompare
 {
     /// <summary>
-    /// The class provides methods for comparison of curves.  
+    /// The class provides methods for comparison of curves.
     /// </summary>
     public class CurveCompare
     {
@@ -146,7 +146,7 @@ namespace CurveCompare
                                     if (!testExists || (options.ShowValidity == Validity.All || (options.ShowValidity == Validity.Invalid && report.Valid == Validity.Invalid) || (options.ShowValidity == Validity.Valid && report.Valid == Validity.Valid)))
                                         Application.Run(chartControl);
 
-                                
+
                             }
 #endif
                         }
@@ -198,13 +198,13 @@ namespace CurveCompare
                 report.Reference = refCurve;
                 report.Test = testCurve;
             }
-            // Error: no data 
+            // Error: no data
             else
             {
                 report.ErrorStep = Step.DataImport;
                 report.Valid = Validity.Undefined;
 
-                if (options.Log != null) 
+                if (options.Log != null)
                 {
                     if (referenceX != null || referenceX.Length != 0)
                         options.Log.WriteLine(LogLevel.Error, "Reference curve: Missing data.");
@@ -238,10 +238,10 @@ namespace CurveCompare
             bool useGivenResult = !String.IsNullOrWhiteSpace(result);
             bool testExists = (!String.IsNullOrWhiteSpace(testFileName) && (File.Exists(testFileName)));
             double[] refX, refY, testX, testY;
-           
+
             if (String.IsNullOrWhiteSpace(referenceFileName) || (!File.Exists(referenceFileName)))
                 return reportList;
-           
+
             // read curve data, set arrays with x values
             refCsvFile = new CsvFile(referenceFileName, readOptions, options.Log);
             refX = refCsvFile.XAxis.ToArray();
@@ -265,7 +265,7 @@ namespace CurveCompare
 
                 // set arrays with y values
                 refY = refCsvFile.Results[result].ToArray();
-                if (testExists) 
+                if (testExists)
                     testY = testCsvFile.Results[result].ToArray();
                 else
                     testY = null;
@@ -298,7 +298,7 @@ namespace CurveCompare
         /// </summary>
         /// <param name="reportList">List of TubeReport</param>
         /// <returns>List of defective steps.</returns>
-        public List<TubeReport> findErrorReports(List<TubeReport> reports, Log log) 
+        public List<TubeReport> findErrorReports(List<TubeReport> reports, Log log)
         {
            List<TubeReport> errorReports = new List<TubeReport>();
            foreach (TubeReport report in reports)
@@ -310,6 +310,6 @@ namespace CurveCompare
            }
            return errorReports;
         }
-        
+
     }
 }

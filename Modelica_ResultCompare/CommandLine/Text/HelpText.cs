@@ -63,7 +63,7 @@ namespace CommandLine.Text
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandLine.Text.HelpText"/> class 
+        /// Initializes a new instance of the <see cref="CommandLine.Text.HelpText"/> class
         /// specifying the sentence builder.
         /// </summary>
         /// <param name="sentenceBuilder">
@@ -667,7 +667,7 @@ namespace CommandLine.Text
                 }
 
                 optionName.AppendFormat("{0}", option.ShortName);
-                
+
                 if (option.HasMetaValue)
                 {
                     optionName.AppendFormat(" {0}", option.MetaValue);

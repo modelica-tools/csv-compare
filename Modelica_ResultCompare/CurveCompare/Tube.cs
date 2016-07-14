@@ -1,5 +1,5 @@
-﻿// Tube.cs
-// authors: Susanne Walther, Sven Rütz
+// Tube.cs
+// authors: Susanne Walther, Sven Ruetz
 // date: 19.12.2014
 
 using System;
@@ -12,14 +12,14 @@ using CurveCompare.Algorithms;
 namespace CurveCompare
 {
     /// <summary>
-    /// The class provides methods for tube calculation. A tube can be calculated around a reference curve. It can be verified, if a compare curve is inside the tube. 
+    /// The class provides methods for tube calculation. A tube can be calculated around a reference curve. It can be verified, if a compare curve is inside the tube.
     /// </summary>
     /// <remarks>Usage: <para>
     /// Choose a reference curve (reference) and a relative height for the tube (relativeHeight).
     /// Choose a curve to be compared.<para/>
     /// size = TubeSize(relativeHeight, reference);<para/>
     /// tube = Tube(size);<para/>
-    /// CalculateTube(reference); 
+    /// CalculateTube(reference);
     /// tubeReport = Validate(compare);<para/>
     /// </para></remarks>
     public class Tube
@@ -31,11 +31,11 @@ namespace CurveCompare
         private bool calculateErrors;
         private bool tubeSuccessful;
         private bool validationSuccessful;
-        
+
         /// <summary>
-        /// Option for the tube calculation algorithm. Defines how the distance between the reference curve and the tube is measured. 
+        /// Option for the tube calculation algorithm. Defines how the distance between the reference curve and the tube is measured.
         /// </summary>
-        public AlgorithmOptions AlgorithmOption 
+        public AlgorithmOptions AlgorithmOption
         {
             get { return algorithmOption; }
             set { algorithmOption = value; }
@@ -43,7 +43,7 @@ namespace CurveCompare
         /// <summary>
         /// Data about tube calculation and comparison.
         /// </summary>
-        public TubeReport Report 
+        public TubeReport Report
         {
             get { return report; }
         }
@@ -77,7 +77,7 @@ namespace CurveCompare
         /// <summary>
         /// Sets standard value for Tube.AlgorithmOption
         /// </summary>
-        public Tube(TubeSize size) 
+        public Tube(TubeSize size)
         {
             this.size = size;
             algorithmOption = AlgorithmOptions.Rectangle;
@@ -90,7 +90,7 @@ namespace CurveCompare
         /// <param name="reference">Reference curve.</param>
         /// <returns>true, if tube calculation successful;
         /// false, elsewise.</returns>
-        public TubeReport Calculate(Curve reference)        
+        public TubeReport Calculate(Curve reference)
         {
             if (chooseAlgorithm())
             {
@@ -110,7 +110,7 @@ namespace CurveCompare
         /// <param name="test">Curve, that shall be compared with the reference curve.</param>
         /// <returns>TubeReport: Data about tube calculation and comparison.</returns>
         /// <remarks>Requirement: CalculateTube() must be called before.</remarks>
-        public TubeReport Validate(Curve test) 
+        public TubeReport Validate(Curve test)
         {
             if (report == null)
                 return (new TubeReport());
@@ -124,7 +124,7 @@ namespace CurveCompare
                 report.Test = test;
                 validationSuccessful = Compare(newLower, newUpper, test.Y, test.X, out errorCount, out errors);
                 report.Errors = errors;
-                
+
                 if (validationSuccessful)
                 {
                     if (report.Errors.Count == 0)
@@ -142,7 +142,7 @@ namespace CurveCompare
                 validationSuccessful = false;
                 report.Valid = Validity.Undefined;
             }
-            
+
             return report;
         }
         /// <summary>
@@ -165,7 +165,7 @@ namespace CurveCompare
             List<double> errorsTime = new List<double>(time.Length);
             List<double> errorsDif = new List<double>(time.Length);
             errorCount = 0;
-            
+
             for (int i = 0; i < test.Length && i < upper.Length && i < lower.Length; i++)
             {
                 if (test[i] < lower[i] || test[i] > upper[i])
@@ -255,7 +255,7 @@ namespace CurveCompare
         /// </summary>
         /// <returns>true, if algorithm chosen;
         /// false, if no algorithm chosen.</returns>
-        private bool chooseAlgorithm() 
+        private bool chooseAlgorithm()
         {
             bool successful = true;
 
@@ -272,5 +272,5 @@ namespace CurveCompare
         }
     }
 
-    
+
 }

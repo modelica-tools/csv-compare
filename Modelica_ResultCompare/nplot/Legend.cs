@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * Legend.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -68,7 +68,7 @@ namespace NPlot
 
 		/// <summary>
 		/// Whether or not the positions of the Axes may be shifted to make
-		/// room for the Legend. 
+		/// room for the Legend.
 		/// </summary>
 		public bool NeverShiftAxes
 		{
@@ -117,8 +117,8 @@ namespace NPlot
 
 		/// <summary>
 		/// Whether or not to attach the legend on the inside of the top
-		/// or bottom axis (which, is specified using the AttachTo method) or the 
-		/// outside. 
+		/// or bottom axis (which, is specified using the AttachTo method) or the
+		/// outside.
 		/// </summary>
 		public Legend.Placement VerticalEdgePlacement
 		{
@@ -132,10 +132,10 @@ namespace NPlot
 			}
 		}
 
-		
+
 		/// <summary>
 		/// Whether or not to attach the legend on the inside of the
-		/// left or right axis (which, is specified using the AttachTo method) 
+		/// left or right axis (which, is specified using the AttachTo method)
 		/// or the outside.
 		/// </summary>
 		public Legend.Placement HorizontalEdgePlacement
@@ -152,14 +152,14 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Specify the Axes to attach the legend to. 
+		/// Specify the Axes to attach the legend to.
 		/// </summary>
 		/// <param name="xa">Specify which horizontal axis the legend should be attached to.</param>
 		/// <param name="ya">Specify which vertical axis the legend should be attached to.</param>
 		public void AttachTo( PlotSurface2D.XAxisPosition xa, PlotSurface2D.YAxisPosition ya )
 		{
 			xAttach_ = xa;
-			yAttach_ = ya; 
+			yAttach_ = ya;
 		}
 
 
@@ -190,7 +190,7 @@ namespace NPlot
 		/// <param name="padding">padding around plot within bounds.</param>
 		/// <param name="bounds">graphics surface bounds</param>
 		/// <param name="position">legend position</param>
-		public void UpdateAxesPositions( 
+		public void UpdateAxesPositions(
 			PhysicalAxis pXAxis1,
 			PhysicalAxis pYAxis1,
 			PhysicalAxis pXAxis2,
@@ -199,7 +199,7 @@ namespace NPlot
 			float scale, int padding, Rectangle bounds,
 			out Point position )
 		{
-		
+
 			int leftIndent = 0;
 			int rightIndent = 0;
 			int bottomIndent = 0;
@@ -207,7 +207,7 @@ namespace NPlot
 
 			position = new Point(0,0);
 
-			// now determine if legend should change any of these (legend should be fully 
+			// now determine if legend should change any of these (legend should be fully
 			// visible at all times), and draw legend.
 
 			Rectangle legendWidthHeight = this.GetBoundingBox( new Point(0,0), plots, scale );
@@ -222,7 +222,7 @@ namespace NPlot
 			// y
 
 			position.Y = this.yOffset_;
-			
+
 			if ( this.xAttach_ == PlotSurface2D.XAxisPosition.Bottom )
 			{
 				position.Y += pYAxis1.PhysicalMin.Y;
@@ -239,14 +239,14 @@ namespace NPlot
 					position.Y -= legendWidthHeight.Height;
 				}
 			}
-	
+
 			// x
 
 			position.X = this.xOffset_;
-		
+
 			if ( this.yAttach_ == PlotSurface2D.YAxisPosition.Left )
 			{
-				if ( this.verticalEdgePlacement_ == Legend.Placement.Outside ) 
+				if ( this.verticalEdgePlacement_ == Legend.Placement.Outside )
 				{
 					position.X -= legendWidthHeight.Width;
 				}
@@ -271,7 +271,7 @@ namespace NPlot
 				{
 					int changeAmount = -position.X + padding;
 					// only allow axes to move away from bounds.
-					if ( changeAmount > 0 )					
+					if ( changeAmount > 0 )
 					{
 						leftIndent = changeAmount;
 					}
@@ -282,7 +282,7 @@ namespace NPlot
 				{
 					int changeAmount = (position.X - bounds.Right + legendWidthHeight.Width + padding );
 					// only allow axes to move away from bounds.
-					if ( changeAmount > 0.0f ) 
+					if ( changeAmount > 0.0f )
 					{
 						rightIndent = changeAmount;
 					}
@@ -293,7 +293,7 @@ namespace NPlot
 				{
 					int changeAmount = -position.Y + padding;
 					// only allow axes to move away from bounds.
-					if ( changeAmount > 0.0f )					
+					if ( changeAmount > 0.0f )
 					{
 						topIndent = changeAmount;
 					}
@@ -304,7 +304,7 @@ namespace NPlot
 				{
 					int changeAmount = (position.Y - bounds.Bottom + legendWidthHeight.Height + padding );
 					// only allow axes to move away from bounds.
-					if ( changeAmount > 0.0f ) 
+					if ( changeAmount > 0.0f )
 					{
 						bottomIndent = changeAmount;
 					}
@@ -322,7 +322,7 @@ namespace NPlot
 				pXAxis2.PhysicalMax = new Point( pXAxis2.PhysicalMax.X - rightIndent, pXAxis2.PhysicalMax.Y + topIndent );
 				pYAxis2.PhysicalMin = new Point( pYAxis2.PhysicalMin.X - rightIndent, pYAxis2.PhysicalMin.Y - bottomIndent );
 				pYAxis2.PhysicalMax = new Point( pYAxis2.PhysicalMax.X - rightIndent, pYAxis2.PhysicalMax.Y + topIndent );
-			
+
 			}
 
 		}

@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // <copyright file="BaseOptionAttribute.cs" company="Giacomo Stelluti Scala">
 //   Copyright 2015-2013 Giacomo Stelluti Scala
 // </copyright>
@@ -175,7 +175,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a short description of this command line option. Usually a sentence summary. 
+        /// Gets or sets a short description of this command line option. Usually a sentence summary.
         /// </summary>
         public string HelpText
         {

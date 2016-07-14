@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * LegendBase.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -40,7 +40,7 @@ namespace NPlot
 	/// Provides functionality for drawing legends.
 	/// </summary>
 	/// <remarks>
-	/// The class is quite closely tied to PlotSurface2D. 
+	/// The class is quite closely tied to PlotSurface2D.
 	/// </remarks>
 	public class LegendBase
 	{
@@ -98,7 +98,7 @@ namespace NPlot
 			}
 
 			// determine max width and max height of label strings and
-			// count the labels. 
+			// count the labels.
 			int labelCount = 0;
 			int maxHt = 0;
 			int maxWd = 0;
@@ -187,7 +187,7 @@ namespace NPlot
 			int lineLength = 20;
 			int hSpacing = (int)(5.0f * scale);
 			int vSpacing = (int)(3.0f * scale);
-			int boxWidth = (int) ((float)widthInItemCount * (lineLength + maxWd + hSpacing * 2.0f ) + hSpacing); 
+			int boxWidth = (int) ((float)widthInItemCount * (lineLength + maxWd + hSpacing * 2.0f ) + hSpacing);
 			int boxHeight = (int)((float)heightInItemCount * (maxHt + vSpacing) + vSpacing);
 
 			int totalWidth = boxWidth;
@@ -259,7 +259,7 @@ namespace NPlot
 				int lineXPos = (int)(position.X + hSpacing + xpos * (lineLength + maxWd + hSpacing * 2.0f));
 				int lineYPos = (int)(position.Y + vSpacing + ypos * (vSpacing + maxHt));
 				p.DrawInLegend( g, new Rectangle( lineXPos, lineYPos, lineLength, maxHt ) );
-				
+
 				int textXPos = lineXPos + hSpacing + lineLength;
 				int textYPos = lineYPos;
 				string label = p.Label;
@@ -404,7 +404,7 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Setting this does two things. First of all, it sets the maximum number of 
+		/// Setting this does two things. First of all, it sets the maximum number of
 		/// items in the legend vertically. Second of all, it makes the legend grow
 		/// horizontally (as it must given this constraint).
 		/// </summary>
@@ -420,7 +420,7 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Setting this does two things. First of all, it sets the maximum number of 
+		/// Setting this does two things. First of all, it sets the maximum number of
 		/// items in the legend horizontally. Second of all, it makes the legend grow
 		/// vertically (as it must given this constraint).
 		/// </summary>

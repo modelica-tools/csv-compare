@@ -1,4 +1,4 @@
-﻿// Rectangle.cs
+// Rectangle.cs
 // authors: Susanne Walther, Dr. Uwe Schnabel
 // date: 15.05.2015
 

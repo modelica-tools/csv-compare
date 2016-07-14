@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * LinearAxis.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -109,7 +109,7 @@ namespace NPlot
 		}
 
 
-		private void Init() 
+		private void Init()
 		{
 			this.NumberFormat = "{0:g5}";
 		}
@@ -124,9 +124,9 @@ namespace NPlot
 		/// <param name="boundingBox">out: smallest box that completely surrounds all ticks and associated labels for this axis.</param>
 		/// <param name="labelOffset">out: offset from the axis to draw the axis label.</param>
 		protected override void DrawTicks(
-			Graphics g, 
-			Point physicalMin, 
-			Point physicalMax, 
+			Graphics g,
+			Point physicalMin,
+			Point physicalMax,
 			out object labelOffset,
 			out object boundingBox )
 		{
@@ -159,12 +159,12 @@ namespace NPlot
 					StringBuilder label = new StringBuilder();
 					label.AppendFormat(this.NumberFormat, labelNumber);
 
-					this.DrawTick( g, ((double)largeTickPositions[i]/this.scale_-this.offset_), 
+					this.DrawTick( g, ((double)largeTickPositions[i]/this.scale_-this.offset_),
 						this.LargeTickSize, label.ToString(),
-						new Point(0,0), physicalMin, physicalMax, 
+						new Point(0,0), physicalMin, physicalMax,
 						out tLabelOffset, out tBoundingBox );
-					
-					Axis.UpdateOffsetAndBounds( ref labelOffset, ref boundingBox, 
+
+					Axis.UpdateOffsetAndBounds( ref labelOffset, ref boundingBox,
 						tLabelOffset, tBoundingBox );
 
 				}
@@ -172,9 +172,9 @@ namespace NPlot
 
 			for (int i = 0; i<smallTickPositions.Count; ++i)
 			{
-				this.DrawTick( g, ((double)smallTickPositions[i]/this.scale_-this.offset_), 
-					this.SmallTickSize, "", 
-					new Point(0, 0), physicalMin, physicalMax, 
+				this.DrawTick( g, ((double)smallTickPositions[i]/this.scale_-this.offset_),
+					this.SmallTickSize, "",
+					new Point(0, 0), physicalMin, physicalMax,
 					out tLabelOffset, out tBoundingBox );
 
 				// assume bounding box and label offset unchanged by small tick bounds.
@@ -186,16 +186,16 @@ namespace NPlot
 		/// <summary>
 		/// Determines the positions, in world coordinates, of the small ticks
 		/// if they have not already been generated.
-		/// 
+		///
 		/// </summary>
 		/// <param name="physicalMin">The physical position corresponding to the world minimum of the axis.</param>
 		/// <param name="physicalMax">The physical position corresponding to the world maximum of the axis.</param>
 		/// <param name="largeTickPositions">The positions of the large ticks.</param>
 		/// <param name="smallTickPositions">If null, small tick positions are returned via this parameter. Otherwise this function does nothing.</param>
-		internal override void WorldTickPositions_SecondPass( 
+		internal override void WorldTickPositions_SecondPass(
 			Point physicalMin,
 			Point physicalMax,
-			ArrayList largeTickPositions, 
+			ArrayList largeTickPositions,
 			ref ArrayList smallTickPositions )
 		{
 
@@ -255,20 +255,20 @@ namespace NPlot
 
 
 		/// <summary>
-		/// Determines the positions, in world coordinates, of the large ticks. 
-		/// When the physical extent of the axis is small, some of the positions 
-		/// that were generated in this pass may be converted to small tick 
+		/// Determines the positions, in world coordinates, of the large ticks.
+		/// When the physical extent of the axis is small, some of the positions
+		/// that were generated in this pass may be converted to small tick
 		/// positions and returned as well.
 		///
 		/// If the LargeTickStep isn't set then this is calculated automatically and
-		/// depends on the physical extent of the axis. 
+		/// depends on the physical extent of the axis.
 		/// </summary>
 		/// <param name="physicalMin">The physical position corresponding to the world minimum of the axis.</param>
 		/// <param name="physicalMax">The physical position corresponding to the world maximum of the axis.</param>
 		/// <param name="largeTickPositions">ArrayList containing the positions of the large ticks.</param>
 		/// <param name="smallTickPositions">ArrayList containing the positions of the small ticks if calculated, null otherwise.</param>
 		internal override void WorldTickPositions_FirstPass(
-			Point physicalMin, 
+			Point physicalMin,
 			Point physicalMax,
 			out ArrayList largeTickPositions,
 			out ArrayList smallTickPositions
@@ -281,21 +281,21 @@ namespace NPlot
 			{
 				throw new NPlotException( "world extent of axis not set." );
 			}
-			
+
 			double adjustedMax = this.AdjustedWorldValue( WorldMax );
 			double adjustedMin = this.AdjustedWorldValue( WorldMin );
 
 			// (2) determine distance between large ticks.
 			bool shouldCullMiddle;
-			double tickDist = this.DetermineLargeTickStep( 
+			double tickDist = this.DetermineLargeTickStep(
 				Utils.Distance(physicalMin, physicalMax),
 				out shouldCullMiddle );
 
 			// (3) determine starting position.
-		
+
 			double first = 0.0f;
 
-			if (!double.IsNaN(largeTickValue_)) 
+			if (!double.IsNaN(largeTickValue_))
 			{
 				// this works for both case when largTickValue_ lt or gt adjustedMin.
 				first = largeTickValue_ + (Math.Ceiling((adjustedMin-largeTickValue_)/tickDist))*tickDist;
@@ -323,7 +323,7 @@ namespace NPlot
 
 
 			// (4) now make list of large tick positions.
-			
+
 			largeTickPositions = new ArrayList();
 
 			if (tickDist < 0.0) // some sanity checking. TODO: remove this.
@@ -332,14 +332,14 @@ namespace NPlot
 			double position = first;
 			int safetyCount = 0;
 			while (
-				(position <= adjustedMax) && 
+				(position <= adjustedMax) &&
 				(++safetyCount < 5000) )
 			{
 				largeTickPositions.Add( position );
 				position += tickDist;
 			}
 
-			// (5) if the physical extent is too small, and the middle 
+			// (5) if the physical extent is too small, and the middle
 			// ticks should be turned into small ticks, then do this now.
 			smallTickPositions = null;
 			if (shouldCullMiddle)
@@ -365,12 +365,12 @@ namespace NPlot
 
 		/// <summary>
 		/// Calculates the world spacing between large ticks, based on the physical
-		/// axis length (parameter), world axis length, Mantissa values and 
-		/// MinPhysicalLargeTickStep. A value such that at least two 
+		/// axis length (parameter), world axis length, Mantissa values and
+		/// MinPhysicalLargeTickStep. A value such that at least two
 		/// </summary>
 		/// <param name="physicalLength">physical length of the axis</param>
-		/// <param name="shouldCullMiddle">Returns true if we were forced to make spacing of 
-		/// large ticks too small in order to ensure that there are at least two of 
+		/// <param name="shouldCullMiddle">Returns true if we were forced to make spacing of
+		/// large ticks too small in order to ensure that there are at least two of
 		/// them. The draw ticks method should not draw more than two large ticks if this
 		/// returns true.</param>
 		/// <returns>Large tick spacing</returns>
@@ -389,7 +389,7 @@ namespace NPlot
 			{
 				if ( largeTickStep_ <= 0.0f )
 				{
-					throw new NPlotException( 
+					throw new NPlotException(
 						"can't have negative or zero tick step - reverse WorldMin WorldMax instead."
 					);
 				}
@@ -432,8 +432,8 @@ namespace NPlot
 					break;
 				}
 			}
-			
-			// then choose next largest spacing. 
+
+			// then choose next largest spacing.
 			mantissaIndex += 1;
 			if (mantissaIndex == Mantissas.Length)
 			{
@@ -443,7 +443,7 @@ namespace NPlot
 
 			if (!TicksIndependentOfPhysicalExtent)
 			{
-				// now make sure that the returned value is such that at least two 
+				// now make sure that the returned value is such that at least two
 				// large tick marks will be displayed.
 				double tickStep = Math.Pow( 10.0, exponent ) * Mantissas[mantissaIndex];
 				float physicalStep = (float)((tickStep / range) * physicalLength);
@@ -504,7 +504,7 @@ namespace NPlot
 				}
 
 			}
-				
+
 			return 0;
 
 		}
@@ -532,7 +532,7 @@ namespace NPlot
 
 
 		/// <summary>
-		/// If set, a large tick will be placed at this position, and other large ticks will 
+		/// If set, a large tick will be placed at this position, and other large ticks will
 		/// be placed relative to this position.
 		/// </summary>
 		public double LargeTickValue
@@ -568,7 +568,7 @@ namespace NPlot
 		/// <summary>
 		/// Scale to apply to world values when labelling axis:
 		/// (labelWorld = world * scale + offset). This does not
-		/// affect the "real" world range of the axis. 
+		/// affect the "real" world range of the axis.
 		/// </summary>
 		public double Scale
 		{
@@ -600,11 +600,11 @@ namespace NPlot
 		}
 
 		/// <summary>
-		/// If LargeTickStep isn't specified, then a suitable value is 
+		/// If LargeTickStep isn't specified, then a suitable value is
 		/// calculated automatically. To determine the tick spacing, the
 		/// world axis length is divided by ApproximateNumberLargeTicks
 		/// and the next lowest distance m*10^e for some m in the Mantissas
-		/// set and some integer e is used as the large tick spacing. 
+		/// set and some integer e is used as the large tick spacing.
 		/// </summary>
 		public float ApproxNumberLargeTicks = 3.0f;
 
@@ -616,7 +616,7 @@ namespace NPlot
 		public double[] Mantissas = {1.0, 2.0, 5.0};
 
 		/// <summary>
-		/// If NumberOfSmallTicks isn't specified then .... 
+		/// If NumberOfSmallTicks isn't specified then ....
 		/// If specified LargeTickStep manually, then no small ticks unless
 		/// NumberOfSmallTicks specified.
 		/// </summary>

@@ -1,4 +1,4 @@
-﻿// TubeReport.cs
+// TubeReport.cs
 // author: Susanne Walther
 // date: 22.12.2014
 
@@ -29,13 +29,13 @@ namespace CurveCompare
         /// = Validity.Valid, if the test curve is inside the tube;
         /// Validity.Invalid, elsewise.
         /// </summary>
-        public Validity Valid 
+        public Validity Valid
         {
             get { return validity; }
             set { validity = value; }
         }
         /// <summary>
-        /// Distance from points of test curve to tube in y direction, for all points of test curve outside the tube. 
+        /// Distance from points of test curve to tube in y direction, for all points of test curve outside the tube.
         /// </summary>
         public Curve Errors { get; set; }
         /// <summary>
@@ -59,13 +59,13 @@ namespace CurveCompare
         /// </summary>
         public TubeSize Size { get; set; }
         /// <summary>
-        /// Option for the tube calculation algorithm. Defines how the distance between the reference curve and the tube is measured. 
+        /// Option for the tube calculation algorithm. Defines how the distance between the reference curve and the tube is measured.
         /// </summary>
         public AlgorithmOptions Algorithm { get; set; }
-        
+
         public Step ErrorStep { get; set; }
 
-        public TubeReport() 
+        public TubeReport()
         {
             validity = Validity.Undefined;
         }

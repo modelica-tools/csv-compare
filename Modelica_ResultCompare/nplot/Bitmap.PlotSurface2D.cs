@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * Bitmap.PlotSurface2D.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -44,7 +44,7 @@ namespace NPlot
 		/// Wrapper around NPlot.PlotSurface2D that provides extra functionality
 		/// specific to drawing to Bitmaps.
 		/// </summary>
-		public class PlotSurface2D: IPlotSurface2D 
+		public class PlotSurface2D: IPlotSurface2D
 		{
 
 			/// <summary>
@@ -55,7 +55,7 @@ namespace NPlot
 			public PlotSurface2D( int width, int height )
 			{
 				b_ = new System.Drawing.Bitmap( width, height );
-				ps_ = new NPlot.PlotSurface2D();	
+				ps_ = new NPlot.PlotSurface2D();
 			}
 
 			/// <summary>
@@ -65,7 +65,7 @@ namespace NPlot
 			public PlotSurface2D( System.Drawing.Bitmap b )
 			{
 				b_ = b;
-				ps_ = new NPlot.PlotSurface2D();	
+				ps_ = new NPlot.PlotSurface2D();
 			}
 
 
@@ -90,7 +90,7 @@ namespace NPlot
 
 
 			/// <summary>
-			/// Adds a drawable object to the plot surface. If the object is an IPlot, 
+			/// Adds a drawable object to the plot surface. If the object is an IPlot,
 			/// the PlotSurface2D axes will also be updated.
 			/// </summary>
 			/// <param name="p">The IDrawable object to add to the plot surface.</param>
@@ -113,7 +113,7 @@ namespace NPlot
 			}
 
 			/// <summary>
-			/// Adds a drawable object to the plot surface. If the object is an IPlot, 
+			/// Adds a drawable object to the plot surface. If the object is an IPlot,
 			/// the PlotSurface2D axes will also be updated.
 			/// </summary>
 			/// <param name="p">The IDrawable object to add to the plot surface.</param>
@@ -143,11 +143,11 @@ namespace NPlot
 			/// </summary>
 			public string Title
 			{
-				get 
+				get
 				{
 					return ps_.Title;
 				}
-				set 
+				set
 				{
 					ps_.Title = value;
 				}
@@ -157,13 +157,13 @@ namespace NPlot
 			/// <summary>
 			/// The plot title font.
 			/// </summary>
-			public Font TitleFont 
+			public Font TitleFont
 			{
-				get 
+				get
 				{
 					return ps_.TitleFont;
 				}
-				set 
+				set
 				{
 					ps_.TitleFont = value;
 				}
@@ -320,8 +320,8 @@ namespace NPlot
 			/// <summary>
 			/// Smoothing mode to use when drawing plots.
 			/// </summary>
-			public System.Drawing.Drawing2D.SmoothingMode SmoothingMode 
-			{ 
+			public System.Drawing.Drawing2D.SmoothingMode SmoothingMode
+			{
 				get
 				{
 					return ps_.SmoothingMode;
@@ -336,7 +336,7 @@ namespace NPlot
 			/// <summary>
 			/// The bitmap width
 			/// </summary>
-			public int Width 
+			public int Width
 			{
 				get
 				{
@@ -348,9 +348,9 @@ namespace NPlot
 			/// <summary>
 			/// The bitmap height
 			/// </summary>
-			public int Height 
+			public int Height
 			{
-				get 
+				get
 				{
 					return b_.Height;
 				}
@@ -362,7 +362,7 @@ namespace NPlot
 			/// an ASP.NET page.
 			/// </summary>
 			/// <returns>The MemoryStream object.</returns>
-			public System.IO.MemoryStream ToStream( System.Drawing.Imaging.ImageFormat imageFormat ) 
+			public System.IO.MemoryStream ToStream( System.Drawing.Imaging.ImageFormat imageFormat )
 			{
 				System.IO.MemoryStream stream = new System.IO.MemoryStream();
 				ps_.Draw(Graphics.FromImage(this.Bitmap),new System.Drawing.Rectangle(0,0,b_.Width,b_.Height));
@@ -374,9 +374,9 @@ namespace NPlot
 			/// <summary>
 			/// The bitmap to use as the drawing surface.
 			/// </summary>
-			public System.Drawing.Bitmap Bitmap 
+			public System.Drawing.Bitmap Bitmap
 			{
-				get 
+				get
 				{
 					return b_;
 				}
@@ -398,7 +398,7 @@ namespace NPlot
 				}
 			}
 			object backColor_ = null;
-			
+
 
 			/// <summary>
 			/// Refreshes (draws) the plot.
@@ -417,7 +417,7 @@ namespace NPlot
 			private NPlot.PlotSurface2D ps_;
 			private System.Drawing.Bitmap b_;
 
-			
+
 			/// <summary>
 			/// Add an axis constraint to the plot surface. Axis constraints can
 			/// specify relative world-pixel scalings, absolute axis positions etc.
@@ -430,7 +430,7 @@ namespace NPlot
 
 
 			/// <summary>
-			/// Whether or not the title will be scaled according to size of the plot 
+			/// Whether or not the title will be scaled according to size of the plot
 			/// surface.
 			/// </summary>
 			public bool AutoScaleTitle
@@ -448,7 +448,7 @@ namespace NPlot
 
 			/// <summary>
 			/// When plots are added to the plot surface, the axes they are attached to
-			/// are immediately modified to reflect data of the plot. If 
+			/// are immediately modified to reflect data of the plot. If
 			/// AutoScaleAutoGeneratedAxes is true when a plot is added, the axes will
 			/// be turned in to auto scaling ones if they are not already [tick marks,
 			/// tick text and label size scaled to size of plot surface]. If false,

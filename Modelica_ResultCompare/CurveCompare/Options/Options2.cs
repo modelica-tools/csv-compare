@@ -1,6 +1,6 @@
-﻿// Options2.cs
+// Options2.cs
 // author: Susanne Walther
-// date: 18.12.2014 
+// date: 18.12.2014
 
 using System;
 using System.Collections.Generic;
@@ -24,9 +24,9 @@ namespace CurveCompare
         private Validity showValidity;
         private int drawFastAbove, drawPointsBelow;
         private bool drawLabelNumber;
-        
+
         /// <summary>
-        /// x value of TubeSize. Half width of rectangle. 
+        /// x value of TubeSize. Half width of rectangle.
         /// </summary>
         public double X
         {
@@ -40,7 +40,7 @@ namespace CurveCompare
             get { return y; }
         }
         /// <summary>
-        /// States, if values are relative or absolute. 
+        /// States, if values are relative or absolute.
         /// </summary>
         public Relativity Relativity
         {
@@ -160,6 +160,6 @@ namespace CurveCompare
             drawFastAbove = 0;
             drawPointsBelow = Int32.MaxValue;
             drawLabelNumber = false;
-        }    
+        }
     }
 }

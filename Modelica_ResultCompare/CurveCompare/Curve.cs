@@ -1,4 +1,4 @@
-﻿// Curve.cs
+// Curve.cs
 // author: Susanne Walther
 // date: 4.12.2014
 
@@ -75,7 +75,7 @@ namespace CurveCompare
                 {
                     this.Name = name;
 
-                    // Error treatment: If arrays have different Length, trim the longer array. 
+                    // Error treatment: If arrays have different Length, trim the longer array.
                     int diff = x.Length - y.Length;
                     if (diff > 0)
                         Array.Resize<double>(ref x, y.Length);
@@ -94,7 +94,7 @@ namespace CurveCompare
         /// Identifies, if x values of points are monotonic.
         /// </summary>
         /// <returns></returns>
-        public bool MonotoneInX() 
+        public bool MonotoneInX()
         {
             bool monotone = true;
 

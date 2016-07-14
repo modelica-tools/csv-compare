@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // <copyright file="MultilineTextAttribute.cs" company="Giacomo Stelluti Scala">
 //   Copyright 2015-2013 Giacomo Stelluti Scala
 // </copyright>
@@ -192,7 +192,7 @@ namespace CommandLine
 
         internal void AddToHelpText(HelpText helpText, bool before)
         {
-            // before flag only distinguishes which action is called, 
+            // before flag only distinguishes which action is called,
             // so refactor common code and call with appropriate action
             if (before)
             {

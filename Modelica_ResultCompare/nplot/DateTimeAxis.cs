@@ -1,13 +1,13 @@
 /*
  * NPlot - A charting library for .NET
- * 
+ *
  * DateTimeAxis.cs
  * Copyright (C) 2003-2006 Matt Howlett and others.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of NPlot nor the names of its contributors may
  *    be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -146,22 +146,22 @@ namespace NPlot
 		/// <param name="physicalMax">The maximum physical extent of the axis.</param>
 		/// <param name="boundingBox">out: smallest box that completely encompasses all of the ticks and tick labels.</param>
 		/// <param name="labelOffset">out: a suitable offset from the axis to draw the axis label.</param>
-		protected override void DrawTicks( 
-			Graphics g, 
-			Point physicalMin, 
-			Point physicalMax, 
+		protected override void DrawTicks(
+			Graphics g,
+			Point physicalMin,
+			Point physicalMax,
 			out object labelOffset,
 			out object boundingBox )
 		{
-			
-			// TODO: Look at offset and bounding box logic again here. why temp and other vars? 
+
+			// TODO: Look at offset and bounding box logic again here. why temp and other vars?
 
 			Point tLabelOffset;
 			Rectangle tBoundingBox;
 
 			labelOffset = this.getDefaultLabelOffset( physicalMin, physicalMax );
 			boundingBox = null;
-		
+
 			ArrayList largeTicks;
 			ArrayList smallTicks;
 			this.WorldTickPositions( physicalMin, physicalMax, out largeTicks, out smallTicks );
@@ -169,9 +169,9 @@ namespace NPlot
 			// draw small ticks.
 			for (int i=0; i<smallTicks.Count; ++i)
 			{
-				this.DrawTick( g, (double)smallTicks[i], 
+				this.DrawTick( g, (double)smallTicks[i],
 					this.SmallTickSize, "", new Point(0, 0),
-					physicalMin, physicalMax, 
+					physicalMin, physicalMax,
 					out tLabelOffset, out tBoundingBox );
 				// assume label offset and bounding box unchanged by small tick bounds.
 			}
@@ -179,7 +179,7 @@ namespace NPlot
 			// draw large ticks.
 			for (int i=0; i<largeTicks.Count; ++i)
 			{
-					
+
 				DateTime tickDate = new DateTime( (long)((double)largeTicks[i]) );
                 string label = LargeTickLabel(tickDate);
 
@@ -201,7 +201,7 @@ namespace NPlot
 		{
 			string label = "";
 
-			if(this.NumberFormat == null || this.NumberFormat == String.Empty) 
+			if(this.NumberFormat == null || this.NumberFormat == String.Empty)
 			{
 				if ( this.LargeTickLabelType_ == LargeTickLabelType.year )
 				{
@@ -221,7 +221,7 @@ namespace NPlot
 					label += " ";
 					label += tickDate.ToString("MMM");
 				}
-				
+
 				else if ( this.LargeTickLabelType_ == LargeTickLabelType.hourMinute )
 				{
 					string minutes = tickDate.Minute.ToString();
@@ -244,11 +244,11 @@ namespace NPlot
 					{
 						minutes = "0" + minutes;
 					}
-					label = tickDate.Hour.ToString() + ":" + minutes + "." + seconds;	
+					label = tickDate.Hour.ToString() + ":" + minutes + "." + seconds;
 				}
 
 			}
-			else 
+			else
 			{
 				label = tickDate.ToString(NumberFormat);
 			}
@@ -260,7 +260,7 @@ namespace NPlot
 		/// <summary>
 		/// Enumerates the different types of tick label possible.
 		/// </summary>
-		protected enum LargeTickLabelType 
+		protected enum LargeTickLabelType
 		{
 			/// <summary>
 			/// default - no tick labels.
@@ -303,14 +303,14 @@ namespace NPlot
 		/// <summary>
 		/// Determines the positions, in world coordinates, of the large ticks. No
 		/// small tick marks are currently calculated by this method.
-		/// 
+		///
 		/// </summary>
 		/// <param name="physicalMin">The physical position corresponding to the world minimum of the axis.</param>
 		/// <param name="physicalMax">The physical position corresponding to the world maximum of the axis.</param>
 		/// <param name="largeTickPositions">ArrayList containing the positions of the large ticks.</param>
 		/// <param name="smallTickPositions">null</param>
 		internal override void WorldTickPositions_FirstPass(
-			Point physicalMin, 
+			Point physicalMin,
 			Point physicalMax,
 			out ArrayList largeTickPositions,
 			out ArrayList smallTickPositions
@@ -326,10 +326,10 @@ namespace NPlot
 			DateTime worldMinDate = new DateTime( (long)this.WorldMin );
 			DateTime worldMaxDate = new DateTime( (long)this.WorldMax );
 
-			if(largeTickStep_ == TimeSpan.Zero) 
+			if(largeTickStep_ == TimeSpan.Zero)
 			{
 
-				// if less than 10 minutes, then large ticks on second spacings. 
+				// if less than 10 minutes, then large ticks on second spacings.
 
 				if ( timeLength < new TimeSpan(0,0,2,0,0) )
 				{
@@ -345,15 +345,15 @@ namespace NPlot
 						secondsSkip = 5.0;
 					else if ( timeLength < new TimeSpan(0,0,2,30,0) )
 						secondsSkip = 15.0;
-					else 
+					else
 						secondsSkip = 30.0;
 
 					int second = worldMinDate.Second;
-					second -= second % (int)secondsSkip;					
+					second -= second % (int)secondsSkip;
 
-					DateTime currentTickDate = new DateTime( 
+					DateTime currentTickDate = new DateTime(
 						worldMinDate.Year,
-						worldMinDate.Month, 
+						worldMinDate.Month,
 						worldMinDate.Day,
 						worldMinDate.Hour,
 						worldMinDate.Minute,
@@ -392,11 +392,11 @@ namespace NPlot
 						minuteSkip = 30.0;
 
 					int minute = worldMinDate.Minute;
-					minute -= minute % (int)minuteSkip;					
+					minute -= minute % (int)minuteSkip;
 
-					DateTime currentTickDate = new DateTime( 
+					DateTime currentTickDate = new DateTime(
 						worldMinDate.Year,
-						worldMinDate.Month, 
+						worldMinDate.Month,
 						worldMinDate.Day,
 						worldMinDate.Hour,
 						minute,0,0 );
@@ -430,11 +430,11 @@ namespace NPlot
 
 
 					int hour = worldMinDate.Hour;
-					hour -= hour % (int)hourSkip;					
+					hour -= hour % (int)hourSkip;
 
-					DateTime currentTickDate = new DateTime( 
+					DateTime currentTickDate = new DateTime(
 						worldMinDate.Year,
-						worldMinDate.Month, 
+						worldMinDate.Month,
 						worldMinDate.Day,
 						hour,0,0,0 );
 
@@ -466,12 +466,12 @@ namespace NPlot
 						daySkip = 2.0;
 					else if (timeLength < new TimeSpan(7*10,0,0,0,0) )
 						daySkip = 7.0;
-					else 
+					else
 						daySkip = 14.0;
 
-					DateTime currentTickDate = new DateTime( 
+					DateTime currentTickDate = new DateTime(
 						worldMinDate.Year,
-						worldMinDate.Month, 
+						worldMinDate.Month,
 						worldMinDate.Day );
 
                     if (daySkip == 2.0)
@@ -542,7 +542,7 @@ namespace NPlot
 				{
 
 					int monthSpacing = 0;
-			
+
 					if ( timeLength.Days < daysInMonth*(12*3+6) )
 					{
 						LargeTickLabelType_ = LargeTickLabelType.month;
@@ -570,11 +570,11 @@ namespace NPlot
 					}
 
 					// truncate start
-					DateTime currentTickDate = new DateTime( 
+					DateTime currentTickDate = new DateTime(
 						worldMinDate.Year,
-						worldMinDate.Month, 
+						worldMinDate.Month,
 						1 );
-			
+
 					if (monthSpacing > 1)
 					{
 						currentTickDate = currentTickDate.AddMonths(
@@ -585,7 +585,7 @@ namespace NPlot
 					if (monthSpacing >= 24)
 					{
 						currentTickDate = currentTickDate.AddYears(
-							-(currentTickDate.Year)%(monthSpacing/12) );						
+							-(currentTickDate.Year)%(monthSpacing/12) );
 					}
 
 					//this.firstLargeTick_ = (double)currentTickDate.Ticks;
@@ -608,7 +608,7 @@ namespace NPlot
 			}
 			else
 			{
-				for (DateTime date = worldMinDate; date < worldMaxDate; date += largeTickStep_) 
+				for (DateTime date = worldMinDate; date < worldMaxDate; date += largeTickStep_)
 				{
 					largeTickPositions.Add((double)date.Ticks);
 				}
@@ -663,13 +663,13 @@ namespace NPlot
 		/// The distance between large ticks. If this is set to Zero [default],
 		/// this distance will be calculated automatically.
 		/// </summary>
-		public TimeSpan LargeTickStep 
+		public TimeSpan LargeTickStep
 		{
-			set 
+			set
 			{
 				largeTickStep_ = value;
 			}
-			get 
+			get
 			{
 				return largeTickStep_;
 			}
