@@ -87,6 +87,8 @@ namespace CsvCompare
                 _log.WriteLine(LogLevel.Debug, "Parsing command line options: {0} * {1}", Environment.NewLine, string.Join(" ", cmdArgs));
                 _log.WriteLine(LogLevel.Debug, "Successfully parsed the following options:");
                 _log.WriteLine(LogLevel.Debug, "Operation mode is {0}", options.Mode);
+                _log.WriteLine(LogLevel.Debug, "Execution method is {0}", options.Method);
+                _log.WriteLine(LogLevel.Debug, "Given tolerance is  in {0} direction", options.Direction);
                 _log.WriteLine(LogLevel.Debug, "Tolerance is {0}", options.Tolerance);
 
                 if (options.Delimiter == 0)

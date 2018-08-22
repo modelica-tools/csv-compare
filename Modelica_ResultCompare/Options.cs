@@ -19,6 +19,18 @@ namespace CsvCompare
         PlotOnly
     }
 
+    public enum ExecutionMethod
+    {
+        Relative,
+        Absolute
+    }
+
+    public enum ToleranceDirection
+    {
+        X,
+        Y
+    }
+
     public class Options
     {
         [Option('a', "args", Required = false, HelpText = "Arguments to run FMU checker with. [Default is \"-l 5 -h 1e-2 -s 1.5\"]")]
@@ -32,6 +44,12 @@ namespace CsvCompare
 
         [Option('m', "mode", DefaultValue = OperationMode.CsvFileCompare, Required = false, HelpText = "Set the tools operation mode. Valid modes are: CsvFileCompare, CsvTreeCompare, FmuChecker, PlotOnly(experimental)")]
         public OperationMode Mode { get; set; }
+
+        [Option("method", DefaultValue = ExecutionMethod.Relative, Required = false, HelpText = "Set the tools execution method. Valid methods are: Relative and Absolute.If relative method is opted range of tolerance is [0,1] and for absolute there is no limit.")]
+        public ExecutionMethod Method { get; set; }
+
+        [Option("direction", DefaultValue = ToleranceDirection.X, Required = false, HelpText = "Set the tolerance to any one of the axis.valid directions are: X and Y.")]
+        public ToleranceDirection Direction { get; set; }
 
         [Option('o', "override", DefaultValue = false, HelpText = "Override output files if they already exist (Default behaviour is to put the output next to the found file with a time stamp in the file name).")]
         public bool OverrideOutput { get; set; }
