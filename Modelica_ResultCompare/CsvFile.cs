@@ -23,6 +23,7 @@ namespace CsvCompare
         private Dictionary<string, List<double>> _values = new Dictionary<string, List<double>>();
         private bool _bShowRelativeErrors = true;
         private bool _bDisposed = false;
+        public int userchoice;///used in calculation of tube dimensions
 
         /// Holds values for x axis (time)
         public List<double> XAxis { get { return _xAxis; } }
@@ -281,12 +282,44 @@ namespace CsvCompare
             TubeReport tubeReport = new TubeReport();
             TubeSize size = null;
             Tube tube = new Tube(size);
-            IOptions tubeOptions = new Options1(_dRangeDelta, Axes.X);
+            switch (options.Direction)
+            {
+                case ToleranceDirection.X:
+                    userchoice = 1; ///set to 1 for tolerenace in X axis
+                    break;
+                case ToleranceDirection.Y:
+                    userchoice = 0; ///set to 0 for tolerance in Y-axis
+                    break;
+
+                default://Invalid mode
+                    Console.WriteLine(options.GetUsage());
+                    break;
+            } 
+
+            if (userchoice == 1)
+            {
+                IOptions tubeOptions = new Options1(_dRangeDelta, Axes.X);
+            }
+            else if (userchoice == 0)
+            {
+                IOptions tubeOptions = new Options1(_dRangeDelta, Axes.Y);
+            }
+            else
+            {
+                Console.WriteLine("opted for wrong choice");
+                Environment.ExitCode = 2;
+            }
+           
 
             foreach (KeyValuePair<string, List<double>> res in csvBase.Results)
             {
                 if (!this.Results.ContainsKey(res.Key))
-                    log.WriteLine(LogLevel.Warning, "{0} not found in \"{1}\", skipping checks.", res.Key, this._fileName);
+                   {
+                   log.Error("{0} not found in \"{1}\", skipping checks.", res.Key, this._fileName);
+                    rep.Chart.Add(new Chart() { Title = res.Key, Errors = 1 });
+                    Environment.ExitCode = 1;
+                    continue;
+                }
                 else
                 {
                     compareCurve = new Curve(res.Key, this.XAxis.ToArray<double>(), this.Results[res.Key].ToArray<double>());
@@ -310,7 +343,32 @@ namespace CsvCompare
                         log.WriteLine(LogLevel.Debug, "The resolution of the base x-axis is good.");
 
                     size = new TubeSize(reference, true);
-                    size.Calculate(_dRangeDelta, Axes.X, Relativity.Relative);
+                    switch (options.Method)
+                    {
+                        case ExecutionMethod.Relative:
+                            if (userchoice == 1)
+                            {
+                                size.Calculate(_dRangeDelta, Axes.X, Relativity.Relative);
+                            }
+                            else
+                            {
+                                size.Calculate(_dRangeDelta, Axes.Y, Relativity.Relative);
+                            }
+                            break;
+                        case ExecutionMethod.Absolute:
+                            if (userchoice == 1)
+                            {
+                                size.Calculate(_dRangeDelta, Axes.X, Relativity.Absolute);
+                            }
+                            else
+                            {
+                                size.Calculate(_dRangeDelta, Axes.Y, Relativity.Absolute);
+                            }
+                            break;
+                        default://Invalid mode
+                            Console.WriteLine(options.GetUsage());
+                            break;
+                    }
                     tube = new Tube(size);
                     tubeReport = tube.Calculate(reference);
                     tube.Validate(compareCurve);
@@ -346,16 +404,21 @@ namespace CsvCompare
                     writer.WriteLine(". Time:        {0:o}", DateTime.Now);
                     writer.WriteLine(". Operation:   {0}", options.Mode);
                     writer.WriteLine(". Tolerance:   {0}", options.Tolerance);
+                    writer.WriteLine(". Execution Method:   {0}", options.Method);
+                    writer.WriteLine(". Direction of Tolerence:   {0}", options.Direction);
                     writer.WriteLine(". Result:      {0}", sResult);
 
                     if (rep.TotalErrors > 0)
                     {
                         Chart pairMax = rep.Chart.Aggregate((l, r) => l.DeltaError > r.DeltaError ? l : r);
-                        writer.WriteLine(". Biggest error: {0}=>{1}", pairMax.Title, pairMax.DeltaError.ToString(CultureInfo.InvariantCulture));
-                        writer.WriteLine(". Failed values:");
+                        if (pairMax.DeltaError > 0)
+                        {
+                            writer.WriteLine(". Largest error: {0}=>{1}", pairMax.Title, pairMax.DeltaError);
+                            writer.WriteLine(". Failed values:");
 
-                        foreach (Chart c in (from r in rep.Chart where r.DeltaError > 0 select r).OrderByDescending(er => er.DeltaError))
-                            writer.WriteLine("{0}=>{1}", c.Title, c.DeltaError.ToString(CultureInfo.InvariantCulture));
+                            foreach (Chart c in (from r in rep.Chart where r.DeltaError > 0 select r).OrderByDescending(er => er.DeltaError))
+                                writer.WriteLine("{0}=>{1}", c.Title, c.DeltaError.ToString(CultureInfo.InvariantCulture));
+                        }
                     }
                 }
 

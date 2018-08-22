@@ -305,7 +305,7 @@ namespace CsvCompare
             {
                 sb.AppendLine("<table class=\"info\">");
                 sb.AppendFormat("	<tr><td class=\"header\">Value:</td><td>{0}</td></tr>", this.Title).AppendLine();
-                sb.AppendLine("	<tr><td class=\"header\">Errors:</td><td>Exception during validation, skipping!</td></tr>");
+                sb.AppendFormat("	<tr><td class=\"header\">Errors:</td><td>variable {0} missing !</td></tr>",this.Title).AppendLine();
                 sb.AppendLine("</table>");
                 sb.AppendLine("<p style=\"width: 100%; text-align: right;\"><a href=\"#top\">[Back to top]</a></p>");
 
@@ -541,6 +541,9 @@ namespace CsvCompare
                     if (null != options.Tolerance)
                         writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Tolerance:</td><td>{0}</td></tr>", options.Tolerance);
 
+                    writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Execution method:</td><td>{0}</td></tr>", options.Method);
+                    writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Tolerence is given in:</td><td>{0} direction</td></tr>", options.Method);
+                   
                     if (!String.IsNullOrEmpty(options.Logfile))
                     {
                         writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Logfile:</td><td><a href=\"file:///{0}\">{0}</a></td></tr>", options.Logfile);
@@ -838,6 +841,8 @@ namespace CsvCompare
                 writer.WriteLine("	<tr><td class=\"header\">Compare File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.CompareFile.Replace("\\", "/"), this.CompareFile);
 
             writer.WriteLine("	<tr><td class=\"header\">Tolerance:</td><td>{0}</td></tr>", _tolerance);
+            writer.WriteLine("	<tr><td  class=\"header\">Execution method:</td><td>{0}</td></tr>", options.Method);
+            writer.WriteLine("	<tr><td  class=\"header\">Tolerance direction:</td><td>{0}</td></tr>", options.Direction);
             writer.WriteLine("	<tr><td class=\"header\">Tested:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
 
             int iTested = _chart.Count - (from c in _chart where c.Errors == -1 select c).Count();
