@@ -12,7 +12,7 @@ using CommandLine.Text;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ESI ITI GmbH")]
 [assembly: AssemblyProduct("compare")]
-[assembly: AssemblyCopyright("Copyright ©  2015-2016 - ESI ITI GmbH")]
+[assembly: AssemblyCopyright("Copyright ©  2015-2018 - ESI ITI GmbH")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyInformationalVersionAttribute("2.0.0.1")]
