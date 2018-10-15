@@ -286,7 +286,11 @@ namespace CsvCompare
             foreach (KeyValuePair<string, List<double>> res in csvBase.Results)
             {
                 if (!this.Results.ContainsKey(res.Key))
+                {
+                    size = null;
+                    tube = new Tube(size);
                     log.WriteLine(LogLevel.Warning, "{0} not found in \"{1}\", skipping checks.", res.Key, this._fileName);
+                }
                 else
                 {
                     compareCurve = new Curve(res.Key, this.XAxis.ToArray<double>(), this.Results[res.Key].ToArray<double>());
