@@ -32,12 +32,12 @@ POSSIBILITY OF SUCH DAMAGE.
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 The Result Compare uses the Commandline Parser
-<http://commandline.codeplex.com/> that has been published under the MIT
+<https://github.com/commandlineparser/commandline> that has been published under the MIT
 License:
 
 The MIT License (MIT)
 
-Copyright (c) 2005-2012, Giacomo Stelluti Scala
+Copyright (c) 2005-2015 Giacomo Stelluti Scala & Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
