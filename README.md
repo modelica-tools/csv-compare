@@ -1,5 +1,8 @@
 # csv-compare
 
+## Build status 
+[![Build Status](https://travis-ci.org/modelica-tools/csv-compare.svg?branch=master)](https://travis-ci.org/modelica-tools/csv-compare) [![Build status](https://ci.appveyor.com/api/projects/status/wa6sd1cc7xotpf0f/branch/master?svg=true)](https://ci.appveyor.com/project/modelica-tools/csv-compare/branch/master)
+
 ## About
 
 The CSV Result Compare can be used to compare curves from one CSV file with curves from other CSV files using a special algorithm.
