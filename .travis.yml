@@ -1,0 +1,12 @@
+language: csharp
+
+git:
+  depth: 5
+
+script:
+  - make
+
+notifications:
+  email: false
+
+sudo: false
