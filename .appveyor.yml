@@ -1,0 +1,9 @@
+clone_depth: 5
+
+configuration: Debug, Release
+
+build:
+  project: Modelica_ResultCompare.sln
+  verbosity: normal
+
+test: off
