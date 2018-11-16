@@ -289,6 +289,7 @@ namespace CsvCompare
 
                 //Try different locations for the base file
                 string sBaseFile = string.Empty;
+                Report r = null;
                 if (dirBase.GetFiles(file.Name).Length == 1)//1. Base file is in the, via command line, given base directory
                 {
                     sBaseFile = Path.Combine(dirBase.FullName, file.Name);
@@ -302,6 +303,10 @@ namespace CsvCompare
                         if (!File.Exists(sBaseFile))
                         {
                             _log.WriteLine(LogLevel.Warning, "{0} not found in {1} or {2}, skipping validation.", file.Name, dirBase.Name, sBaseFile);
+                            sBaseFile = string.Empty;
+                            r = new Report(sBaseFile);
+                            r.CompareFile = file.FullName;
+                            meta.Reports.Add(r);
                             continue;
                         }
                         else
@@ -313,7 +318,12 @@ namespace CsvCompare
                         continue;
                     }
                 }
-                Report r = CheckFiles(options, file.FullName, sBaseFile);
+                r = CheckFiles(options, file.FullName, sBaseFile);
+                if (null == r)
+                {
+                    r = new Report(sBaseFile);
+                    r.CompareFile = file.FullName;
+                }
                 meta.Reports.Add(r);
             }
         }
