@@ -722,7 +722,7 @@ namespace CsvCompare
             }
             log.WriteLine("Report has been written to: {0}", _path);
 
-            if (!options.InlineScripts && !options.UseBitmapPlots)//Save script files from resource to file system
+            if (!options.InlineScripts)//Save script files from resource to file system
             {
                 Assembly ass = Assembly.GetExecutingAssembly();
 
@@ -730,7 +730,7 @@ namespace CsvCompare
                     using (Stream stream = ass.GetManifestResourceStream(s))
                     {
                         string sPath = Path.GetDirectoryName(_path);
-                        if (s.ToLowerInvariant().EndsWith(".js"))
+                        if (s.ToLowerInvariant().EndsWith(".js") && !options.UseBitmapPlots)
                             sPath = Path.Combine(sPath, "js");
                         else if (s.ToLowerInvariant().EndsWith(".css"))
                             sPath = Path.Combine(sPath, "css");
