@@ -36,7 +36,7 @@ namespace CsvCompare
         [Option('o', "override", DefaultValue = false, HelpText = "Override output files if they already exist (Default behaviour is to put the output next to the found file with a time stamp in the file name).")]
         public bool OverrideOutput { get; set; }
 
-        [Option('e', "abserror", DefaultValue = false, HelpText = "Shows, if set, only 0 and 1 in the error graph (peeks) instead of the difference between the error and the penetrated tube.")]
+        [Option('e', "abserror", DefaultValue = false, HelpText = "Shows, if set, only 0 and 1 in the error graph (peaks) instead of the difference between the error and the penetrated tube.")]
         public bool AbsoluteError { get; set; }
 
         [Option("comparisonflag", DefaultValue = false, HelpText = "Generates a text file that indicates if the test has been passed and contains test details.")]
@@ -48,7 +48,7 @@ namespace CsvCompare
         [Option('n', "nometareport", DefaultValue = false, HelpText = "Set this to disable the generation of a meta report.")]
         public bool NoMetaReport { get; set; }
 
-        [Option('b', "bitmap", DefaultValue = false, HelpText = "Set this to generate raster instead of vector plots (i.e. reports will shrink).")]
+        [Option('b', "bitmap", DefaultValue = false, HelpText = "Set this to generate raster instead of vector plots (i.e., reports will shrink).")]
         public bool UseBitmapPlots { get; set; }
 
         [Option('i', "inline", DefaultValue = false, HelpText = "If set, javascript and style sheet files are inserted as inline text in every html output file")]
@@ -63,8 +63,11 @@ namespace CsvCompare
         [Option('d', "delimiter", Required = false, HelpText = "Sets the delimiter that is used to parse and write csv files. Default value is \";\".")]
         public char Delimiter { get; set; }
 
-        [Option('s', "separator", DefaultValue = '.', Required = false, HelpText = "Sets the decimal separator that is used to parse and write csv files. Default value is \".\".")]
+        [Option('s', "separator", DefaultValue = '.', Required = false, HelpText = "Sets the decimal separator that is used to parse and write csv files [Default is \".\"].")]
         public char Separator { get; set; }
+
+        [Option('p', "reportnamesep", Required = false, DefaultValue = ".", HelpText = "Sets the namespace separator when assembling the report file names from the directory structure for CsvTreeCompare mode [Default is \".\"].")]
+        public string ReportNamespaceSeparator { get; set; }
 
         [ValueList(typeof(List<string>))]
         public IList<string> Items { get; set; }
