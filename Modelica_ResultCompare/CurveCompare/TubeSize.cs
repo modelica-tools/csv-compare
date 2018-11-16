@@ -124,12 +124,11 @@ namespace CurveCompare
         /// </summary>
         public void SetFormerBaseAndRatio()
         {
-            baseX = reference.X.Max() - reference.X.Min() + Math.Abs(reference.X.Min());
-            baseY = reference.Y.Max() - reference.Y.Min() + Math.Abs(reference.Y.Min()); // not necessary
-            if (reference.X.Max() != reference.X.Min())
-                ratio = Math.Max(0.0004, ((reference.Y.Max() - reference.Y.Min() + Math.Abs(reference.Y.Min())) / (reference.X.Max() - reference.X.Min())));
-            else
-                ratio = 0;
+            double epsilon = 1e-12;
+            baseX = Math.Max(Math.Max(reference.X.Max() - reference.X.Min(), Math.Abs(reference.X.Min())), epsilon);
+            ratio = Math.Max(Math.Max(reference.Y.Max() - reference.Y.Min(), Math.Abs(reference.Y.Min())), epsilon) / baseX;
+            baseY = baseX * ratio;
+            return;
         }
         /// <summary>
         /// Calculates or sets X and Y.
