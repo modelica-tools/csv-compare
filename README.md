@@ -69,7 +69,7 @@ The default settings for CSV compare to read a CSV file are:
 
 To receive optimal validation results it is good to use a base file with a better resolution than the compare file, so the tube can be calculated more accurate.
 
-The tool generates html reports that contain scalable vector graphics of all results that are found in both files. Keep that in mind when you compare CSV files with many results as the created html reports can grow to big to be viewed in a browser. The best way is to prepare your base file to contain only results you really want to compare.
+The tool generates html reports that contain scalable vector graphics of all results that are found in both files. Keep that in mind when you compare CSV files with many results as the created html reports can grow too big to be viewed in a browser. The best way is to prepare your base file to contain only results you really want to compare.
 
 To run the tool you need Microsoft Windows and [Microsoft .NET Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=30653) or [Mono (Stable)](http://www.go-mono.com/mono-downloads/download.html) and a Mono-Supported platform.
 
