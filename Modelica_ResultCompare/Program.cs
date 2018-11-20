@@ -70,6 +70,12 @@ namespace CsvCompare
             }
         }
 
+        private static string GetFullPathWithEndingSlashes(string input)
+        {
+            string fullPath = Path.GetFullPath(input);
+            return fullPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+        }
+
         private static void Run(string[] cmdArgs)
         {
             var options = new Options();
@@ -126,15 +132,15 @@ namespace CsvCompare
                     FileAttributes attr = File.GetAttributes(options.Items[0]);
 
                     if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
-                        options.ReportDir = Path.GetFullPath(options.Items[0]);
+                        options.ReportDir = GetFullPathWithEndingSlashes(options.Items[0]);
                     else
-                        options.ReportDir = Path.GetDirectoryName(options.Items[0]);
+                        options.ReportDir = GetFullPathWithEndingSlashes(Path.GetDirectoryName(options.Items[0]));
                     _log.WriteLine(LogLevel.Warning, "No report directory has been set, using \"{0}\"", options.ReportDir);
                 }
                 else
                 {
                     meta.ReportDirSet = true;
-                    options.ReportDir = Path.GetFullPath(options.ReportDir);//normalize report dir (i.e. make absolut if relative)
+                    options.ReportDir = GetFullPathWithEndingSlashes(options.ReportDir);//normalize report dir (i.e. make absolut if relative)
                     if (!Directory.Exists(options.ReportDir))
                         Directory.CreateDirectory(options.ReportDir);
                 }
@@ -164,6 +170,8 @@ namespace CsvCompare
                             Console.WriteLine(options.GetUsage());
                             Environment.Exit(2);
                         }
+                        options.Items[0] = GetFullPathWithEndingSlashes(options.Items[0]);
+                        options.Items[1] = GetFullPathWithEndingSlashes(options.Items[1]);
                         CheckTrees(meta, options);
                         if(!options.NoMetaReport)
                             meta.WriteReport(_log, options);
