@@ -516,22 +516,22 @@ namespace CsvCompare
                     writer.WriteLine("<body>");
                     writer.WriteLine("<div id=\"page\">");
                     writer.WriteLine("<table class=\"info\">");
-                    writer.WriteLine("	<tr><td colspan=\"3\" class=\"header\"><h1>Metareport - CSV file comparison</h1></td></tr>");
+                    writer.WriteLine("	<tr><td colspan=\"3\" class=\"header\"><h1>Meta report - CSV file comparison</h1></td></tr>");
                     writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Timestamp:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
                     writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Mode:</td><td>{0}</td></tr>", options.Mode.ToString());
                     switch (options.Mode)
                     {
                         case OperationMode.CsvTreeCompare:
-                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Base Directory:</td><td>{0}</td></tr>", options.Items[1]);
-                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Compare Directory:</td><td>{0}</td></tr>", options.Items[0]);
+                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Base directory:</td><td>{0}</td></tr>", options.Items[1]);
+                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Compare directory:</td><td>{0}</td></tr>", options.Items[0]);
                             break;
                         case OperationMode.CsvFileCompare:
-                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Base File:</td><td>{0}</td></tr>", options.Items[1]);
-                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Compare File:</td><td>{0}</td></tr>", options.Items[0]);
+                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Base file:</td><td>{0}</td></tr>", options.Items[1]);
+                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Compare file:</td><td>{0}</td></tr>", options.Items[0]);
                             break;
                         case OperationMode.FmuChecker:
-                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">FMU Checker:</td><td>{0}</td></tr>", options.CheckerPath);
-                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">FMU Arguments:</td><td>{0}</td></tr>", options.CheckerArgs);
+                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">FMU checker:</td><td>{0}</td></tr>", options.CheckerPath);
+                            writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">FMU arguments:</td><td>{0}</td></tr>", options.CheckerArgs);
                             break;
                         default:
                             break;
@@ -551,28 +551,24 @@ namespace CsvCompare
                     int iErrors = 0;
                     double dSuccess;
 
-                    try
-                    {
-                        iTested = _reports.Count - (from c in _reports where c.TotalErrors == -1 select c).Count();
-                        iErrors = (from c in _reports where c.TotalErrors > 0 && c.TotalErrors != -1 select c).Count();
-                    }
-                    catch (NullReferenceException)
-                    {
-                        //empty reports
-                    }
+                    iTested = _reports.Count - (from r in _reports where null != r && r.TotalErrors == -1 select r).Count();
+                    iErrors = (from r in _reports where null != r && r.TotalErrors > 0 select r).Count();
 
                     if (iTested <= 0)
                         dSuccess = 0;
                     else
-                        dSuccess = ((1 - ((double)iErrors / (double)iTested)));
+                        dSuccess = 1 - ((double)iErrors / (double)iTested);
 
-                    writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Compared Files:</td><td>The compare file contained {0} results. {1} results have been tested. {2} failed, success rate is {3:0.0%}.</td></tr>",
+                    writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Compared files:</td><td>The compare directory contained {0} file{4}.<br/>{1} file{5} tested.<br/>{2} file{6} failed.<br/>Success rate is {3:0.0%}.</td></tr>",
                         _reports.Count,     //All results
                         iTested,            //All tested results
                         iErrors,            //Errors
-                        dSuccess);
+                        dSuccess,
+                        _reports.Count == 1 ? string.Empty : "s",
+                        iTested == 1 ? " was" : "s were",
+                        iErrors == 1 ? string.Empty : "s");
                     writer.WriteLine("<tr><td class=\"header\" colspan=\"3\">Results</td></tr>");
-                    writer.WriteLine("<tr><td colspan=\"2\">&nbsp;</td><td>FAILED - at least one result failed its check with the base file<br/>UNTESTED - no base file has been found for all results in the file<br/>SUCCEEDED - All results have been checked and are valid</td></tr>");
+                    writer.WriteLine("<tr><td colspan=\"2\">&nbsp;</td><td>FAILED - At least one result failed its check with the base file.<br/>UNTESTED - No base file has been found or an exception occurred.<br/>SUCCEEDED - All results have been checked and are valid.</td></tr>");
 
                     //write results and paths of the sub reports
                     foreach (Report r in _reports)
@@ -585,27 +581,25 @@ namespace CsvCompare
                                 r.RelativePaths = true;
                             }
 
+                            string displayName = options.Mode == OperationMode.CsvTreeCompare ? Util.GetTrailingPath(options.Items[0], r.CompareFile, Path.DirectorySeparatorChar.ToString()) : Path.GetFileName(r.CompareFile);
 
                             if (r.TotalErrors > 0)
                             {
                                 if (r.RelativePaths)
-                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"{1}\">{1}</a></td></tr>", r.AverageError, Path.GetFileName(r.FileName));
+                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"{1}\">{2}</a></td></tr>", r.AverageError, Path.GetFileName(r.FileName), displayName);
                                 else
-                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                                    writer.WriteLine("<tr><td class=\"error right\">FAILED</td><td class=\"error\">&Oslash;{0:0.00}</td><td class=\"error\"><a href=\"file:///{1}\">{2}</a></td></tr>", r.AverageError, r.FileName.Replace("\\", "/"), displayName);
                             }
                             else if (r.TotalErrors==-1) // if all results have not been checked, mark as "untested"
                             {
-                                if (r.RelativePaths)
-                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
-                                else
-                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                                writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\">{0}</td></tr>", displayName);
                             }
                             else
                             {
                                 if (r.RelativePaths)
-                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"{0}\">{1}</a></td></tr>", Path.GetFileName(r.FileName), displayName);
                                 else
-                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), r.FileName);
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"ok right\">SUCCEEDED</td><td class=\"ok\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), displayName);
                             }
 
                         }
@@ -617,11 +611,11 @@ namespace CsvCompare
 </html>
 ");
                 }
-                log.WriteLine("Metareport has been written to: {0}", this.FileName);
+                log.WriteLine("Meta report has been written to: {0}", this.FileName);
             }
             else
             {
-                log.WriteLine("Skipping generation of metareport as \"--nometareport\" has been set.");
+                log.WriteLine("Skipping generation of meta report as \"--nometareport\" has been set.");
                 foreach (Report r in _reports)
                     if (!r.WriteReport(log, null, options))
                         log.Error("Error writing report to {0}", r.FileName);
@@ -661,7 +655,7 @@ namespace CsvCompare
         {
             get
             {
-                if (_iTotalErrors < 0)
+                if (_iTotalErrors < 0 && _chart.Count > 0)
                 {
                     _iTotalErrors = 0;
                     foreach (Chart c in _chart)
@@ -828,34 +822,37 @@ namespace CsvCompare
             writer.WriteLine("<table class=\"info\">");
             if (!String.IsNullOrEmpty(_metaPath))
                 if (!_bRelative)
-                    writer.WriteLine("	<tr><td class=\"header\">Meta Report:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", _metaPath.Replace("\\", "/"), _metaPath);
+                    writer.WriteLine("	<tr><td class=\"header\">Meta report:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", _metaPath.Replace("\\", "/"), _metaPath);
                 else
-                    writer.WriteLine("	<tr><td class=\"header\">Meta Report:</td><td><a href=\"{0}\">{1}</a></td></tr>", Path.GetFileName(_metaPath), Path.GetFileName(_metaPath));
+                    writer.WriteLine("	<tr><td class=\"header\">Meta report:</td><td><a href=\"{0}\">{1}</a></td></tr>", Path.GetFileName(_metaPath), Path.GetFileName(_metaPath));
 
-            if(null != this.BaseFile)
-            writer.WriteLine("	<tr><td class=\"header\">Base File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.BaseFile.Replace("\\", "/"), this.BaseFile);
+            if (null != this.BaseFile)
+                writer.WriteLine("	<tr><td class=\"header\">Base file:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.BaseFile.Replace("\\", "/"), this.BaseFile);
             if (null != this.CompareFile)
-                writer.WriteLine("	<tr><td class=\"header\">Compare File:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.CompareFile.Replace("\\", "/"), this.CompareFile);
+                writer.WriteLine("	<tr><td class=\"header\">Compare file:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.CompareFile.Replace("\\", "/"), this.CompareFile);
 
             writer.WriteLine("	<tr><td class=\"header\">Tolerance:</td><td>{0}</td></tr>", _tolerance);
-            writer.WriteLine("	<tr><td class=\"header\">Tested:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
+            writer.WriteLine("	<tr><td class=\"header\">Timestamp:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
 
             int iTested = _chart.Count - (from c in _chart where c.Errors == -1 select c).Count();
             int iErrors = (from c in _chart where c.Errors > 0 && c.Errors != -1 select c).Count();
             double dSuccess;
 
-            if(iTested<=0)
+            if (iTested <= 0)
                dSuccess = 0;
             else
                dSuccess = ((1 - ((double)iErrors / (double)iTested)));
 
-            writer.WriteLine("	<tr><td class=\"header\">&nbsp;</td><td>The compare file contained {0} results. {1} results have been tested. {2} failed, success rate is {3:0.0%}.</td></tr>",
+            writer.WriteLine("	<tr><td class=\"header\">Compared results:</td><td>The compare file contained {0} result{4}.<br/>{1} result{5} tested.<br/>{2} result{6} failed.<br/>Success rate is {3:0.0%}.</td></tr>",
                 _chart.Count,   //All results
                 iTested,    //All tested results
                 iErrors,   //Errors
-                dSuccess);
+                dSuccess,
+                _chart.Count == 1 ? string.Empty : "s",
+                iTested == 1 ? " was" : "s were",
+                iErrors == 1 ? string.Empty : "s");
             writer.Write("  <tr><td class=\"header\">Average relative error:</td><td>{0:0.00}</td></tr>", this.AverageError);
-            writer.Write("  <tr><td class=\"header\">Failed Tests:</td><td>");
+            writer.Write("  <tr><td class=\"header\">Failed tests:</td><td>");
             foreach (Chart c in (from ch in _chart where ch.Errors > 0 select ch))
                 writer.WriteLine("<a href=\"#a{0}\">{1}</a><br/>", c.Id, c.Title);
             writer.WriteLine("</td></tr>");
