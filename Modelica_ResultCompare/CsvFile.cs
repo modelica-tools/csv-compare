@@ -167,7 +167,7 @@ namespace CsvCompare
                     log.WriteLine(LogLevel.Debug, "Time to parse: {0}", timer.Elapsed);
 #endif
 
-                    if (_xAxis.Count <= 1)
+                    if (_xAxis.Count < 1)
                         throw new ArgumentNullException(string.Format(CultureInfo.CurrentCulture, "{0} could not be parsed and might be an invalid CSV file.", fileName));
                 }
             }
