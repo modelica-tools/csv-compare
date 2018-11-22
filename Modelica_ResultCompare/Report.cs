@@ -547,28 +547,38 @@ namespace CsvCompare
                         writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Loglevel:</td><td>{0}</td></tr>", ((LogLevel)options.Verbosity));
                     }
 
-                    int iTested = 0;
-                    int iErrors = 0;
-                    double dSuccess;
+                    if (OperationMode.PlotOnly != options.Mode)
+                    {
+                        int iTested = 0;
+                        int iErrors = 0;
+                        double dSuccess;
 
-                    iTested = _reports.Count - (from r in _reports where null != r && r.TotalErrors == -1 select r).Count();
-                    iErrors = (from r in _reports where null != r && r.TotalErrors > 0 select r).Count();
+                        iTested = _reports.Count - (from r in _reports where null != r && r.TotalErrors == -1 select r).Count();
+                        iErrors = (from r in _reports where null != r && r.TotalErrors > 0 select r).Count();
 
-                    if (iTested <= 0)
-                        dSuccess = 0;
-                    else
-                        dSuccess = 1 - ((double)iErrors / (double)iTested);
+                        if (iTested <= 0)
+                            dSuccess = 0;
+                        else
+                            dSuccess = 1 - ((double)iErrors / (double)iTested);
 
-                    writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Compared files:</td><td>The compare directory contained {0} file{4}.<br/>{1} file{5} tested.<br/>{2} file{6} failed.<br/>Success rate is {3:0.0%}.</td></tr>",
-                        _reports.Count,     //All results
-                        iTested,            //All tested results
-                        iErrors,            //Errors
-                        dSuccess,
-                        _reports.Count == 1 ? string.Empty : "s",
-                        iTested == 1 ? " was" : "s were",
-                        iErrors == 1 ? string.Empty : "s");
+                        writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Compared files:</td><td>The compare directory contained {0} file{4}.<br/>{1} file{5} tested.<br/>{2} file{6} failed.<br/>Success rate is {3:0.0%}.</td></tr>",
+                            _reports.Count,     //All results
+                            iTested,            //All tested results
+                            iErrors,            //Errors
+                            dSuccess,
+                            _reports.Count == 1 ? string.Empty : "s",
+                            iTested == 1 ? " was" : "s were",
+                            iErrors == 1 ? string.Empty : "s");
+                    }
                     writer.WriteLine("<tr><td class=\"header\" colspan=\"3\">Results</td></tr>");
-                    writer.WriteLine("<tr><td colspan=\"2\">&nbsp;</td><td>FAILED - At least one result failed its check with the base file.<br/>UNTESTED - No base file has been found or an exception occurred.<br/>SUCCEEDED - All results have been checked and are valid.</td></tr>");
+                    if (OperationMode.PlotOnly != options.Mode)
+                    {
+                        writer.WriteLine("<tr><td colspan=\"2\">&nbsp;</td><td>FAILED - At least one result failed its check with the base file.<br/>UNTESTED - No base file has been found or an exception occurred.<br/>SUCCEEDED - All results have been checked and are valid.</td></tr>");
+                    }
+                    else
+                    {
+                        writer.WriteLine("<tr><td colspan=\"2\">&nbsp;</td><td>UNTESTED - CSV file was displayed only.</td></tr>");
+                    }
 
                     //write results and paths of the sub reports
                     foreach (Report r in _reports)
@@ -592,7 +602,17 @@ namespace CsvCompare
                             }
                             else if (r.TotalErrors==-1) // if all results have not been checked, mark as "untested"
                             {
-                                writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\">{0}</td></tr>", displayName);
+                                if (OperationMode.PlotOnly != options.Mode)
+                                {
+                                    writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\">{0}</td></tr>", displayName);
+                                }
+                                else
+                                {
+                                    if (r.RelativePaths)
+                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"{0}\">{0}</a></td></tr>", Path.GetFileName(r.FileName));
+                                    else
+                                        writer.WriteLine("<tr><td colspan=\"2\" class=\"untested right\">UNTESTED</td><td class=\"untested\"><a href=\"file:///{0}\">{1}</a></td></tr>", r.FileName.Replace("\\", "/"), Path.GetFileName(r.FileName));
+                                }
                             }
                             else
                             {
