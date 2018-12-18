@@ -213,7 +213,7 @@ namespace CsvCompare
         {
             path = Path.GetDirectoryName(path);
 
-            string Filename = string.Format("{0}.png", this.Title);
+            string Filename = string.Format("{0}-{1}.png", this.Title, this.Id.ToString());
             string ImagePath = Path.Combine(path, @"img", Filename);
 
             StringBuilder sb;
