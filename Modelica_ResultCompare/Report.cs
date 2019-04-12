@@ -704,7 +704,7 @@ namespace CsvCompare
                 _metaPath = string.Empty;
 
             if (!string.IsNullOrEmpty(options.ReportDir))
-                _path = Path.Combine(options.ReportDir, Util.GetTrailingPath(Path.GetDirectoryName(options.Items[0]), _path, options.ReportNamespaceSeparator));
+                _path = Path.Combine(options.ReportDir, Util.GetTrailingPath(Path.GetDirectoryName(Path.GetFullPath(options.Items[0])), _path, options.ReportNamespaceSeparator));
             else
             {
                 try
