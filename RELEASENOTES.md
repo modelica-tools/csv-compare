@@ -1,3 +1,8 @@
+## 2019-04-17 Version 2.0.2
+* bugfix for meta report for the PlotOnly mode
+* bugfix to create unique bitmap file names if the option --bitmap is set
+* bugfix for relative paths for the CsvFileCompare mode
+
 ## 2018-11-21 Version 2.0.1
 * new command line option `--reportnamesep` to specify the name space separator when assembling the report file name from the compare directory structure; only relevant for the CsvTreeCompare mode; the default separator is "."
 * improve naming of report file from the structure of the compare directory; only relevant for the CsvTreeCompare mode
