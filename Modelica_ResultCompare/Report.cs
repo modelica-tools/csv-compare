@@ -730,7 +730,7 @@ namespace CsvCompare
             using (TextWriter writer = new StreamWriter(_path, false))
             {
                 WriteHeader(writer, options);
-                WriteChart(writer);
+                WriteChart(writer, options);
                 WriteFooter(writer);
                 bRet = true;
             }
@@ -783,13 +783,17 @@ namespace CsvCompare
 ");
         }
 
-        private void WriteChart(TextWriter writer)
+        private void WriteChart(TextWriter writer, Options options)
         {
             foreach (Chart ch in _chart)
+            {
+                if (options.FailedOnly && ch.Errors == 0)
+                    continue;
                 if (!ch.UseBitmap)
                     writer.WriteLine(ch.RenderChart());
                 else
                     writer.WriteLine(ch.RenderBitmap(this._path));
+            }
         }
 
         private void WriteHeader(TextWriter writer, Options options)

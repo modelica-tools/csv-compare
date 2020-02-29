@@ -69,6 +69,9 @@ namespace CsvCompare
         [Option('p', "reportnamesep", Required = false, DefaultValue = ".", HelpText = "Sets the namespace separator when assembling the report file names from the directory structure for CsvTreeCompare mode [Default is \".\"].")]
         public string ReportNamespaceSeparator { get; set; }
 
+        [Option('f', "failedonly", Required = false, DefaultValue = false, HelpText = "Set this to only plot failed tests in the reports (i.e., reports will shrink).")]
+        public bool FailedOnly { get; set; }
+
         [ValueList(typeof(List<string>))]
         public IList<string> Items { get; set; }
 
