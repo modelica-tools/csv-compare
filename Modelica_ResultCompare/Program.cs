@@ -72,7 +72,15 @@ namespace CsvCompare
 
         private static string GetFullPathWithEndingSlashes(string input)
         {
-            string fullPath = Path.GetFullPath(input);
+            string fullPath;
+            if (string.IsNullOrEmpty(input))
+            {
+                fullPath = Directory.GetCurrentDirectory();
+            }
+            else
+            {
+                fullPath = Path.GetFullPath(input);
+            }
             return fullPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
         }
 
