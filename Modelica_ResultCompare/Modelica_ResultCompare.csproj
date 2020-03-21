@@ -317,21 +317,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\jquery.min.js" />
+    <EmbeddedResource Include="Resources\jquery.jqplot.min.js" />
+    <EmbeddedResource Include="Resources\jqplot.cursor.min.js" />
+    <EmbeddedResource Include="Resources\jqplot.canvasTextRenderer.min.js" />
+    <EmbeddedResource Include="Resources\jqplot.canvasAxisLabelRenderer.min.js" />
     <EmbeddedResource Include="Resources\excanvas.min.js" />
     <EmbeddedResource Include="Resources\jquery.jqplot.min.css" />
-    <EmbeddedResource Include="Resources\jquery.jqplot.min.js" />
-    <EmbeddedResource Include="Resources\jquery.min.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\jqplot.cursor.min.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\jqplot.canvasAxisLabelRenderer.min.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\jqplot.canvasTextRenderer.min.js" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\style.css" />
   </ItemGroup>
 </Project>
