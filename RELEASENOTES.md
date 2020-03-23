@@ -1,3 +1,8 @@
+## 2020-03-23 Version 2.0.3
+* new command line option `--failedonly` to only add the charts for failed signals to the report
+* bugfix for option --inline (regression of Version 2.0.1)
+* bugfix for report directory if CSV file path does not contain a directory separator and report directory is not set
+
 ## 2019-04-17 Version 2.0.2
 * bugfix for meta report for the PlotOnly mode
 * bugfix to create unique bitmap file names if the option --bitmap is set
