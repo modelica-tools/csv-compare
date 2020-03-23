@@ -1,4 +1,4 @@
-/// Copyright (c) 2013-2020, ESI ITI GmbH ad contributors
+/// Copyright (c) 2013-2020, ESI ITI GmbH and contributors
 /// All rights reserved.
 ///
 /// Redistribution and use in source and binary forms, with or without
