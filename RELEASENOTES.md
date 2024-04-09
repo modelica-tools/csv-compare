@@ -1,3 +1,6 @@
+## 2024-04-09 Version 2.0.4
+* improve compare_failed log file to print total number of failed values
+
 ## 2020-03-23 Version 2.0.3
 * new command line option `--failedonly` to only add the charts for failed signals to the report
 * bugfix for option `--inline` (regression of Version 2.0.1)
@@ -37,7 +40,7 @@
 
 ## 2013-06-26 Version 1.0.0.6751
 * bugfix error graph (list has not been reset)
-* new commandline parameter `-e` for enabling absolute errors (0,1) in error graph; new default behaviour is to show relative differences between error and tube
+* new command line parameter `-e` for enabling absolute errors (0,1) in error graph; new default behaviour is to show relative differences between error and tube
 * added check for resolution of base file and documentation in the readme. Base files should have a higher resolution than the compare files
 * use `--nometareport` to skip the generation of an index file for the reports
 
@@ -57,7 +60,7 @@
 * added some color to the console output
 * more output on parsing errors has been added
 * extrapolation of values if the source time line is shorter than the target timeline is now prevented
-* some doumentation has been done in readme and cli usage info
+* some documentation has been done in readme and cli usage info
 
 ## 2013-05-30 Version 1.0.0.6573 beta
 * added option `--delimiter` to set the delimiter of the input csv files

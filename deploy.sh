@@ -1,5 +1,5 @@
 #!/bin/bash
-#This script sets assembly infos and builds csv-copmpare and zips it in a properly named tar archive
+#This script sets assembly infos and builds csv-compare and zips it in a properly named tar archive
 
 # stop on errors
 set -e
