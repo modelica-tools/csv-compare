@@ -101,6 +101,13 @@ namespace CurveCompare
         /// </summary>
         public void SetStandardBaseAndRatio()
         {
+            double default_nominal = 0.001;
+            // default_nominal provides a default nominal value to handle the case of reference variables that are near-zero
+            // e.g. because of being the result of balance equations affected by small numerical errors, but are meant
+            // to have a much larger order of magnitude. The nominal attribute should be used, but is unfortunately unavailable
+            // in the CSV files. A default nominal value of 0.001 was chosen as a compromise between having many false negatives
+            // and passing wrong result files
+
             // set baseX
             baseX = reference.X.Max() - reference.X.Min(); //reference.X.Max() - reference.X.Min() + Math.Abs(reference.X.Min());
             if (baseX == 0) // nonsense case, no data
@@ -108,11 +115,7 @@ namespace CurveCompare
             if (baseX == 0) // nonsense case, no data
                 baseX = 1;
             // set baseY
-            baseY = reference.Y.Max() - reference.Y.Min();
-            if (baseY == 0) // rare special case
-                baseY = Math.Abs(reference.Y.Max());
-            if (baseY == 0) // rare special case
-                baseY = 0.00000000000000001;
+            baseY = Math.Max(reference.Y.Max() - reference.Y.Min(), default_nominal);
             // set ratio
             if (baseX != 0)
                 ratio = baseY / baseX;
@@ -125,9 +128,16 @@ namespace CurveCompare
         public void SetFormerBaseAndRatio()
         {
             double epsilon = 1e-12;
+            double default_nominal = 0.001;
+            // epsilon guards agains the case of result files with only on time point, for which baseX would be zero
             baseX = Math.Max(Math.Max(reference.X.Max() - reference.X.Min(), Math.Abs(reference.X.Min())), epsilon);
-            ratio = Math.Max(Math.Max(reference.Y.Max() - reference.Y.Min(), Math.Abs(reference.Y.Min())), epsilon) / baseX;
-            baseY = baseX * ratio;
+            // default_nominal provides a default nominal value to handle the case of reference variables that are near-zero
+            // e.g. because of being the result of balance equations affected by small numerical errors, but are meant
+            // to have a much larger order of magnitude. The nominal attribute should be used, but is unfortunately unavailable
+            // in the CSV files. A default nominal value of 0.001 was chosen as a compromise between having many false negatives
+            // and passing wrong result files
+            baseY = Math.Max(Math.Max(reference.Y.Max() - reference.Y.Min(), Math.Abs(reference.Y.Min())), default_nominal);
+            ratio = baseY/baseX;
             return;
         }
         /// <summary>
