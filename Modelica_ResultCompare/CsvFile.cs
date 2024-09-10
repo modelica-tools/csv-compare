@@ -278,7 +278,7 @@ namespace CsvCompare
 
             Curve reference = new Curve();
             Curve compareCurve = new Curve();
-            TubeReport tubeReport = new TubeReport();
+            TubeReport report = new TubeReport();
             TubeSize size = null;
             Tube tube = new Tube(size);
             IOptions tubeOptions = new Options1(_dRangeDelta, Axes.X);
@@ -321,21 +321,35 @@ namespace CsvCompare
                     size = new TubeSize(reference, defaultNominalValue, useLegacyBaseAndRatio);
                     size.Calculate(_dRangeDelta, Axes.X, Relativity.Relative);
                     tube = new Tube(size);
-                    tubeReport = tube.Calculate(reference);
-                    tube.Validate(compareCurve);
+                    var calcResult = tube.Calculate(reference);
+                    bool calcSuccess = calcResult.Item2;
+                    if (!calcSuccess)
+                    {
+                        log.Error("Error in the calculation of the tube. Skipping {0}", res.Key);
+                        rep.Chart.Add(new Chart() { Title = res.Key, Errors = 1 });
+                        continue;
+                    }
+                    report = calcResult.Item1;
+                    bool validationSuccess = Tube.Validate(compareCurve, report);
+                    if (!validationSuccess)
+                    {
+                        log.Error("Error in the validation of the tube. Skipping {0}", res.Key);
+                        rep.Chart.Add(new Chart() { Title = res.Key, Errors = 1 });
+                        continue;
+                    }
 
-                    if (tubeReport.Valid == Validity.Valid)
+                    if (report.Valid == Validity.Valid)
                         log.WriteLine(res.Key + " is valid");
                     else
                     {
                         log.WriteLine(LogLevel.Warning, "{0} is invalid! {1} errors have been found during validation.", res.Key,
-                            (null != tube.Report.Errors && null != tube.Report.Errors.X) ? tube.Report.Errors.X.Length : 0);
+                            (null != report.Errors && null != report.Errors.X) ? report.Errors.X.Length : 0);
                         iInvalids++;
                         Environment.ExitCode = 1;
                     }
                 }
-                if (null != tube.Report)//No charts for missing reports
-                    PrepareCharts(reference, compareCurve, tube.Report.Errors, rep, tubeReport, res, options.UseBitmapPlots);
+                if (null != report) //No charts for missing reports
+                    PrepareCharts(reference, compareCurve, report.Errors, rep, report, res, options.UseBitmapPlots);
             }
             rep.Tolerance = _dRangeDelta;
 

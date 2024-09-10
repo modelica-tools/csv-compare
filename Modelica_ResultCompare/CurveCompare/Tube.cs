@@ -4,9 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Globalization;
 using CurveCompare.Algorithms;
 
 namespace CurveCompare
@@ -19,18 +16,16 @@ namespace CurveCompare
     /// Choose a curve to be compared.<para/>
     /// size = TubeSize(relativeHeight, reference);<para/>
     /// tube = Tube(size);<para/>
-    /// CalculateTube(reference);
-    /// tubeReport = Validate(compare);<para/>
+    /// calcResult = tube.Calculate(reference);
+    /// tubeReport = calcResult.Item1;
+    /// success = calcResult.Item2; // Handle success
+    /// success = Tube.Validate(compare, tubeReport); // Handle success<para/>
     /// </para></remarks>
     public class Tube
     {
         private TubeSize size;
         private Algorithm algorithm;
         private AlgorithmOptions algorithmOption;
-        private TubeReport report;
-        private bool calculateErrors;
-        private bool tubeSuccessful;
-        private bool validationSuccessful;
 
         /// <summary>
         /// Option for the tube calculation algorithm. Defines how the distance between the reference curve and the tube is measured.
@@ -41,79 +36,38 @@ namespace CurveCompare
             set { algorithmOption = value; }
         }
         /// <summary>
-        /// Data about tube calculation and comparison.
-        /// </summary>
-        public TubeReport Report
-        {
-            get { return report; }
-        }
-        /// <summary>
-        /// true, if Errors shall be calculated;
-        /// false, otherwise.
-        /// </summary>
-        public bool CalculateErrors
-        {
-            get { return calculateErrors; }
-            set { calculateErrors = value; }
-        }
-        /// <summary>
-        /// true, if calculation of tube successful; <para>
-        /// false, if calculation fails.</para>
-        /// </summary>
-        public bool TubeSuccessful
-        {
-            get { return tubeSuccessful; }
-            set { tubeSuccessful = value; }
-        }
-        /// <summary>
-        /// true, if validation successful; <para>
-        /// false, elsewise.</para>
-        /// </summary>
-        public bool ValidationSuccessful
-        {
-            get { return validationSuccessful; }
-            set { validationSuccessful = value; }
-        }
-        /// <summary>
         /// Sets standard value for Tube.AlgorithmOption
         /// </summary>
         public Tube(TubeSize size)
         {
             this.size = size;
             algorithmOption = AlgorithmOptions.Rectangle;
-            calculateErrors = true;
-            tubeSuccessful = false;
         }
         /// <summary>
         /// Calculates the Tube, that consists of 2 Curves: Lower and Upper.
         /// </summary>
         /// <param name="reference">Reference curve.</param>
-        /// <returns>true, if tube calculation successful;
-        /// false, elsewise.</returns>
-        public TubeReport Calculate(Curve reference)
+        /// <returns>Tuple consisting of tube calculation and success state.</returns>
+        public Tuple<TubeReport, bool> Calculate(Curve reference)
         {
-            if (chooseAlgorithm())
+            if (ChooseAlgorithm())
             {
-                report = algorithm.Calculate(reference, size);
-                tubeSuccessful = algorithm.Successful;
+                TubeReport report = algorithm.Calculate(reference, size);
+                return Tuple.Create(report, algorithm.Successful);
             }
-            else
-            {
-                report = new TubeReport();
-                tubeSuccessful = false;
-            }
-            return report;
+            return Tuple.Create(new TubeReport(), false);
         }
         /// <summary>
         /// Validates if compare is inside the tube.
         /// </summary>
         /// <param name="test">Curve, that shall be compared with the reference curve.</param>
-        /// <returns>TubeReport: Data about tube calculation and comparison.</returns>
-        /// <remarks>Requirement: CalculateTube() must be called before.</remarks>
-        public TubeReport Validate(Curve test)
+        /// <param name="report">Data about tube calculation and comparison.</param>
+        /// <returns>Success state.</returns>
+        public static bool Validate(Curve test, TubeReport report)
         {
             if (report == null)
-                return (new TubeReport());
+                return false;
+
             if (test != null && report.Lower != null && report.Upper != null && test.ImportSuccessful && report.Lower.ImportSuccessful && report.Upper.ImportSuccessful)
             {
                 double[] newLower = InterpolateValues(report.Lower.X, report.Lower.Y, test.X);
@@ -122,28 +76,27 @@ namespace CurveCompare
                 int errorCount;
 
                 report.Test = test;
-                validationSuccessful = Compare(newLower, newUpper, test.Y, test.X, out errorCount, out errors);
+                bool validationSuccess = Compare(newLower, newUpper, test.Y, test.X, out errorCount, out errors);
                 report.Errors = errors;
 
-                if (validationSuccessful)
+                if (validationSuccess)
                 {
                     if (report.Errors.Count == 0)
                         report.Valid = Validity.Valid;
                     else
                         report.Valid = Validity.Invalid;
                 }
-                // Error: validation not successful
                 else
+                {
+                    // Error: validation not successful
                     report.Valid = Validity.Undefined;
-            }
-            // Error: no data
-            else
-            {
-                validationSuccessful = false;
-                report.Valid = Validity.Undefined;
+                }
+                return validationSuccess;
             }
 
-            return report;
+            // Error: no data
+            report.Valid = Validity.Undefined;
+            return false;
         }
         /// <summary>
         /// Compares with tube
@@ -153,7 +106,7 @@ namespace CurveCompare
         /// <param name="test">Compare curve values.</param>
         /// <param name="time">Time values.</param>
         /// <param name="Errors">Errors.</param>
-        /// <returns>Number of Errors.</returns>
+        /// <returns>Success state.</returns>
         private static bool Compare(double[] lower, double[] upper, double[] test, double[] time, out int errorCount, out Curve errors)
         {
             // --------------------------------------------------------------------------------------------------------------------------------
@@ -253,9 +206,8 @@ namespace CurveCompare
         /// <summary>
         /// Decides which tube calculation algorithm to use.
         /// </summary>
-        /// <returns>true, if algorithm chosen;
-        /// false, if no algorithm chosen.</returns>
-        private bool chooseAlgorithm()
+        /// <returns>Success state.</returns>
+        private bool ChooseAlgorithm()
         {
             bool successful = true;
 

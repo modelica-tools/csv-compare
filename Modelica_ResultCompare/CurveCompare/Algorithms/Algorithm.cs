@@ -2,11 +2,6 @@
 // author: Susanne Walther
 // date: 22.12.2014
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace CurveCompare.Algorithms
 {
     /// <summary>
@@ -27,8 +22,7 @@ namespace CurveCompare.Algorithms
         /// <returns>Collection of return values.</returns>
         public virtual TubeReport Calculate(Curve reference, TubeSize size)
         {
-            TubeReport report = new TubeReport();
-            return report;
+            return new TubeReport();
         }
     }
 
