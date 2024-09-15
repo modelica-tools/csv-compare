@@ -313,7 +313,12 @@ namespace CsvCompare
                     else
                         log.WriteLine(LogLevel.Debug, "The resolution of the base x-axis is good.");
 
-                    size = new TubeSize(reference, true);
+                    // The actual nominal attribute should be used, but is unfortunately unavailable in the CSV files.
+                    // A default nominal value of 0.001 was chosen as a compromise between having many false negatives
+                    // and passing wrong result files.
+                    const double defaultNominalValue = 0.001;
+                    const bool useLegacyBaseAndRatio = true;
+                    size = new TubeSize(reference, defaultNominalValue, useLegacyBaseAndRatio);
                     size.Calculate(_dRangeDelta, Axes.X, Relativity.Relative);
                     tube = new Tube(size);
                     tubeReport = tube.Calculate(reference);

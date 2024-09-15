@@ -70,36 +70,27 @@ namespace CurveCompare
             set { successful = value; }
         }
         /// <summary>
-        /// Creates an instanz of TubeSize. <para>
-        /// Base and Ratio get standard values.</para>
+        /// Creates an instance of TubeSize.
         /// </summary>
         /// <param name="reference">Reference curve.</param>
-        public TubeSize(Curve reference)
-        {
-            this.reference = reference;
-            SetStandardBaseAndRatio();
-            successful = false;
-        }
-        /// <summary>
-        /// Creates an instanz of TubeSize. <para>
-        /// Ratio and Base get standard values.</para>
-        /// </summary>
-        /// <param name="reference">Reference curve.</param>
-        /// <param name="formerBaseAndRatio">Base and Ratio are calculated like in the former CSV-Compare, if true;<para>
-        /// Ratio and Base get standard values, elsewise.</para></param>
-        public TubeSize(Curve reference, bool formerBaseAndRatio)
+        /// <param name="nominalValue">A nominal value handles the case of reference variables that are near-zero
+        /// e.g. because of being the result of balance equations affected by small numerical errors, but are meant
+        /// to have a much larger order of magnitude.</param>
+        /// <param name="formerBaseAndRatio">Base and Ratio are calculated like in the former CSV-Compare, if true;<param>
+        public TubeSize(Curve reference, double nominalValue, bool formerBaseAndRatio)
         {
             this.reference = reference;
             if (formerBaseAndRatio)
-                SetFormerBaseAndRatio();
+                SetFormerBaseAndRatio(nominalValue);
             else
-                SetStandardBaseAndRatio();
+                SetStandardBaseAndRatio(nominalValue);
             successful = false;
         }
         /// <summary>
         /// Calculates standard values for BaseX , BaseY and Ratio.
         /// </summary>
-        public void SetStandardBaseAndRatio()
+        /// <param name="nominalValue">Nominal value (required: greater than zero).</param>
+        private void SetStandardBaseAndRatio(double nominalValue)
         {
             // set baseX
             baseX = reference.X.Max() - reference.X.Min(); //reference.X.Max() - reference.X.Min() + Math.Abs(reference.X.Min());
@@ -108,11 +99,7 @@ namespace CurveCompare
             if (baseX == 0) // nonsense case, no data
                 baseX = 1;
             // set baseY
-            baseY = reference.Y.Max() - reference.Y.Min();
-            if (baseY == 0) // rare special case
-                baseY = Math.Abs(reference.Y.Max());
-            if (baseY == 0) // rare special case
-                baseY = 0.00000000000000001;
+            baseY = Math.Max(reference.Y.Max() - reference.Y.Min(), nominalValue);
             // set ratio
             if (baseX != 0)
                 ratio = baseY / baseX;
@@ -122,12 +109,14 @@ namespace CurveCompare
         /// <summary>
         /// Calculates former standard values for BaseX , BaseY and Ratio.
         /// </summary>
-        public void SetFormerBaseAndRatio()
+        /// <param name="nominalValue">Nominal value (required: greater than zero).</param>
+        private void SetFormerBaseAndRatio(double nominalValue)
         {
-            double epsilon = 1e-12;
+            // guard against the case with only one time point, for which baseX would be zero
+            const double epsilon = 1e-12;
             baseX = Math.Max(Math.Max(reference.X.Max() - reference.X.Min(), Math.Abs(reference.X.Min())), epsilon);
-            ratio = Math.Max(Math.Max(reference.Y.Max() - reference.Y.Min(), Math.Abs(reference.Y.Min())), epsilon) / baseX;
-            baseY = baseX * ratio;
+            baseY = Math.Max(Math.Max(reference.Y.Max() - reference.Y.Min(), Math.Abs(reference.Y.Min())), nominalValue);
+            ratio = baseY / baseX;
             return;
         }
         /// <summary>
