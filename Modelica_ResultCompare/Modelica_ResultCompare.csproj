@@ -159,7 +159,6 @@
     <Compile Include="CurveCompare\Algorithms\Ellipse.cs" />
     <Compile Include="CurveCompare\Algorithms\Rectangle.cs" />
     <Compile Include="CurveCompare\Curve.cs" />
-    <Compile Include="CurveCompare\CurveCompare.cs" />
     <Compile Include="CurveCompare\DataImport\CsvFile.cs" />
     <Compile Include="CurveCompare\DataImport\Options.cs" />
     <Compile Include="CurveCompare\DataImport\ReadOptions.cs" />
