@@ -19,7 +19,7 @@ then
         echo file version set to $fileversion
         sed -i 's/\(AssemblyInformationalVersionAttribute\)(.*/\1("'$version'")]/' $output
         echo informational version set to $version
-        sed -i 's/\(AssemblyCopyright\).*/AssemblyCopyright("Copyright © '$dt' ESI ITI GmbH")]/' $output
+        sed -i 's/\(AssemblyCopyright\).*/AssemblyCopyright("Copyright © '$dt' ESI ITI GmbH and contributors")]/' $output
 else
         echo "No template found @"$input!
         exit 1
@@ -31,15 +31,15 @@ then
 	cmd //c "winbuild.bat"
 	# create zip file
 	zipper="/c/Program Files/7-Zip/7z.exe"
-	"$zipper" a -tzip $root/csv-compare.windows-$version.x64.zip ./Modelica_ResultCompare/bin/x64/Release/Compare.exe BUILD.md LICENSE README.md RELEASENOTES.md
+	"$zipper" a -tzip $root/csv-compare.windows-$version.x64.zip ./Modelica_ResultCompare/bin/x64/Release/Compare.exe BUILD.md LICENSE README.md RELEASENOTES.md ./Third-party
 	echo "Successfully created the file $root/csv-compare.windows-$version.x64.tar.gz"
-	"$zipper" a -tzip $root/csv-compare.windows-$version.x86.zip  ./Modelica_ResultCompare/bin/x86/Release/Compare.exe BUILD.md LICENSE README.md RELEASENOTES.md
+	"$zipper" a -tzip $root/csv-compare.windows-$version.x86.zip  ./Modelica_ResultCompare/bin/x86/Release/Compare.exe BUILD.md LICENSE README.md RELEASENOTES.md ./Third-party
 	echo "Successfully created the file $root/csv-compare.windows-$version.x86.tar.gz"
 else
 	# build release
 	make release
 	# create zip file
-	tar -czf $root/csv-compare.linux-$version.tar.gz Modelica_ResultCompare/bin/Release/Compare.exe BUILD.md LICENSE README.md RELEASENOTES.md
+	tar -czf $root/csv-compare.linux-$version.tar.gz Modelica_ResultCompare/bin/Release/Compare.exe BUILD.md LICENSE README.md RELEASENOTES.md ./Third-party
 	echo "Successfully created the file csv-compare.linux-$version.tar.gz with the following content:"
 	tar tf $root/csv-compare.linux-$version.tar.gz
 fi
