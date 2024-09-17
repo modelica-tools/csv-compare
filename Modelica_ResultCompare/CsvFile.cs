@@ -316,6 +316,7 @@ namespace CsvCompare
                     // The actual nominal attribute should be used, but is unfortunately unavailable in the CSV files.
                     // A default nominal value of 0.001 was chosen as a compromise between having many false negatives
                     // and passing wrong result files.
+                    // See discussion in https://github.com/modelica/ModelicaStandardLibrary/issues/4421
                     const double defaultNominalValue = 0.001;
                     const bool useLegacyBaseAndRatio = true;
                     size = new TubeSize(reference, defaultNominalValue, useLegacyBaseAndRatio);
