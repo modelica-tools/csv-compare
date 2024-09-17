@@ -4,8 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 // for visualization with ChartControl
 #if GUI
@@ -38,8 +36,10 @@ namespace CurveCompare.Algorithms
         /// </summary>
         /// <param name="reference">Reference curve with x and y values.</param>
         /// <param name="size">Size of tube.</param>
+        /// <param name="minX">Min abscissa value.</param>
+        /// <param name="maxX">Max abscissa value.</param>
         /// <returns>Collection of return values.</returns>
-        public override TubeReport Calculate(Curve reference, TubeSize size)
+        public override TubeReport Calculate(Curve reference, TubeSize size, double minX, double maxX)
         {
             TubeReport report = new TubeReport();
             successful = false;
@@ -49,8 +49,8 @@ namespace CurveCompare.Algorithms
                 report.Reference = reference;
                 report.Size = size;
                 report.Algorithm = AlgorithmOptions.Rectangle;
-                report.Lower = CalculateLower(reference, size);
-                report.Upper = CalculateUpper(reference, size);
+                report.Lower = CalculateLower(reference, size, minX, maxX);
+                report.Upper = CalculateUpper(reference, size, minX, maxX);
                 if (report.Lower.ImportSuccessful && report.Upper.ImportSuccessful)
                     successful = true;
             }
@@ -61,10 +61,11 @@ namespace CurveCompare.Algorithms
         /// </summary>
         /// <param name="reference">Reference curve.</param>
         /// <param name="size">Tube size.</param>
+        /// <param name="minX">Min abscissa value.</param>
+        /// <param name="maxX">Max abscissa value.</param>
         /// <returns>Lower tube curve.</returns>
-        private static Curve CalculateLower(Curve reference, TubeSize size)
+        private static Curve CalculateLower(Curve reference, TubeSize size, double minX, double maxX)
         {
-            Curve lower;                                            // lower tube curve
             List<double> LX = new List<double>(2 * reference.Count); // x-values of lower tube curve
             List<double> LY = new List<double>(2 * reference.Count); // y-values of lower tube curve
 
@@ -148,7 +149,6 @@ namespace CurveCompare.Algorithms
                         {
                             // add point down left
                             LX.Add(reference.X[i] - size.X);
-
                             LY.Add(reference.Y[i] - size.Y);
                             // add point down right
                             LX.Add(reference.X[i] + size.X);
@@ -207,10 +207,21 @@ namespace CurveCompare.Algorithms
             // -------------- 2. Remove points and add intersection points in case of backward order -----------------------
             // -------------------------------------------------------------------------------------------------------------
 
-            removeLoop(LX, LY, true);
+            RemoveLoop(LX, LY, true);
 
-            lower = new Curve("Lower", LX.ToArray(), LY.ToArray());
-            return lower;
+            while (LX.Count > 0 && LX[0] < minX - size.X / 2.0)
+            {
+                LX.RemoveAt(0);
+                LY.RemoveAt(0);
+            }
+
+            while (LX.Count > 0 && LX[LX.Count - 1] > maxX + size.X / 2.0)
+            {
+                LX.RemoveAt(LX.Count - 1);
+                LY.RemoveAt(LY.Count - 1);
+            }
+
+            return new Curve("Lower", LX.ToArray(), LY.ToArray());
         }
 
         /// <summary>
@@ -218,10 +229,11 @@ namespace CurveCompare.Algorithms
         /// </summary>
         /// <param name="reference">Reference curve.</param>
         /// <param name="size">Tube size.</param>
+        /// <param name="minX">Min abscissa value.</param>
+        /// <param name="maxX">Max abscissa value.</param>
         /// <returns>Upper tube curve.</returns>
-        private static Curve CalculateUpper(Curve reference, TubeSize size)
+        private static Curve CalculateUpper(Curve reference, TubeSize size, double minX, double maxX)
         {
-            Curve upper;                                             // upper tube curve
             List<double> UX = new List<double>(2 * reference.Count); // x-values of upper tube curve
             List<double> UY = new List<double>(2 * reference.Count); // y-values of upper tube curve
 
@@ -363,10 +375,21 @@ namespace CurveCompare.Algorithms
             // -------------- 2. Remove points and add intersection points in case of backward order -------------------
             // ---------------------------------------------------------------------------------------------------------
 
-            removeLoop(UX, UY, false);
+            RemoveLoop(UX, UY, false);
 
-            upper = new Curve("Upper", UX.ToArray(), UY.ToArray());
-            return upper;
+            while (UX.Count > 0 && UX[0] < minX - size.X / 2.0)
+            {
+                UX.RemoveAt(0);
+                UY.RemoveAt(0);
+            }
+
+            while (UX.Count > 0 && UX[UX.Count - 1] > maxX + size.X / 2.0)
+            {
+                UX.RemoveAt(UX.Count - 1);
+                UY.RemoveAt(UY.Count - 1);
+            }
+
+            return new Curve("Upper", UX.ToArray(), UY.ToArray());
         }
         /// <summary>
         ///  Remove points and add intersection points in case of backward order
@@ -376,7 +399,7 @@ namespace CurveCompare.Algorithms
         /// <param name="lower">if true, algorithm for lower tube curve is used;<para>
         /// if false, algorithm for upper tube curve is used</para></param>
         /// <return>Number of loops, that are removed.</return>
-        private static int removeLoop(List<double> X, List<double> Y, bool lower)
+        private static int RemoveLoop(List<double> X, List<double> Y, bool lower)
         {
             // Visualization of working of removeLoop
 #if GUI

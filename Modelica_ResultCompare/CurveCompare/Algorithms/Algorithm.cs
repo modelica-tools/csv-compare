@@ -19,8 +19,10 @@ namespace CurveCompare.Algorithms
         /// </summary>
         /// <param name="reference">Reference curve with x and y values.</param>
         /// <param name="size">Size of tube.</param>
+        /// <param name="minX">Min abscissa value.</param>
+        /// <param name="maxX">Max abscissa value.</param>
         /// <returns>Collection of return values.</returns>
-        public virtual TubeReport Calculate(Curve reference, TubeSize size)
+        public virtual TubeReport Calculate(Curve reference, TubeSize size, double minX, double maxX)
         {
             return new TubeReport();
         }

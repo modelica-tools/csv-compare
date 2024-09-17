@@ -322,7 +322,9 @@ namespace CsvCompare
                     size = new TubeSize(reference, defaultNominalValue, useLegacyBaseAndRatio);
                     size.Calculate(_dRangeDelta, Axes.X, Relativity.Relative);
                     tube = new Tube(size);
-                    var calcResult = tube.Calculate(reference);
+                    double minX = Math.Max(compareCurve.X[0], reference.X[0]);
+                    double maxX = Math.Min(compareCurve.X[compareCurve.X.Length - 1], reference.X[reference.X.Length - 1]);
+                    var calcResult = tube.Calculate(reference, minX, maxX);
                     bool calcSuccess = calcResult.Item2;
                     if (!calcSuccess)
                     {
