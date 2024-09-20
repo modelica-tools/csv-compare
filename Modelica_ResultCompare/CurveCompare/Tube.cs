@@ -47,14 +47,12 @@ namespace CurveCompare
         /// Calculates the Tube, that consists of 2 Curves: Lower and Upper.
         /// </summary>
         /// <param name="reference">Reference curve.</param>
-        /// <param name="minX">Min abscissa value.</param>
-        /// <param name="maxX">Max abscissa value.</param>
         /// <returns>Tuple consisting of tube calculation and success state.</returns>
-        public Tuple<TubeReport, bool> Calculate(Curve reference, double minX, double maxX)
+        public Tuple<TubeReport, bool> Calculate(Curve reference)
         {
             if (ChooseAlgorithm())
             {
-                TubeReport report = algorithm.Calculate(reference, size, minX, maxX);
+                TubeReport report = algorithm.Calculate(reference, size);
                 return Tuple.Create(report, algorithm.Successful);
             }
             return Tuple.Create(new TubeReport(), false);

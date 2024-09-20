@@ -36,10 +36,8 @@ namespace CurveCompare.Algorithms
         /// </summary>
         /// <param name="reference">Reference curve with x and y values.</param>
         /// <param name="size">Size of tube.</param>
-        /// <param name="minX">Min abscissa value.</param>
-        /// <param name="maxX">Max abscissa value.</param>
         /// <returns>Collection of return values.</returns>
-        public override TubeReport Calculate(Curve reference, TubeSize size, double minX, double maxX)
+        public override TubeReport Calculate(Curve reference, TubeSize size)
         {
             TubeReport report = new TubeReport();
             successful = false;
@@ -49,8 +47,8 @@ namespace CurveCompare.Algorithms
                 report.Reference = reference;
                 report.Size = size;
                 report.Algorithm = AlgorithmOptions.Rectangle;
-                report.Lower = CalculateLower(reference, size, minX, maxX);
-                report.Upper = CalculateUpper(reference, size, minX, maxX);
+                report.Lower = CalculateLower(reference, size);
+                report.Upper = CalculateUpper(reference, size);
                 if (report.Lower.ImportSuccessful && report.Upper.ImportSuccessful)
                     successful = true;
             }
@@ -61,10 +59,8 @@ namespace CurveCompare.Algorithms
         /// </summary>
         /// <param name="reference">Reference curve.</param>
         /// <param name="size">Tube size.</param>
-        /// <param name="minX">Min abscissa value.</param>
-        /// <param name="maxX">Max abscissa value.</param>
         /// <returns>Lower tube curve.</returns>
-        private static Curve CalculateLower(Curve reference, TubeSize size, double minX, double maxX)
+        private static Curve CalculateLower(Curve reference, TubeSize size)
         {
             List<double> LX = new List<double>(2 * reference.Count); // x-values of lower tube curve
             List<double> LY = new List<double>(2 * reference.Count); // y-values of lower tube curve
@@ -208,17 +204,27 @@ namespace CurveCompare.Algorithms
             // -------------------------------------------------------------------------------------------------------------
 
             RemoveLoop(LX, LY, true);
-
-            while (LX.Count > 0 && LX[0] < minX - size.X / 2.0)
             {
-                LX.RemoveAt(0);
-                LY.RemoveAt(0);
+                double minY = reference.Y[0] - size.Y;
+                while (LX.Count > 0 && LX[0] <= reference.X[0])
+                {
+                    minY = Math.Min(minY, LY[0]);
+                    LX.RemoveAt(0);
+                    LY.RemoveAt(0);
+                }
+                LX.Insert(0, reference.X[0]);
+                LY.Insert(0, minY);
             }
-
-            while (LX.Count > 0 && LX[LX.Count - 1] > maxX + size.X / 2.0)
             {
-                LX.RemoveAt(LX.Count - 1);
-                LY.RemoveAt(LY.Count - 1);
+                double minY = reference.Y[reference.Count - 1] - size.Y;
+                while (LX.Count > 0 && LX[LX.Count - 1] >= reference.X[reference.Count - 1])
+                {
+                    minY = Math.Min(minY, LY[LY.Count - 1]);
+                    LX.RemoveAt(LX.Count - 1);
+                    LY.RemoveAt(LY.Count - 1);
+                }
+                LX.Add(reference.X[reference.Count - 1]);
+                LY.Add(minY);
             }
 
             return new Curve("Lower", LX.ToArray(), LY.ToArray());
@@ -229,10 +235,8 @@ namespace CurveCompare.Algorithms
         /// </summary>
         /// <param name="reference">Reference curve.</param>
         /// <param name="size">Tube size.</param>
-        /// <param name="minX">Min abscissa value.</param>
-        /// <param name="maxX">Max abscissa value.</param>
         /// <returns>Upper tube curve.</returns>
-        private static Curve CalculateUpper(Curve reference, TubeSize size, double minX, double maxX)
+        private static Curve CalculateUpper(Curve reference, TubeSize size)
         {
             List<double> UX = new List<double>(2 * reference.Count); // x-values of upper tube curve
             List<double> UY = new List<double>(2 * reference.Count); // y-values of upper tube curve
@@ -376,17 +380,27 @@ namespace CurveCompare.Algorithms
             // ---------------------------------------------------------------------------------------------------------
 
             RemoveLoop(UX, UY, false);
-
-            while (UX.Count > 0 && UX[0] < minX - size.X / 2.0)
             {
-                UX.RemoveAt(0);
-                UY.RemoveAt(0);
+                double maxY = reference.Y[0] + size.Y;
+                while (UX.Count > 0 && UX[0] <= reference.X[0])
+                {
+                    maxY = Math.Max(maxY, UY[0]);
+                    UX.RemoveAt(0);
+                    UY.RemoveAt(0);
+                }
+                UX.Insert(0, reference.X[0]);
+                UY.Insert(0, maxY);
             }
-
-            while (UX.Count > 0 && UX[UX.Count - 1] > maxX + size.X / 2.0)
             {
-                UX.RemoveAt(UX.Count - 1);
-                UY.RemoveAt(UY.Count - 1);
+                double maxY = reference.Y[reference.Count - 1] + size.Y;
+                while (UX.Count > 0 && UX[UX.Count - 1] >= reference.X[reference.Count - 1])
+                {
+                    maxY = Math.Max(maxY, UY[UY.Count - 1]);
+                    UX.RemoveAt(UX.Count - 1);
+                    UY.RemoveAt(UY.Count - 1);
+                }
+                UX.Add(reference.X[reference.Count - 1]);
+                UY.Add(maxY);
             }
 
             return new Curve("Upper", UX.ToArray(), UY.ToArray());
