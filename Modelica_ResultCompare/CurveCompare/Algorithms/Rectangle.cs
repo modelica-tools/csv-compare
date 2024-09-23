@@ -204,32 +204,7 @@ namespace CurveCompare.Algorithms
             // -------------------------------------------------------------------------------------------------------------
 
             RemoveLoop(LX, LY, true);
-            while (LX.Count > 0 && LX[0] <= reference.X[0])
-            {
-                if (LX.Count > 1 && LX[1] > reference.X[0])
-                {
-                    LY[0] = LY[0] + (LY[1] - LY[0]) * (reference.X[0] - LX[0]) / (LX[1] - LX[0]);
-                    LX[0] = reference.X[0];
-                }
-                else
-                {
-                    LX.RemoveAt(0);
-                    LY.RemoveAt(0);
-                }
-            }
-            while (LX.Count > 0 && LX[LX.Count - 1] >= reference.X[reference.Count - 1])
-            {
-                if (LX.Count > 1 && LX[LX.Count - 2] < reference.X[reference.Count - 1])
-                {
-                    LY[LY.Count - 1] = LY[LY.Count - 1] - (LY[LY.Count - 1] - LY[LY.Count - 2]) * (LX[LX.Count - 1] - reference.X[reference.Count - 1]) / (LX[LX.Count - 1] - LX[LX.Count - 2]);
-                    LX[LX.Count - 1] = reference.X[reference.Count - 1];
-                }
-                else
-                {
-                    LX.RemoveAt(LX.Count - 1);
-                    LY.RemoveAt(LY.Count - 1);
-                }
-            }
+            FixBoundaries(LX, LY, reference);
 
             return new Curve("Lower", LX.ToArray(), LY.ToArray());
         }
@@ -384,32 +359,7 @@ namespace CurveCompare.Algorithms
             // ---------------------------------------------------------------------------------------------------------
 
             RemoveLoop(UX, UY, false);
-            while (UX.Count > 0 && UX[0] <= reference.X[0])
-            {
-                if (UX.Count > 1 && UX[1] > reference.X[0])
-                {
-                    UY[0] = UY[0] + (UY[1] - UY[0]) * (reference.X[0] - UX[0]) / (UX[1] - UX[0]);
-                    UX[0] = reference.X[0];
-                }
-                else
-                {
-                    UX.RemoveAt(0);
-                    UY.RemoveAt(0);
-                }
-            }
-            while (UX.Count > 0 && UX[UX.Count - 1] >= reference.X[reference.Count - 1])
-            {
-                if (UX.Count > 1 && UX[UX.Count - 2] < reference.X[reference.Count - 1])
-                {
-                    UY[UY.Count - 1] = UY[UY.Count - 1] - (UY[UY.Count - 1] - UY[UY.Count - 2]) * (UX[UX.Count - 1] - reference.X[reference.Count - 1]) / (UX[UX.Count - 1] - UX[UX.Count - 2]);
-                    UX[UX.Count - 1] = reference.X[reference.Count - 1];
-                }
-                else
-                {
-                    UX.RemoveAt(UX.Count - 1);
-                    UY.RemoveAt(UY.Count - 1);
-                }
-            }
+            FixBoundaries(UX, UY, reference);
 
             return new Curve("Upper", UX.ToArray(), UY.ToArray());
         }
@@ -599,6 +549,42 @@ namespace CurveCompare.Algorithms
             }
 #endif
             return countLoops;
+        }
+        /// <summary>
+        /// Fix the boundary values of the tube curve.
+        /// </summary>
+        /// <param name="X">x values of curve</param>
+        /// <param name="Y">y values of curve</param>
+        /// <param name="reference">Reference curve.</param>
+        private static void FixBoundaries(List<double> X, List<double> Y, Curve reference)
+        {
+            while (X.Count > 0 && X[0] <= reference.X[0])
+            {
+                if (X.Count > 1 && X[1] > reference.X[0])
+                {
+                    Y[0] = Y[0] + (Y[1] - Y[0]) * (reference.X[0] - X[0]) / (X[1] - X[0]);
+                    X[0] = reference.X[0];
+                }
+                else
+                {
+                    X.RemoveAt(0);
+                    Y.RemoveAt(0);
+                }
+            }
+            while (X.Count > 0 && X[X.Count - 1] >= reference.X[reference.Count - 1])
+            {
+                if (X.Count > 1 && X[X.Count - 2] < reference.X[reference.Count - 1])
+                {
+                    Y[Y.Count - 1] = Y[Y.Count - 1] - (Y[Y.Count - 1] - Y[Y.Count - 2]) * (X[X.Count - 1] - reference.X[reference.Count - 1]) / (X[X.Count - 1] - X[X.Count - 2]);
+                    X[X.Count - 1] = reference.X[reference.Count - 1];
+                }
+                else
+                {
+                    X.RemoveAt(X.Count - 1);
+                    Y.RemoveAt(Y.Count - 1);
+                }
+            }
+
         }
     }
 }
