@@ -204,27 +204,31 @@ namespace CurveCompare.Algorithms
             // -------------------------------------------------------------------------------------------------------------
 
             RemoveLoop(LX, LY, true);
+            while (LX.Count > 0 && LX[0] <= reference.X[0])
             {
-                double minY = reference.Y[0] - size.Y;
-                while (LX.Count > 0 && LX[0] <= reference.X[0])
+                if (LX.Count > 1 && LX[1] > reference.X[0])
                 {
-                    minY = Math.Min(minY, LY[0]);
+                    LY[0] = LY[0] + (LY[1] - LY[0]) * (reference.X[0] - LX[0]) / (LX[1] - LX[0]);
+                    LX[0] = reference.X[0];
+                }
+                else
+                {
                     LX.RemoveAt(0);
                     LY.RemoveAt(0);
                 }
-                LX.Insert(0, reference.X[0]);
-                LY.Insert(0, minY);
             }
+            while (LX.Count > 0 && LX[LX.Count - 1] >= reference.X[reference.Count - 1])
             {
-                double minY = reference.Y[reference.Count - 1] - size.Y;
-                while (LX.Count > 0 && LX[LX.Count - 1] >= reference.X[reference.Count - 1])
+                if (LX.Count > 1 && LX[LX.Count - 2] < reference.X[reference.Count - 1])
                 {
-                    minY = Math.Min(minY, LY[LY.Count - 1]);
+                    LY[LY.Count - 1] = LY[LY.Count - 1] - (LY[LY.Count - 1] - LY[LY.Count - 2]) * (LX[LX.Count - 1] - reference.X[reference.Count - 1]) / (LX[LX.Count - 1] - LX[LX.Count - 2]);
+                    LX[LX.Count - 1] = reference.X[reference.Count - 1];
+                }
+                else
+                {
                     LX.RemoveAt(LX.Count - 1);
                     LY.RemoveAt(LY.Count - 1);
                 }
-                LX.Add(reference.X[reference.Count - 1]);
-                LY.Add(minY);
             }
 
             return new Curve("Lower", LX.ToArray(), LY.ToArray());
@@ -380,27 +384,31 @@ namespace CurveCompare.Algorithms
             // ---------------------------------------------------------------------------------------------------------
 
             RemoveLoop(UX, UY, false);
+            while (UX.Count > 0 && UX[0] <= reference.X[0])
             {
-                double maxY = reference.Y[0] + size.Y;
-                while (UX.Count > 0 && UX[0] <= reference.X[0])
+                if (UX.Count > 1 && UX[1] > reference.X[0])
                 {
-                    maxY = Math.Max(maxY, UY[0]);
+                    UY[0] = UY[0] + (UY[1] - UY[0]) * (reference.X[0] - UX[0]) / (UX[1] - UX[0]);
+                    UX[0] = reference.X[0];
+                }
+                else
+                {
                     UX.RemoveAt(0);
                     UY.RemoveAt(0);
                 }
-                UX.Insert(0, reference.X[0]);
-                UY.Insert(0, maxY);
             }
+            while (UX.Count > 0 && UX[UX.Count - 1] >= reference.X[reference.Count - 1])
             {
-                double maxY = reference.Y[reference.Count - 1] + size.Y;
-                while (UX.Count > 0 && UX[UX.Count - 1] >= reference.X[reference.Count - 1])
+                if (UX.Count > 1 && UX[UX.Count - 2] < reference.X[reference.Count - 1])
                 {
-                    maxY = Math.Max(maxY, UY[UY.Count - 1]);
+                    UY[UY.Count - 1] = UY[UY.Count - 1] - (UY[UY.Count - 1] - UY[UY.Count - 2]) * (UX[UX.Count - 1] - reference.X[reference.Count - 1]) / (UX[UX.Count - 1] - UX[UX.Count - 2]);
+                    UX[UX.Count - 1] = reference.X[reference.Count - 1];
+                }
+                else
+                {
                     UX.RemoveAt(UX.Count - 1);
                     UY.RemoveAt(UY.Count - 1);
                 }
-                UX.Add(reference.X[reference.Count - 1]);
-                UY.Add(maxY);
             }
 
             return new Curve("Upper", UX.ToArray(), UY.ToArray());
