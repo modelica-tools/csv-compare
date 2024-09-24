@@ -1,3 +1,8 @@
+## 2024-09-24 Version 2.1.0
+* improve curve compare by introduction of a default nominal value (hard-coded to 0.001)
+* improve the tube size calculation (by switching to the new standard approach)
+* bugfix for tube calculation if reference curve is shorter than actual curve
+
 ## 2024-04-09 Version 2.0.4
 * improve compare_failed log file to print total number of failed values
 
