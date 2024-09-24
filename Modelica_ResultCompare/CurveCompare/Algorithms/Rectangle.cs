@@ -4,8 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 // for visualization with ChartControl
 #if GUI
@@ -64,7 +62,6 @@ namespace CurveCompare.Algorithms
         /// <returns>Lower tube curve.</returns>
         private static Curve CalculateLower(Curve reference, TubeSize size)
         {
-            Curve lower;                                            // lower tube curve
             List<double> LX = new List<double>(2 * reference.Count); // x-values of lower tube curve
             List<double> LY = new List<double>(2 * reference.Count); // y-values of lower tube curve
 
@@ -148,7 +145,6 @@ namespace CurveCompare.Algorithms
                         {
                             // add point down left
                             LX.Add(reference.X[i] - size.X);
-
                             LY.Add(reference.Y[i] - size.Y);
                             // add point down right
                             LX.Add(reference.X[i] + size.X);
@@ -207,10 +203,10 @@ namespace CurveCompare.Algorithms
             // -------------- 2. Remove points and add intersection points in case of backward order -----------------------
             // -------------------------------------------------------------------------------------------------------------
 
-            removeLoop(LX, LY, true);
+            RemoveLoop(LX, LY, true);
+            FixBoundaries(LX, LY, reference);
 
-            lower = new Curve("Lower", LX.ToArray(), LY.ToArray());
-            return lower;
+            return new Curve("Lower", LX.ToArray(), LY.ToArray());
         }
 
         /// <summary>
@@ -221,7 +217,6 @@ namespace CurveCompare.Algorithms
         /// <returns>Upper tube curve.</returns>
         private static Curve CalculateUpper(Curve reference, TubeSize size)
         {
-            Curve upper;                                             // upper tube curve
             List<double> UX = new List<double>(2 * reference.Count); // x-values of upper tube curve
             List<double> UY = new List<double>(2 * reference.Count); // y-values of upper tube curve
 
@@ -363,10 +358,10 @@ namespace CurveCompare.Algorithms
             // -------------- 2. Remove points and add intersection points in case of backward order -------------------
             // ---------------------------------------------------------------------------------------------------------
 
-            removeLoop(UX, UY, false);
+            RemoveLoop(UX, UY, false);
+            FixBoundaries(UX, UY, reference);
 
-            upper = new Curve("Upper", UX.ToArray(), UY.ToArray());
-            return upper;
+            return new Curve("Upper", UX.ToArray(), UY.ToArray());
         }
         /// <summary>
         ///  Remove points and add intersection points in case of backward order
@@ -376,7 +371,7 @@ namespace CurveCompare.Algorithms
         /// <param name="lower">if true, algorithm for lower tube curve is used;<para>
         /// if false, algorithm for upper tube curve is used</para></param>
         /// <return>Number of loops, that are removed.</return>
-        private static int removeLoop(List<double> X, List<double> Y, bool lower)
+        private static int RemoveLoop(List<double> X, List<double> Y, bool lower)
         {
             // Visualization of working of removeLoop
 #if GUI
@@ -554,6 +549,42 @@ namespace CurveCompare.Algorithms
             }
 #endif
             return countLoops;
+        }
+        /// <summary>
+        /// Fix the boundary values of the tube curve.
+        /// </summary>
+        /// <param name="X">x values of curve</param>
+        /// <param name="Y">y values of curve</param>
+        /// <param name="reference">Reference curve.</param>
+        private static void FixBoundaries(List<double> X, List<double> Y, Curve reference)
+        {
+            while (X.Count > 0 && X[0] <= reference.X[0])
+            {
+                if (X.Count > 1 && X[1] > reference.X[0])
+                {
+                    Y[0] = Y[0] + (Y[1] - Y[0]) * (reference.X[0] - X[0]) / (X[1] - X[0]);
+                    X[0] = reference.X[0];
+                }
+                else
+                {
+                    X.RemoveAt(0);
+                    Y.RemoveAt(0);
+                }
+            }
+            while (X.Count > 0 && X[X.Count - 1] >= reference.X[reference.Count - 1])
+            {
+                if (X.Count > 1 && X[X.Count - 2] < reference.X[reference.Count - 1])
+                {
+                    Y[Y.Count - 1] = Y[Y.Count - 1] - (Y[Y.Count - 1] - Y[Y.Count - 2]) * (X[X.Count - 1] - reference.X[reference.Count - 1]) / (X[X.Count - 1] - X[X.Count - 2]);
+                    X[X.Count - 1] = reference.X[reference.Count - 1];
+                }
+                else
+                {
+                    X.RemoveAt(X.Count - 1);
+                    Y.RemoveAt(Y.Count - 1);
+                }
+            }
+
         }
     }
 }
