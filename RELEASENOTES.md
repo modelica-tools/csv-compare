@@ -1,5 +1,9 @@
+## 2024-09-26 Version 2.1.1
+* revert the tube size calculation (by switching to the previous approach, regression of 2.1.0)
+* bugfix for tube calculation if reference curve is shorter than actual curve (regression of 2.1.0)
+
 ## 2024-09-24 Version 2.1.0
-* improve curve compare by introduction of a default nominal value (hard-coded to 0.001)
+* improve curve compare by introducing a default nominal value (hard-coded to 0.001)
 * improve the tube size calculation (by switching to the new standard approach)
 * bugfix for tube calculation if reference curve is shorter than actual curve
 
