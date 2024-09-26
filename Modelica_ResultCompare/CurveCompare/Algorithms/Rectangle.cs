@@ -558,9 +558,9 @@ namespace CurveCompare.Algorithms
         /// <param name="reference">Reference curve.</param>
         private static void FixBoundaries(List<double> X, List<double> Y, Curve reference)
         {
-            while (X.Count > 0 && X[0] <= reference.X[0])
+            while (X.Count > 0 && X[0] < reference.X[0])
             {
-                if (X.Count > 1 && X[1] > reference.X[0])
+                if (X.Count > 1 && X[1] >= reference.X[0])
                 {
                     Y[0] = Y[0] + (Y[1] - Y[0]) * (reference.X[0] - X[0]) / (X[1] - X[0]);
                     X[0] = reference.X[0];
@@ -571,9 +571,9 @@ namespace CurveCompare.Algorithms
                     Y.RemoveAt(0);
                 }
             }
-            while (X.Count > 0 && X[X.Count - 1] >= reference.X[reference.Count - 1])
+            while (X.Count > 0 && X[X.Count - 1] > reference.X[reference.Count - 1])
             {
-                if (X.Count > 1 && X[X.Count - 2] < reference.X[reference.Count - 1])
+                if (X.Count > 1 && X[X.Count - 2] <= reference.X[reference.Count - 1])
                 {
                     Y[Y.Count - 1] = Y[Y.Count - 1] - (Y[Y.Count - 1] - Y[Y.Count - 2]) * (X[X.Count - 1] - reference.X[reference.Count - 1]) / (X[X.Count - 1] - X[X.Count - 2]);
                     X[X.Count - 1] = reference.X[reference.Count - 1];
