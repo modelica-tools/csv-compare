@@ -318,7 +318,7 @@ namespace CsvCompare
                     // and passing wrong result files.
                     // See discussion in https://github.com/modelica/ModelicaStandardLibrary/issues/4421
                     const double defaultNominalValue = 0.001;
-                    const bool useLegacyBaseAndRatio = false;
+                    const bool useLegacyBaseAndRatio = true;
                     size = new TubeSize(reference, defaultNominalValue, useLegacyBaseAndRatio);
                     size.Calculate(_dRangeDelta, Axes.X, Relativity.Relative);
                     tube = new Tube(size);
