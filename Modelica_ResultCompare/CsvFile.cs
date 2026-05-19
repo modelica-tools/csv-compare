@@ -290,6 +290,7 @@ namespace CsvCompare
                     size = null;
                     tube = new Tube(size);
                     log.WriteLine(LogLevel.Warning, "{0} not found in \"{1}\", skipping checks.", res.Key, this._fileName);
+                    continue;
                 }
                 else
                 {
