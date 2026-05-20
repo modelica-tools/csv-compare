@@ -102,6 +102,7 @@ namespace CsvCompare
                 _log.WriteLine(LogLevel.Debug, "Successfully parsed the following options:");
                 _log.WriteLine(LogLevel.Debug, "Operation mode is {0}", options.Mode);
                 _log.WriteLine(LogLevel.Debug, "Tolerance is {0}", options.Tolerance);
+                _log.WriteLine(LogLevel.Debug, "TimeTolerance is {0}", options.TimeTolerance);
 
                 if (options.Delimiter == 0)
                 {

@@ -540,7 +540,10 @@ namespace CsvCompare
 
                     if (null != options.Tolerance)
                         writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Tolerance:</td><td>{0}</td></tr>", options.Tolerance);
-
+                    
+                    if (null != options.TimeTolerance)
+                        writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Time Tolerance:</td><td>{0}</td></tr>", options.TimeTolerance);
+                    
                     if (!String.IsNullOrEmpty(options.Logfile))
                     {
                         writer.WriteLine("	<tr><td colspan=\"2\" class=\"header\">Logfile:</td><td><a href=\"file:///{0}\">{0}</a></td></tr>", options.Logfile);
@@ -653,7 +656,7 @@ namespace CsvCompare
         private string _metaPath;
         private List<Chart> _chart = new List<Chart>();
         private List<string> _data = new List<string>();
-        private double _tolerance;
+        private double _tolerance, _timetolerance;
         private double _dAvErr = 0;
         private int _iTotalErrors = -1;
         private bool _bRelative = false;
@@ -662,6 +665,12 @@ namespace CsvCompare
         {
             get { return _tolerance; }
             set { _tolerance = value; }
+        }
+
+        public double TimeTolerance
+        {
+            get { return _timetolerance; }
+            set { _timetolerance = value; }
         }
         public string Message { get { return _message; } set { _message = value; } }
         public string FileName { get { return _path; } set { _path = value; } }
@@ -851,6 +860,7 @@ namespace CsvCompare
                 writer.WriteLine("	<tr><td class=\"header\">Compare file:</td><td><a href=\"file:///{0}\">{1}</a></td></tr>", this.CompareFile.Replace("\\", "/"), this.CompareFile);
 
             writer.WriteLine("	<tr><td class=\"header\">Tolerance:</td><td>{0}</td></tr>", _tolerance);
+            writer.WriteLine("	<tr><td class=\"header\">Time Tolerance:</td><td>{0}</td></tr>", _timetolerance);
             writer.WriteLine("	<tr><td class=\"header\">Timestamp:</td><td>{0} [UTC]</td></tr>", DateTime.UtcNow);
 
             int iTested = _chart.Count - (from c in _chart where c.Errors == -1 select c).Count();

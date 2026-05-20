@@ -127,7 +127,7 @@ namespace CurveCompare
         /// Calculation fails, if (Ratio = 0 or BaseX = 0 or BaseY = 0).<para/>
         /// If calculation fails, [set Ratio and BaseX and BaseY != 0] or [call Calculate(double x, double y, Relativity relativity) with parameter Relativity.Absolute]</para></remarks>
         /// <exception cref="ArgumentOutOfRangeException">Relative value is out of expected range [0,1].</exception>
-        public void Calculate(double value, Axes axes, Relativity relativity)
+        public void Calculate(double value, double valueT, Axes axes, Relativity relativity)
         {
             successful = false;
 
@@ -137,17 +137,20 @@ namespace CurveCompare
                 {
                     if ((value < 0) || (value > 1))
                         throw new ArgumentOutOfRangeException("Relative value is out of expected range [0,1].");
-
+                    
+                    if ((valueT < 0) || (valueT > 1))
+                        throw new ArgumentOutOfRangeException("Relative value is out of expected range [0,1].");
+                    
                     if (axes == Axes.Y && baseY > 0)
                     {
                         y = value * baseY;
-                        x = y / ratio;
+                        x = valueT * baseX;
                         successful = true;
                     }
                     else if (axes == Axes.X && baseX > 0)
                     {
-                        x = value * baseX;
-                        y = ratio * x;
+                        x = valueT * baseX;
+                        y = value * baseY;
                         successful = true;
                     }
                 }

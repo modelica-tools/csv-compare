@@ -18,6 +18,7 @@ namespace CsvCompare
     public class CsvFile:IDisposable
     {
         private double _dRangeDelta = 0.002;
+        private double _dRangeDeltaT = 0.002;
         private string _fileName = string.Empty;
         private List<double> _xAxis = new List<double>();
         private Dictionary<string, List<double>> _values = new Dictionary<string, List<double>>();
@@ -32,6 +33,8 @@ namespace CsvCompare
         public Dictionary<string, List<double>> Results { get { return _values; } }
         /// This value can be used to produce a offset between base and comparison values
         public double RangeDelta { get { return _dRangeDelta; } set { _dRangeDelta = value; } }
+        /// This value can be used to produce a offset between base and comparison values
+        public double RangeDeltaT { get { return _dRangeDeltaT; } set { _dRangeDeltaT = value; } }
         /// This value enables/disables relative error differences in the error graph
         public bool ShowRelativeErrors
         {
@@ -58,7 +61,26 @@ namespace CsvCompare
                     if (!Double.TryParse(options.Tolerance, out _dRangeDelta))
                         log.WriteLine(LogLevel.Warning, "could not parse given tolerance argument: \"{0}\", using default \"{1}\".", options.Tolerance, _dRangeDelta);
             }
-
+            
+            //understand 0.002
+            if (null != options.TimeTolerance)
+            {
+                if (!Double.TryParse(options.TimeTolerance, NumberStyles.AllowDecimalPoint, toleranceProvider, out _dRangeDeltaT))
+                {
+                    //understand 0,002
+                    toleranceProvider.NumberDecimalSeparator = ",";
+                    if (!Double.TryParse(options.TimeTolerance, NumberStyles.AllowDecimalPoint, toleranceProvider, out _dRangeDeltaT))
+                        //understand 2e-2 etc.
+                        if (!Double.TryParse(options.TimeTolerance, out _dRangeDeltaT))
+                            log.WriteLine(LogLevel.Warning, "could not parse given time tolerance argument: \"{0}\", using default \"{1}\".", options.TimeTolerance, _dRangeDelta);
+                    _dRangeDeltaT = _dRangeDelta;
+                }
+            }
+            else
+            {
+                _dRangeDeltaT = _dRangeDelta;
+            }
+            
             if (File.Exists(fileName))
             {
                 _fileName = Path.GetFullPath(fileName);
@@ -281,7 +303,7 @@ namespace CsvCompare
             TubeReport report = new TubeReport();
             TubeSize size = null;
             Tube tube = new Tube(size);
-            IOptions tubeOptions = new Options1(_dRangeDelta, Axes.X);
+            IOptions tubeOptions = new Options1(_dRangeDelta, _dRangeDeltaT , Axes.X);
 
             foreach (KeyValuePair<string, List<double>> res in csvBase.Results)
             {
@@ -320,7 +342,7 @@ namespace CsvCompare
                     const double defaultNominalValue = 0.001;
                     const bool useLegacyBaseAndRatio = true;
                     size = new TubeSize(reference, defaultNominalValue, useLegacyBaseAndRatio);
-                    size.Calculate(_dRangeDelta, Axes.X, Relativity.Relative);
+                    size.Calculate(_dRangeDelta, _dRangeDeltaT, Axes.X, Relativity.Relative);
                     tube = new Tube(size);
                     var calcResult = tube.Calculate(reference);
                     bool calcSuccess = calcResult.Item2;
@@ -353,6 +375,7 @@ namespace CsvCompare
                     PrepareCharts(reference, compareCurve, report.Errors, rep, report, res, options.UseBitmapPlots);
             }
             rep.Tolerance = _dRangeDelta;
+            rep.TimeTolerance = _dRangeDeltaT;
 
             string sResult = "na";
 
@@ -370,6 +393,7 @@ namespace CsvCompare
                     writer.WriteLine(". Time:        {0:o}", DateTime.Now);
                     writer.WriteLine(". Operation:   {0}", options.Mode);
                     writer.WriteLine(". Tolerance:   {0}", options.Tolerance);
+                    writer.WriteLine(". TimeTolerance:   {0}", options.TimeTolerance);
                     writer.WriteLine(". Result:      {0}", sResult);
 
                     if (rep.TotalErrors > 0)

@@ -52,6 +52,9 @@ namespace CsvCompare
         [Option('t', "tolerance", Required = false, DefaultValue = "0.002", HelpText = "Set the width of the tube at discontinuity in x-direction [Default is 0.002].")]
         public string Tolerance { get; set; }
 
+        [Option('x', "timetolerance", Required = false,  HelpText = "Set the width of the tube at discontinuity in y-direction [Default is equal to tolerance].")]
+        public string TimeTolerance { get; set; }
+
         [Option('v', "verbosity", DefaultValue = 4, Required = false, HelpText = "Sets the verbosity of the output (1 most to 4[Default] less verbose).")]
         public int Verbosity { get; set; }
 

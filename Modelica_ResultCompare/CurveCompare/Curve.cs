@@ -49,6 +49,7 @@ namespace CurveCompare
         {
             get { return importSuccessful; }
         }
+
         /// <summary>
         /// Creates an empty Curve with members = null.
         /// </summary>
