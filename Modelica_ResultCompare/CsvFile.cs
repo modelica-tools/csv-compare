@@ -265,7 +265,69 @@ namespace CsvCompare
             else
                 return CompareFiles(log, csvBase, null, ref options);
         }
+        
+        static Curve Trim_curve(Curve curve,
+                       double start_time,
+                       double end_time)
+        {
+            int start_idx = 0;
+            int end_idx = curve.Count;
 
+            /* Find first valid sample */
+            while (start_idx < curve.Count &&
+                   curve.X[start_idx] < start_time)
+            {
+                start_idx++;
+            }
+
+            /* Find last valid sample */
+            while (end_idx > start_idx &&
+                   curve.X[end_idx - 1] > end_time)
+            {
+                end_idx--;
+            }
+
+            int new_size = end_idx - start_idx;
+            double[] TargetValues = new double[new_size];
+            double[] TargetTime = new double[new_size];
+            /* Shift data to beginning */
+            for (int i = 0; i < new_size; ++i)
+            {
+                TargetTime[i] = curve.X[start_idx + i];
+                TargetValues[i] = curve.Y[start_idx + i];
+            }
+            Curve NewCurve = new Curve(curve.Name, TargetTime, TargetValues);
+            return NewCurve; 
+        }
+        
+        public double[] GetCommonInterval(Curve reference, Curve compareCurve)
+        {
+            double[] common_interval = new double[2] { 0.0, 0.0 };
+
+            if (compareCurve.Count == 0 || reference.Count == 0)
+            {
+                return common_interval;
+            }
+            // Determine common interval
+            double common_start =
+            (reference.X[0] > compareCurve.X[0])
+            ? reference.X[0]
+            : compareCurve.X[0];
+
+            double common_stop =
+                (reference.X[reference.X.Length - 1] <
+                 compareCurve.X[compareCurve.X.Length - 1])
+                    ? reference.X[reference.X.Length - 1]
+                    : compareCurve.X[compareCurve.X.Length - 1];
+            if (common_start > common_stop)
+            {
+                return common_interval;
+            }
+            common_interval[0] = common_start;
+            common_interval[1] = common_stop;
+            return common_interval;
+        }
+        
         public Report CompareFiles(Log log, CsvFile csvBase, string sReportPath, ref Options options)
         {
             int iInvalids = 0;
@@ -276,8 +338,11 @@ namespace CsvCompare
             rep.BaseFile = csvBase.ToString();
             rep.CompareFile = _fileName;
 
+            double[] common_interval =  new double [2];
             Curve reference = new Curve();
             Curve compareCurve = new Curve();
+            Curve trimmedReference = new Curve();
+            Curve trimmedCompareCurve = new Curve();
             TubeReport report = new TubeReport();
             TubeSize size = null;
             Tube tube = new Tube(size);
@@ -313,13 +378,26 @@ namespace CsvCompare
                     else
                         log.WriteLine(LogLevel.Debug, "The resolution of the base x-axis is good.");
 
+                    common_interval = GetCommonInterval(compareCurve, reference);
+
+                    if (common_interval != null && common_interval[0] != common_interval[1])
+                    {
+                        trimmedReference = Trim_curve(reference, common_interval[0], common_interval[1]);
+                        trimmedCompareCurve = Trim_curve(compareCurve, common_interval[0], common_interval[1]);
+                    }
+                    else
+                    {
+                        trimmedReference = reference;
+                        trimmedCompareCurve = compareCurve;
+                    }
+                    
                     // The actual nominal attribute should be used, but is unfortunately unavailable in the CSV files.
                     // A default nominal value of 0.001 was chosen as a compromise between having many false negatives
                     // and passing wrong result files.
                     // See discussion in https://github.com/modelica/ModelicaStandardLibrary/issues/4421
                     const double defaultNominalValue = 0.001;
-                    const bool useLegacyBaseAndRatio = true;
-                    size = new TubeSize(reference, defaultNominalValue, useLegacyBaseAndRatio);
+                    const bool useLegacyBaseAndRatio = false;
+                    size = new TubeSize(trimmedReference, defaultNominalValue, useLegacyBaseAndRatio);
                     size.Calculate(_dRangeDelta, Axes.X, Relativity.Relative);
                     tube = new Tube(size);
                     var calcResult = tube.Calculate(reference);
@@ -331,7 +409,7 @@ namespace CsvCompare
                         continue;
                     }
                     report = calcResult.Item1;
-                    bool validationSuccess = Tube.Validate(compareCurve, report);
+                    bool validationSuccess = Tube.Validate(trimmedCompareCurve, report);
                     if (!validationSuccess)
                     {
                         log.Error("Error in the validation of the tube. Skipping {0}", res.Key);
@@ -350,7 +428,7 @@ namespace CsvCompare
                     }
                 }
                 if (null != report) //No charts for missing reports
-                    PrepareCharts(reference, compareCurve, report.Errors, rep, report, res, options.UseBitmapPlots);
+                    PrepareCharts(reference, compareCurve, trimmedCompareCurve, report.Errors, rep, report, res, options.UseBitmapPlots);
             }
             rep.Tolerance = _dRangeDelta;
 
@@ -391,10 +469,10 @@ namespace CsvCompare
 
         private void PrepareCharts(Report rep, Curve compare)//Draw result only
         {
-            PrepareCharts(compare, null, null, rep, null, new KeyValuePair<string, List<double>>(compare.Name, null), false);
+            PrepareCharts(compare, null, null, null, rep, null, new KeyValuePair<string, List<double>>(compare.Name, null), false);
         }
 
-        private void PrepareCharts(Curve reference, Curve compare, Curve error, Report rep, TubeReport tubeReport, KeyValuePair<string, List<double>> res, bool bDrawBitmapPlots)
+        private void PrepareCharts(Curve reference, Curve compare, Curve trimmedCompare, Curve error, Report rep, TubeReport tubeReport, KeyValuePair<string, List<double>> res, bool bDrawBitmapPlots)
         {
 
             Chart ch = new Chart()
@@ -456,15 +534,15 @@ namespace CsvCompare
             if (null != error && null != error.X && error.X.Length > 0)
             {
                 //Get complete error curve as "error" only holds error points
-                Curve curveErrors = new Curve("ERRORS", new double[compare.X.Length], new double[compare.X.Length]);
+                Curve curveErrors = new Curve("ERRORS", new double[trimmedCompare.X.Length], new double[trimmedCompare.X.Length]);
                 int j = 0;
-                for (int i = 0; i < compare.X.Length - 1; i++)
+                for (int i = 0; i <= trimmedCompare.X.Length - 1; i++)
                 {
-                    curveErrors.X[i] = compare.X[i];
-                    if (error.X.Contains(compare.X[i]))
+                    curveErrors.X[i] = trimmedCompare.X[i];
+                    if (error.X.Contains(trimmedCompare.X[i]))
                     {
                         curveErrors.Y[i] = (this._bShowRelativeErrors) ? error.Y[j] : 1;
-                        if (compare.X[i + 1] > compare.X[i])
+                        if (i == trimmedCompare.X.Length - 1 || trimmedCompare.X[i + 1] > trimmedCompare.X[i])
                         {
                             j++;
                         }
@@ -487,24 +565,24 @@ namespace CsvCompare
                 //Calculate delta error
                 List<double> lDeltas = new List<double>();
                 j = 0;
-                for (int i = 1; i < compare.X.Length - 1; i++)
+                for (int i = 1; i < trimmedCompare.X.Length - 1; i++)
                 {
                     if (j < error.X.Length)
                     {
-                        while (compare.X[i] < error.X[j])
+                        while (trimmedCompare.X[i] < error.X[j])
                         {
                             i++;
                             continue;
                         }
 
-                        if (i < compare.X.Length - 1)
-                            lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])) + (Math.Abs(compare.X[i + 1] - compare.X[i])))) / 2);
+                        if (i < trimmedCompare.X.Length - 1)
+                            lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(trimmedCompare.X[i] - trimmedCompare.X[i - 1])) + (Math.Abs(trimmedCompare.X[i + 1] - trimmedCompare.X[i])))) / 2);
                         else // handle errors in the last point (there is no i+1)
-                            lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(compare.X[i] - compare.X[i - 1])))) / 2);
+                            lDeltas.Add((Math.Abs(error.Y[j]) * ((Math.Abs(trimmedCompare.X[i] - trimmedCompare.X[i - 1])))) / 2);
                         j++;
                     }
                 }
-                ch.DeltaError = lDeltas.Sum() / (1e-3 + compare.Y.Max(x => Math.Abs(x)));
+                ch.DeltaError = lDeltas.Sum() / (1e-3 + trimmedCompare.Y.Max(x => Math.Abs(x)));
             }
             if (null != tubeReport && tubeReport.Lower.X.ToList<double>().Count > 2)//Remember Start and Stop values for graph scaling
             {

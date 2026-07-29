@@ -49,7 +49,7 @@ namespace CsvCompare
         [Option('i', "inline", DefaultValue = false, HelpText = "If set, javascript and style sheet files are inserted as inline text in every html output file")]
         public bool InlineScripts { get; set; }
 
-        [Option('t', "tolerance", Required = false, DefaultValue = "0.002", HelpText = "Set the width of the tube at discontinuity in x-direction [Default is 0.002].")]
+        [Option('t', "tolerance", Required = false, DefaultValue = "0.002", HelpText = "Set the width of the tube at discontinuity [Default is 0.002].")]
         public string Tolerance { get; set; }
 
         [Option('v', "verbosity", DefaultValue = 4, Required = false, HelpText = "Sets the verbosity of the output (1 most to 4[Default] less verbose).")]
